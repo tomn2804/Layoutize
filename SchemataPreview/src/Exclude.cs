@@ -6,5 +6,18 @@
 			: base(name)
 		{
 		}
+
+		public override void Create()
+		{
+		}
+
+		public override void Delete()
+		{
+		}
+
+		public override bool Exists()
+		{
+			return false;
+		}
 	}
 }

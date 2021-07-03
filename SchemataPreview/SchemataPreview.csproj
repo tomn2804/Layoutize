@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y $(TargetPath) &quot;C:\Users\Tom\Documents\PowerShell\Modules\$(TargetName)&quot;&#xD;&#xA;" />
+    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot;&#xD;&#xA;start pwsh -NoExit &quot;$(ProjectDir)Invoke-PostBuild.ps1&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

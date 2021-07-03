@@ -6,13 +6,18 @@ namespace SchemataPreview.Models
 {
 	public abstract class Model
 	{
-		public string Name { get; private set; }
-		public List<Model> Schema { get; private set; }
+		public string Name { get; internal set; }
+		public string FullName { get; internal set; }
+		public List<Model> Schema { get; internal set; }
+
+		public Model Parent { get; internal set; }
+		public bool IsMounted { get; internal set; }
+		public bool ShouldHardMount { get; internal set; }
 
 		public Model(string name)
 		{
-			this.Name = name;
-			this.Schema = new List<Model>();
+			Name = name;
+			Schema = new List<Model>();
 		}
 
 		public Model Use(params Model[] models)
@@ -20,20 +25,34 @@ namespace SchemataPreview.Models
 			foreach (Model model in models)
 			{
 				// TODO: Dismount model
-				this.Schema.RemoveAll(m => m.Name == model.Name);
-				this.Schema.Add(model);
+				Schema.RemoveAll(m => m.Name == model.Name);
+				Schema.Add(model);
 			}
 			return this;
 		}
 
 		public Model SelectFromSchema(string name)
 		{
-			return this.Schema.Find(model => model.Name == name);
+			return Schema.Find(model => model.Name == name);
 		}
 
-		public List<Model> SelectFromSchema(params string[] names)
+		public Model[] SelectFromSchema(params string[] names)
 		{
-			return this.Schema.FindAll(model => names.Contains(model.Name));
+			return Schema.FindAll(model => names.Contains(model.Name)).ToArray();
+		}
+
+		public abstract void Create();
+
+		public abstract void Delete();
+
+		public abstract bool Exists();
+
+		public void ModelDidMount()
+		{
+		}
+
+		public void ModelWillDismount()
+		{
 		}
 	}
 }

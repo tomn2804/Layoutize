@@ -1,10 +1,33 @@
-﻿namespace SchemataPreview.Models
+﻿using System.Management.Automation;
+
+namespace SchemataPreview.Models
 {
-	public class Schematic : Model
+	public class Schematic : Directory
 	{
 		public Schematic(string name)
 			: base(name)
 		{
+			UseChildren(
+				new Exclude("*.ps1"),
+				new StaticText("Get-ModelSchema.ps1")
+			);
+		}
+
+		public override void ModelDidMount()
+		{
+			base.ModelDidMount();
+			using (PowerShell psInstance = PowerShell.Create())
+			{
+				psInstance.AddScript(SelectFromSchema("Get-ModelSchema.ps1").FullName);
+				foreach (PSObject obj in psInstance.Invoke())
+				{
+					if (obj.BaseObject is Model model)
+					{
+						UseChildren(model);
+					}
+				}
+			}
+			ControllerHandler.Mount(this);
 		}
 	}
 }

@@ -9,6 +9,11 @@ namespace SchemataPreview.Models
 		{
 		}
 
+		public void Print()
+		{
+			System.Console.WriteLine(Name);
+		}
+
 		public override void Create()
 		{
 			if (!IsMounted)

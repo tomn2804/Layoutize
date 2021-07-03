@@ -72,28 +72,28 @@ namespace SchemataPreview
 			}
 		}
 
-		public static void Clear(Model model)
-		{
-			if (model.Exists())
-			{
-				model.Clear();
-			}
-			foreach (Model child in model.Children)
-			{
-				Clear(child);
-			}
-		}
+		//public static void Clear(Model model)
+		//{
+		//	if (model.Exists())
+		//	{
+		//		model.Clear();
+		//	}
+		//	foreach (Model child in model.Children)
+		//	{
+		//		Clear(child);
+		//	}
+		//}
 
-		public static void Format(Model model)
-		{
-			if (model.Exists())
-			{
-				model.Format();
-			}
-			foreach (Model child in model.Children)
-			{
-				Format(child);
-			}
-		}
+		//public static void Format(Model model)
+		//{
+		//	if (model.Exists())
+		//	{
+		//		model.Format();
+		//	}
+		//	foreach (Model child in model.Children)
+		//	{
+		//		Format(child);
+		//	}
+		//}
 	}
 }

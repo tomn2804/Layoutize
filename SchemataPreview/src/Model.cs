@@ -15,7 +15,11 @@ namespace SchemataPreview.Models
 		public bool IsMounted { get; internal set; }
 		public bool ShouldHardMount { get; internal set; }
 
-		public Model(string name) => Name = name;
+		public Model(string name)
+		{
+			Name = name;
+			Children = new List<Model>();
+		}
 
 		public Model UseChildren(params Model[] models)
 		{
@@ -44,11 +48,11 @@ namespace SchemataPreview.Models
 
 		public abstract bool Exists();
 
-		public void ModelDidMount()
+		public virtual void ModelDidMount()
 		{
 		}
 
-		public void ModelWillDismount()
+		public virtual void ModelWillDismount()
 		{
 		}
 	}

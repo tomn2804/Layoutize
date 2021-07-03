@@ -8,37 +8,34 @@ namespace SchemataPreview.Models
 	{
 		public string Name { get; internal set; }
 		public string FullName { get; internal set; }
-		public List<Model> Schema { get; internal set; }
 
 		public Model Parent { get; internal set; }
+		public List<Model> Children { get; internal set; }
+
 		public bool IsMounted { get; internal set; }
 		public bool ShouldHardMount { get; internal set; }
 
-		public Model(string name)
-		{
-			Name = name;
-			Schema = new List<Model>();
-		}
+		public Model(string name) => Name = name;
 
-		public Model Use(params Model[] models)
+		public Model UseChildren(params Model[] models)
 		{
 			foreach (Model model in models)
 			{
 				// TODO: Dismount model
-				Schema.RemoveAll(m => m.Name == model.Name);
-				Schema.Add(model);
+				Children.RemoveAll(child => child.Name == model.Name);
+				Children.Add(model);
 			}
 			return this;
 		}
 
 		public Model SelectFromSchema(string name)
 		{
-			return Schema.Find(model => model.Name == name);
+			return Children.Find(child => child.Name == name);
 		}
 
 		public Model[] SelectFromSchema(params string[] names)
 		{
-			return Schema.FindAll(model => names.Contains(model.Name)).ToArray();
+			return Children.FindAll(child => names.Contains(child.Name)).ToArray();
 		}
 
 		public abstract void Create();

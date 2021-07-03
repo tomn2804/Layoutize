@@ -1,5 +1,4 @@
-﻿using System;
-using SchemataPreview.Models;
+﻿using SchemataPreview.Models;
 using System.IO;
 
 namespace SchemataPreview
@@ -21,11 +20,11 @@ namespace SchemataPreview
 			{
 				model.Create();
 			}
-			foreach (Model m in model.Schema)
+			foreach (Model child in model.Children)
 			{
-				m.FullName = Path.Combine(model.FullName, m.Name);
-				m.Parent = model;
-				Mount(m);
+				child.FullName = Path.Combine(model.FullName, child.Name);
+				child.Parent = model;
+				Mount(child);
 			}
 			if (!model.IsMounted)
 			{
@@ -43,9 +42,9 @@ namespace SchemataPreview
 				model.Parent = null;
 				model.IsMounted = false;
 			}
-			foreach (Model m in model.Schema)
+			foreach (Model child in model.Children)
 			{
-				Dismount(m);
+				Dismount(child);
 			}
 		}
 
@@ -55,9 +54,9 @@ namespace SchemataPreview
 			{
 				model.Create();
 			}
-			foreach (Model m in model.Schema)
+			foreach (Model child in model.Children)
 			{
-				Create(m);
+				Create(child);
 			}
 		}
 
@@ -67,9 +66,9 @@ namespace SchemataPreview
 			{
 				model.Delete();
 			}
-			foreach (Model m in model.Schema)
+			foreach (Model child in model.Children)
 			{
-				Delete(m);
+				Delete(child);
 			}
 		}
 
@@ -79,9 +78,9 @@ namespace SchemataPreview
 			{
 				model.Clear();
 			}
-			foreach (Model m in model.Schema)
+			foreach (Model child in model.Children)
 			{
-				Clear(m);
+				Clear(child);
 			}
 		}
 
@@ -91,9 +90,9 @@ namespace SchemataPreview
 			{
 				model.Format();
 			}
-			foreach (Model m in model.Schema)
+			foreach (Model child in model.Children)
 			{
-				Format(m);
+				Format(child);
 			}
 		}
 	}

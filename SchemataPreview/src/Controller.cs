@@ -37,17 +37,5 @@ namespace SchemataPreview
 			ControllerHandler.Delete(Model);
 			return this;
 		}
-
-		//public Controller Clear()
-		//{
-		//	ControllerHandler.Clear(Model);
-		//	return this;
-		//}
-
-		//public Controller Format()
-		//{
-		//	ControllerHandler.Format(Model);
-		//	return this;
-		//}
 	}
 }

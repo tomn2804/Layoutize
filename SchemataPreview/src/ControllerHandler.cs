@@ -5,8 +5,40 @@ namespace SchemataPreview
 {
 	public class ControllerHandler
 	{
+		public interface IMount
+		{
+			public string Name { get; internal set; }
+			public string FullName { get; internal set; }
+
+			public bool IsMounted { get; internal set; }
+
+			public Model Parent { get; internal set; }
+			public List<Model> Children { get; internal set; }
+
+			bool Exists();
+		}
+
+		public interface ICreate : IMount
+		{
+			void Create();
+		}
+
+		public interface IDelete : IMount
+		{
+			void Delete();
+		}
+
 		public static void Mount(Model model)
 		{
+			try
+			{
+				System.IO.Directory.CreateDirectory(FullName);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error: {e}");
+			}
+
 			// TODO: check for init
 			if (model.Exists())
 			{
@@ -48,52 +80,36 @@ namespace SchemataPreview
 			}
 		}
 
-		public static void Create(Model model)
+		public static void Create(ICreate model)
 		{
+			if (!model.IsMounted)
+			{
+				throw new ModelNotMountedException(model);
+			}
 			if (!model.Exists())
 			{
 				model.Create();
 			}
-			foreach (Model child in model.Children)
+			foreach (ICreate child in model.Children)
 			{
 				Create(child);
 			}
 		}
 
-		public static void Delete(Model model)
+		public static void Delete(IDelete model)
 		{
+			if (!model.IsMounted)
+			{
+				throw new ModelNotMountedException(model);
+			}
 			if (model.Exists())
 			{
 				model.Delete();
 			}
-			foreach (Model child in model.Children)
+			foreach (IDelete child in model.Children)
 			{
 				Delete(child);
 			}
 		}
-
-		//public static void Clear(Model model)
-		//{
-		//	if (model.Exists())
-		//	{
-		//		model.Clear();
-		//	}
-		//	foreach (Model child in model.Children)
-		//	{
-		//		Clear(child);
-		//	}
-		//}
-
-		//public static void Format(Model model)
-		//{
-		//	if (model.Exists())
-		//	{
-		//		model.Format();
-		//	}
-		//	foreach (Model child in model.Children)
-		//	{
-		//		Format(child);
-		//	}
-		//}
 	}
 }

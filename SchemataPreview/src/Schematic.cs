@@ -2,7 +2,17 @@
 
 namespace SchemataPreview.Models
 {
-	public class Schematic : Directory
+	public interface IMountEvent
+	{
+		void ModelDidMount();
+	}
+
+	public interface IDismountEvent
+	{
+		void ModelWillDismount();
+	}
+
+	public class Schematic : Directory, IMountEvent
 	{
 		public Schematic(string name)
 			: base(name)
@@ -13,9 +23,8 @@ namespace SchemataPreview.Models
 			);
 		}
 
-		public override void ModelDidMount()
+		public void ModelDidMount()
 		{
-			base.ModelDidMount();
 			using (PowerShell instance = PowerShell.Create().AddScript(SelectChild("Get-ModelSchema.ps1").FullName))
 			{
 				foreach (PSObject obj in instance.Invoke())

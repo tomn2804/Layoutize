@@ -32,14 +32,9 @@ namespace SchemataPreview.Models
 			return this;
 		}
 
-		public Model SelectFromSchema(string name)
+		public Model SelectChild(string name)
 		{
 			return Children.Find(child => child.Name == name);
-		}
-
-		public Model[] SelectFromSchema(params string[] names)
-		{
-			return Children.FindAll(child => names.Contains(child.Name)).ToArray();
 		}
 
 		public abstract void Create();

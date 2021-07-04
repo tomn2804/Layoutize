@@ -16,10 +16,9 @@ namespace SchemataPreview.Models
 		public override void ModelDidMount()
 		{
 			base.ModelDidMount();
-			using (PowerShell psInstance = PowerShell.Create())
+			using (PowerShell instance = PowerShell.Create().AddScript(SelectChild("Get-ModelSchema.ps1").FullName))
 			{
-				psInstance.AddScript(SelectFromSchema("Get-ModelSchema.ps1").FullName);
-				foreach (PSObject obj in psInstance.Invoke())
+				foreach (PSObject obj in instance.Invoke())
 				{
 					if (obj.BaseObject is Model model)
 					{

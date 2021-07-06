@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SchemataPreview
 {
-	public class ControllerHandler
+	public static class ModelController
 	{
 		public interface IMount
 		{
@@ -20,16 +20,54 @@ namespace SchemataPreview
 
 		public interface ICreate : IMount
 		{
-			void Create();
+			void OnCreate();
 		}
 
 		public interface IDelete : IMount
 		{
-			void Delete();
+			void OnDelete();
 		}
 
 		public static void Mount(Model model)
 		{
+			try
+			{
+				System.IO.Directory.CreateDirectory(FullName);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error: {e}");
+			}
+
+			// TODO: check for init
+			if (model.Exists())
+			{
+				if (model.ShouldHardMount)
+				{
+					model.Delete();
+					model.Create();
+				}
+			}
+			else
+			{
+				model.Create();
+			}
+			foreach (Model child in model.Children)
+			{
+				child.FullName = Path.Combine(model.FullName, child.Name);
+				child.Parent = model;
+				Mount(child);
+			}
+			if (!model.IsMounted)
+			{
+				model.IsMounted = true;
+				model.ModelDidMount();
+			}
+		}
+
+		public static void Mount(Model model, params Model[] children)
+		{
+			model.UseChildren(children);
 			try
 			{
 				System.IO.Directory.CreateDirectory(FullName);
@@ -80,7 +118,7 @@ namespace SchemataPreview
 			}
 		}
 
-		public static void Create(ICreate model)
+		public static void OnCreate(ICreate model)
 		{
 			if (!model.IsMounted)
 			{
@@ -88,15 +126,15 @@ namespace SchemataPreview
 			}
 			if (!model.Exists())
 			{
-				model.Create();
+				model.OnCreate();
 			}
 			foreach (ICreate child in model.Children)
 			{
-				Create(child);
+				OnCreate(child);
 			}
 		}
 
-		public static void Delete(IDelete model)
+		public static void OnDelete(IDelete model)
 		{
 			if (!model.IsMounted)
 			{
@@ -104,11 +142,11 @@ namespace SchemataPreview
 			}
 			if (model.Exists())
 			{
-				model.Delete();
+				model.OnDelete();
 			}
 			foreach (IDelete child in model.Children)
 			{
-				Delete(child);
+				OnDelete(child);
 			}
 		}
 	}

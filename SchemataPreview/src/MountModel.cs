@@ -1,5 +1,5 @@
-﻿using System.Management.Automation;
-using SchemataPreview.Models;
+﻿using SchemataPreview.Models;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {

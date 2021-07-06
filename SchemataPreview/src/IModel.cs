@@ -2,9 +2,9 @@
 {
 	public interface IModel
 	{
-		void Create();
+		void OnCreate();
 
-		void Delete();
+		void OnDelete();
 
 		bool Exists();
 

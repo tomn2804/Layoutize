@@ -1,40 +1,40 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using System;
 
 namespace SchemataPreview.Models
 {
-	public class File : Model
+	public partial class File : Model
 	{
+		public override bool Exists
+		{
+			get
+			{
+				if (Convert.ToBoolean(FullName))
+				{
+					return System.IO.File.Exists(FullName);
+				}
+				return false;
+			}
+		}
+
 		public File(string name)
 			: base(name)
 		{
 		}
+	}
 
-		public void Print()
-		{
-			System.Console.WriteLine(Name);
-		}
+	public partial class File : Model
+	{
+		public override void Create() => System.IO.File.Create(FullName).Dispose();
 
-		public override void Create()
-		{
-			if (!IsMounted)
-			{
-				throw new ModelNotMountedException(this);
-			}
-			System.IO.File.Create(FullName).Dispose();
-		}
+		public override void Delete() => FileController.SendToRecycleBin(FullName);
+	}
 
-		public override void Delete()
+	public static class FileController
+	{
+		public static void SendToRecycleBin(string path)
 		{
-			if (!IsMounted)
-			{
-				throw new ModelNotMountedException(this);
-			}
-			FileSystem.DeleteFile(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-		}
-
-		public override bool Exists()
-		{
-			return System.IO.File.Exists(FullName);
+			FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }

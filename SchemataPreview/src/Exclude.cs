@@ -2,11 +2,11 @@
 {
 	public class Exclude : Model
 	{
+		public override bool Exists { get => false; }
+
 		public Exclude(string name)
 			: base(name)
 		{
 		}
-
-		public override bool Exists() => false;
 	}
 }

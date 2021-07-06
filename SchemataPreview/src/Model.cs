@@ -12,27 +12,36 @@ namespace SchemataPreview.Models
 		public List<Model> Children { get; internal set; }
 
 		public bool IsMounted { get; internal set; }
+		public abstract bool Exists { get; }
 
 		public Model(string name)
 		{
 			Name = name;
 			Children = new List<Model>();
 		}
+	}
 
+	public abstract partial class Model
+	{
 		public Model UseChildren(params Model[] models)
 		{
 			foreach (Model model in models)
 			{
-				ControllerHandler.Dismount(model);
-				Children.RemoveAll(child => child.Name == model.Name);
-				Children.Add(model);
+				if (IsMounted)
+				{
+					ModelController.Mount(this, model);
+				}
+				else
+				{
+					ModelController.Dismount(model);
+					Children.RemoveAll(child => child.Name == model.Name);
+					Children.Add(model);
+				}
 			}
 			return this;
 		}
 
 		public Model? SelectChild(string name) => Children.Find(child => child.Name == name);
-
-		public abstract bool Exists();
 	}
 
 	public abstract partial class Model
@@ -43,17 +52,6 @@ namespace SchemataPreview.Models
 		{
 			ShouldHardMount = true;
 			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		public virtual void ModelDidMount()
-		{
-		}
-
-		public virtual void ModelWillDismount()
-		{
 		}
 	}
 
@@ -113,6 +111,17 @@ namespace SchemataPreview.Models
 		}
 
 		public virtual void Cleanup()
+		{
+		}
+	}
+
+	public abstract partial class Model
+	{
+		public virtual void ModelDidMount()
+		{
+		}
+
+		public virtual void ModelWillDismount()
 		{
 		}
 	}

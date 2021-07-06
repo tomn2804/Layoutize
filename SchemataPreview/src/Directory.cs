@@ -1,46 +1,56 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SchemataPreview.Models
 {
-	public class Directory : Model
+	public partial class Directory : Model
 	{
+		public override bool Exists
+		{
+			get
+			{
+				if (Convert.ToBoolean(FullName))
+				{
+					return System.IO.Directory.Exists(FullName);
+				}
+				return false;
+			}
+		}
+
 		public Directory(string name)
 			: base(name)
 		{
 		}
+	}
 
-		public override void Create()
+	public partial class Directory : Model
+	{
+		public override void Create() => System.IO.Directory.CreateDirectory(FullName);
+
+		public override void Delete() => DirectoryController.SendToRecycleBin(FullName);
+
+		public override void Cleanup() => Format();
+	}
+
+	public partial class Directory : Model
+	{
+		public void Format()
 		{
-			System.IO.Directory.CreateDirectory(FullName);
+			Format(System.IO.Directory.EnumerateDirectories(FullName), DirectoryController.SendToRecycleBin);
+			Format(System.IO.Directory.EnumerateFiles(FullName), FileController.SendToRecycleBin);
 		}
 
-		public override void Delete()
+		private void Format(IEnumerable<string> paths, Action<string> handleDelete)
 		{
-			FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-		}
-
-		public override bool Exists()
-		{
-			return System.IO.Directory.Exists(FullName);
-		}
-
-		public override void Cleanup()
-		{
-			CleanupSubDirectories();
-			CleanupSubFiles();
-		}
-
-		private void CleanupSubDirectories()
-		{
-			foreach (string childPath in System.IO.Directory.GetDirectories(FullName))
+			foreach (string path in paths)
 			{
 				try
 				{
-					if (SelectChild(Path.GetFileName(childPath)) == null)
+					if (SelectChild(Path.GetFileName(path)) == null)
 					{
-						FileSystem.DeleteDirectory(childPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+						handleDelete(path);
 					}
 				}
 				catch (Exception e)
@@ -49,23 +59,13 @@ namespace SchemataPreview.Models
 				}
 			}
 		}
+	}
 
-		private void CleanupSubFiles()
+	public static class DirectoryController
+	{
+		public static void SendToRecycleBin(string path)
 		{
-			foreach (string childPath in System.IO.Directory.GetFiles(FullName))
-			{
-				try
-				{
-					if (SelectChild(Path.GetFileName(childPath)) == null)
-					{
-						FileSystem.DeleteFile(childPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-					}
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine($"Error: {e}");
-				}
-			}
+			FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }

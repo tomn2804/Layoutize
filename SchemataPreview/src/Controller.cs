@@ -1,44 +1,11 @@
-﻿using SchemataPreview.Models;
-using System.IO;
+﻿using System.IO;
 
 namespace SchemataPreview
 {
-	public static class ModelController
+	public static class Controller
 	{
-		public interface IMount
-		{
-			public string Name { get; internal set; }
-			public string FullName { get; internal set; }
-
-			public bool IsMounted { get; internal set; }
-
-			public Model Parent { get; internal set; }
-			public List<Model> Children { get; internal set; }
-
-			bool Exists();
-		}
-
-		public interface ICreate : IMount
-		{
-			void OnCreate();
-		}
-
-		public interface IDelete : IMount
-		{
-			void OnDelete();
-		}
-
 		public static void Mount(Model model)
 		{
-			try
-			{
-				System.IO.Directory.CreateDirectory(FullName);
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine($"Error: {e}");
-			}
-
 			// TODO: check for init
 			if (model.Exists())
 			{

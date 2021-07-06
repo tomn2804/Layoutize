@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace SchemataPreview.Models
+namespace SchemataPreview
 {
-	public partial class Text : File
+	public partial class TextModel : FileModel
 	{
 		public string[] InitializerContents { get; set; }
 
@@ -14,20 +14,20 @@ namespace SchemataPreview.Models
 			set => System.IO.File.WriteAllLines(FullName, value);
 		}
 
-		public Text(string name)
+		public TextModel(string name)
 			: base(name)
 		{
 			InitializerContents = Array.Empty<string>();
 		}
 
-		public Text(string name, string[] contents)
+		public TextModel(string name, string[] contents)
 			: base(name)
 		{
 			InitializerContents = contents;
 		}
 	}
 
-	public partial class Text : File
+	public partial class TextModel : FileModel
 	{
 		public override void Create()
 		{
@@ -42,7 +42,7 @@ namespace SchemataPreview.Models
 		}
 	}
 
-	public partial class Text : File
+	public partial class TextModel : FileModel
 	{
 		public static string[] Format(string[] contents)
 		{

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Management.Automation;
 
-namespace SchemataPreview.Models
+namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
@@ -29,11 +29,11 @@ namespace SchemataPreview.Models
 			{
 				if (IsMounted)
 				{
-					ModelController.Mount(this, model);
+					Controller.Mount(this, model);
 				}
 				else
 				{
-					ModelController.Dismount(model);
+					Controller.Dismount(model);
 					Children.RemoveAll(child => child.Name == model.Name);
 					Children.Add(model);
 				}

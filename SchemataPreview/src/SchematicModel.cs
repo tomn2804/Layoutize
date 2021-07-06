@@ -1,15 +1,15 @@
 ﻿using System.Management.Automation;
 
-namespace SchemataPreview.Models
+namespace SchemataPreview
 {
-	public class Schematic : Directory
+	public class SchematicModel : DirectoryModel
 	{
-		public Schematic(string name)
+		public SchematicModel(string name)
 			: base(name)
 		{
 			UseChildren(
-				new Exclude("*.ps1"),
-				new Text("Get-ModelSchema.ps1")
+				new ExcludeModel("*.ps1"),
+				new TextModel("Get-ModelSchema.ps1")
 			);
 		}
 

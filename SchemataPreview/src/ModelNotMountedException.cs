@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SchemataPreview.Models
+namespace SchemataPreview
 {
 	public class ModelNotMountedException : Exception
 	{

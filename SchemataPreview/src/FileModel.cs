@@ -1,9 +1,9 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using System;
 
-namespace SchemataPreview.Models
+namespace SchemataPreview
 {
-	public partial class File : Model
+	public partial class FileModel : Model
 	{
 		public override bool Exists
 		{
@@ -17,13 +17,13 @@ namespace SchemataPreview.Models
 			}
 		}
 
-		public File(string name)
+		public FileModel(string name)
 			: base(name)
 		{
 		}
 	}
 
-	public partial class File : Model
+	public partial class FileModel : Model
 	{
 		public override void Create() => System.IO.File.Create(FullName).Dispose();
 

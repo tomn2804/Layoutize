@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SchemataPreview.Models
+namespace SchemataPreview
 {
-	public partial class Directory : Model
+	public partial class DirectoryModel : Model
 	{
 		public override bool Exists
 		{
@@ -19,13 +19,13 @@ namespace SchemataPreview.Models
 			}
 		}
 
-		public Directory(string name)
+		public DirectoryModel(string name)
 			: base(name)
 		{
 		}
 	}
 
-	public partial class Directory : Model
+	public partial class DirectoryModel : Model
 	{
 		public override void Create() => System.IO.Directory.CreateDirectory(FullName);
 
@@ -34,7 +34,7 @@ namespace SchemataPreview.Models
 		public override void Cleanup() => Format();
 	}
 
-	public partial class Directory : Model
+	public partial class DirectoryModel : Model
 	{
 		public void Format()
 		{

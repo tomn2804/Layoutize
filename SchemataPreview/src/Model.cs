@@ -1,28 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Management.Automation;
 
 namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public string Name { get; internal set; }
-		public string FullName { get; internal set; }
+		public Model(string name)
+		{
+			Name = name;
+			Children = new();
+		}
 
-		public Model Parent { get; internal set; }
-		public List<Model> Children { get; internal set; }
+		public string Name { get; private set; }
+		public string FullName { get; private set; }
+
+		public Model Parent { get; private set; }
+		public List<Model> Children { get; private set; }
 
 		public bool IsMounted { get; internal set; }
 		public abstract bool Exists { get; }
 
-		public Model(string name)
+		public virtual void Configure()
 		{
-			Name = name;
-			Children = new List<Model>();
 		}
-	}
 
-	public abstract partial class Model
-	{
+		public virtual void Configure(string path)
+		{
+			FullName = Path.Combine(path, Name);
+			foreach (Model child in Children)
+			{
+				child.Parent = this;
+				Configure(FullName);
+			}
+		}
+
 		public Model UseChildren(params Model[] models)
 		{
 			foreach (Model model in models)
@@ -41,7 +54,14 @@ namespace SchemataPreview
 			return this;
 		}
 
-		public Model? SelectChild(string name) => Children.Find(child => child.Name == name);
+#nullable enable
+
+		public Model? SelectChild(string name)
+		{
+			return Children.Find(child => child.Name == name);
+		}
+
+#nullable disable
 	}
 
 	public abstract partial class Model
@@ -57,72 +77,86 @@ namespace SchemataPreview
 
 	public abstract partial class Model
 	{
-		public ScriptBlock CreateHandler { get; internal set; }
+		internal List<Action> CreateActions { get; private set; }
+
+		public Model OnCreate(Action action)
+		{
+			CreateActions.Add(action);
+			return this;
+		}
 
 		public Model OnCreate(ScriptBlock command)
 		{
-			CreateHandler = command;
+			CreateActions.Add(() => command.Invoke());
 			return this;
-		}
-
-		public virtual void Create()
-		{
 		}
 	}
 
 	public abstract partial class Model
 	{
-		public ScriptBlock DeleteHandler { get; internal set; }
+		internal List<Action> DeleteActions { get; private set; }
+
+		public Model OnDelete(Action action)
+		{
+			DeleteActions.Add(action);
+			return this;
+		}
 
 		public Model OnDelete(ScriptBlock command)
 		{
-			DeleteHandler = command;
+			DeleteActions.Add(() => command.Invoke());
 			return this;
-		}
-
-		public virtual void Delete()
-		{
 		}
 	}
 
 	public abstract partial class Model
 	{
-		public ScriptBlock UpdateHandler { get; internal set; }
+		internal List<Action> UpdateActions { get; private set; }
+
+		public Model OnUpdate(Action action)
+		{
+			UpdateActions.Add(action);
+			return this;
+		}
 
 		public Model OnUpdate(ScriptBlock command)
 		{
-			UpdateHandler = command;
+			UpdateActions.Add(() => command.Invoke());
 			return this;
-		}
-
-		public virtual void Update()
-		{
 		}
 	}
 
 	public abstract partial class Model
 	{
-		public ScriptBlock CleanupHandler { get; internal set; }
+		internal List<Action> CleanupActions { get; private set; }
+
+		public Model OnCleanup(Action action)
+		{
+			CleanupActions.Add(action);
+			return this;
+		}
 
 		public Model OnCleanup(ScriptBlock command)
 		{
-			CleanupHandler = command;
+			CleanupActions.Add(() => command.Invoke());
 			return this;
-		}
-
-		public virtual void Cleanup()
-		{
 		}
 	}
 
 	public abstract partial class Model
 	{
-		public virtual void ModelDidMount()
+		internal List<Action> MountActions { get; private set; }
+
+		public Model OnMount(Action action)
 		{
+			MountActions.Add(action);
+			return this;
 		}
 
-		public virtual void ModelWillDismount()
+		public Model OnMount(ScriptBlock command)
 		{
+			MountActions.Add(() => command.Invoke());
+			return this;
 		}
 	}
 }

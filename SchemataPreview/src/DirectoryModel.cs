@@ -1,48 +1,41 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace SchemataPreview
 {
-	public partial class DirectoryModel : Model
+	public class DirectoryModel : FileSystemModel
 	{
+		public DirectoryModel(string name)
+			: base(name)
+		{
+		}
+
 		public override bool Exists
 		{
 			get
 			{
 				if (Convert.ToBoolean(FullName))
 				{
-					return System.IO.Directory.Exists(FullName);
+					return Directory.Exists(FullName);
 				}
 				return false;
 			}
 		}
 
-		public DirectoryModel(string name)
-			: base(name)
+		public override void Configure()
 		{
-		}
-	}
-
-	public partial class DirectoryModel : Model
-	{
-		public override void Create() => System.IO.Directory.CreateDirectory(FullName);
-
-		public override void Delete() => DirectoryController.SendToRecycleBin(FullName);
-
-		public override void Cleanup() => Format();
-	}
-
-	public partial class DirectoryModel : Model
-	{
-		public void Format()
-		{
-			Format(System.IO.Directory.EnumerateDirectories(FullName), DirectoryController.SendToRecycleBin);
-			Format(System.IO.Directory.EnumerateFiles(FullName), FileController.SendToRecycleBin);
+			base.Configure();
+			OnCreate(() => Directory.CreateDirectory(FullName));
+			OnDelete(() => SendDirectoryToRecycleBin(FullName));
+			OnCleanup(() =>
+			{
+				ForEachNonChild(Directory.EnumerateDirectories(FullName), SendDirectoryToRecycleBin);
+				ForEachNonChild(Directory.EnumerateFiles(FullName), SendFileToRecycleBin);
+			});
 		}
 
-		private void Format(IEnumerable<string> paths, Action<string> handleDelete)
+		private void ForEachNonChild(IEnumerable<string> paths, Action<string> action)
 		{
 			foreach (string path in paths)
 			{
@@ -50,7 +43,7 @@ namespace SchemataPreview
 				{
 					if (SelectChild(Path.GetFileName(path)) == null)
 					{
-						handleDelete(path);
+						action(path);
 					}
 				}
 				catch (Exception e)
@@ -58,14 +51,6 @@ namespace SchemataPreview
 					Console.WriteLine($"Error: {e}");
 				}
 			}
-		}
-	}
-
-	public static class DirectoryController
-	{
-		public static void SendToRecycleBin(string path)
-		{
-			FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }

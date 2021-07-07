@@ -1,40 +1,32 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
+﻿using System;
+using System.IO;
 
 namespace SchemataPreview
 {
-	public partial class FileModel : Model
+	public class FileModel : FileSystemModel
 	{
+		public FileModel(string name)
+			: base(name)
+		{
+		}
+
 		public override bool Exists
 		{
 			get
 			{
 				if (Convert.ToBoolean(FullName))
 				{
-					return System.IO.File.Exists(FullName);
+					return File.Exists(FullName);
 				}
 				return false;
 			}
 		}
 
-		public FileModel(string name)
-			: base(name)
+		public override void Configure()
 		{
-		}
-	}
-
-	public partial class FileModel : Model
-	{
-		public override void Create() => System.IO.File.Create(FullName).Dispose();
-
-		public override void Delete() => FileController.SendToRecycleBin(FullName);
-	}
-
-	public static class FileController
-	{
-		public static void SendToRecycleBin(string path)
-		{
-			FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+			base.Configure();
+			OnCreate(() => File.Create(FullName).Dispose());
+			OnDelete(() => SendFileToRecycleBin(FullName));
 		}
 	}
 }

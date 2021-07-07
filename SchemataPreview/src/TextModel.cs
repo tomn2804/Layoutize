@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace SchemataPreview
 {
-	public partial class TextModel : FileModel
+	public class TextModel : FileModel
 	{
-		public string[] InitializerContents { get; set; }
-
-		public string[] Contents
-		{
-			get => System.IO.File.ReadAllLines(FullName);
-			set => System.IO.File.WriteAllLines(FullName, value);
-		}
-
 		public TextModel(string name)
 			: base(name)
 		{
@@ -25,30 +18,35 @@ namespace SchemataPreview
 		{
 			InitializerContents = contents;
 		}
-	}
 
-	public partial class TextModel : FileModel
-	{
-		public override void Create()
+		public string[] Contents
 		{
-			base.Create();
-			Contents = InitializerContents;
+			get => File.ReadAllLines(FullName);
+			set => File.WriteAllLines(FullName, value);
 		}
 
-		public override void Cleanup()
-		{
-			base.Create();
-			Contents = Format(Contents);
-		}
-	}
+		private string[] InitializerContents { get; set; }
 
-	public partial class TextModel : FileModel
-	{
 		public static string[] Format(string[] contents)
 		{
-			return contents.Distinct().Select(
-				line => Regex.Replace(Regex.Replace(line.TrimEnd(), "(?<=\t) +| +(?=\t)", ""), " {2,}", " ")
-			).ToArray();
+			List<string> results = new();
+			bool hasPreviousLine = false;
+			foreach (string line in contents)
+			{
+				if (!string.IsNullOrWhiteSpace(line) || hasPreviousLine)
+				{
+					results.Add(Regex.Replace(Regex.Replace(line.TrimEnd(), "(?<=\t) +| +(?=\t)", ""), " {2,}", " "));
+					hasPreviousLine = !hasPreviousLine;
+				}
+			}
+			return results.ToArray();
+		}
+
+		public override void Configure()
+		{
+			base.Configure();
+			OnCreate(() => Contents = InitializerContents);
+			OnCleanup(() => Contents = Format(Contents));
 		}
 	}
 }

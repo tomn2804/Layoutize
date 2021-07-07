@@ -7,17 +7,18 @@ namespace SchemataPreview
 		public SchematicModel(string name)
 			: base(name)
 		{
+		}
+
+		public override void Configure()
+		{
+			base.Configure();
 			UseChildren(
 				new ExcludeModel("*.ps1"),
 				new TextModel("Get-ModelSchema.ps1")
 			);
-		}
-
-		public override void ModelDidMount()
-		{
-			base.ModelDidMount();
-			using (PowerShell instance = PowerShell.Create().AddScript(SelectChild("Get-ModelSchema.ps1").FullName))
+			OnMount(() =>
 			{
+				using PowerShell instance = PowerShell.Create().AddScript(SelectChild("Get-ModelSchema.ps1").FullName);
 				foreach (PSObject obj in instance.Invoke())
 				{
 					if (obj.BaseObject is Model model)
@@ -25,7 +26,7 @@ namespace SchemataPreview
 						UseChildren(model);
 					}
 				}
-			}
+			});
 		}
 	}
 }

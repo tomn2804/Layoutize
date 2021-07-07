@@ -22,9 +22,9 @@
 			return this;
 		}
 
-		public ControllerWithContext OnCreate()
+		public ControllerWithContext Create()
 		{
-			Controller.OnCreate(Model);
+			Controller.Create(Model);
 			return this;
 		}
 

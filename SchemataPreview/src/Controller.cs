@@ -37,7 +37,7 @@ namespace SchemataPreview
 			model.UseChildren(children);
 			try
 			{
-				System.IO.Directory.CreateDirectory(FullName);
+				Directory.CreateDirectory(FullName);
 			}
 			catch (Exception e)
 			{
@@ -85,7 +85,7 @@ namespace SchemataPreview
 			}
 		}
 
-		public static void OnCreate(ICreate model)
+		public static void Create(Model model)
 		{
 			if (!model.IsMounted)
 			{
@@ -97,11 +97,11 @@ namespace SchemataPreview
 			}
 			foreach (ICreate child in model.Children)
 			{
-				OnCreate(child);
+				Create(child);
 			}
 		}
 
-		public static void OnDelete(IDelete model)
+		public static void Delete(Model model)
 		{
 			if (!model.IsMounted)
 			{
@@ -113,7 +113,7 @@ namespace SchemataPreview
 			}
 			foreach (IDelete child in model.Children)
 			{
-				OnDelete(child);
+				Delete(child);
 			}
 		}
 	}

@@ -27,6 +27,13 @@ namespace SchemataPreview
 
 		private string[] InitializerContents { get; set; }
 
+		public override void Configure()
+		{
+			base.Configure();
+			OnCreate(() => Contents = InitializerContents);
+			OnCleanup(() => Contents = Format(Contents));
+		}
+
 		public static string[] Format(string[] contents)
 		{
 			List<string> results = new();
@@ -40,13 +47,6 @@ namespace SchemataPreview
 				}
 			}
 			return results.ToArray();
-		}
-
-		public override void Configure()
-		{
-			base.Configure();
-			OnCreate(() => Contents = InitializerContents);
-			OnCleanup(() => Contents = Format(Contents));
 		}
 	}
 }

@@ -13,42 +13,72 @@ namespace SchemataPreview
 			Children = new();
 		}
 
-		public string Name { get; private set; }
-		public string FullName { get; private set; }
+		public string Name { get; }
 
-		public Model Parent { get; private set; }
-		public List<Model> Children { get; private set; }
+#nullable enable
+
+		public string? FullName
+		{
+			get => FullName;
+			set
+			{
+				if (IsMounted)
+				{
+					Controller.Dismount(this);
+				}
+				FullName = value;
+				Children.ForEach(child => child.FullName = string.IsNullOrWhiteSpace(FullName) ? null : Path.Combine(FullName, child.Name));
+			}
+		}
+
+		public Model? Parent
+		{
+			get => Parent;
+			private set
+			{
+				if (IsMounted)
+				{
+					Controller.Dismount(this);
+				}
+				Parent = value;
+				if (Parent != null && Parent.FullName != null)
+				{
+					FullName = Path.Combine(Parent.FullName, Name);
+				}
+			}
+		}
+
+#nullable disable
+
+		public List<Model> Children { get; }
 
 		public bool IsMounted { get; internal set; }
 		public abstract bool Exists { get; }
 
 		public virtual void Configure()
 		{
-		}
-
-		public virtual void Configure(string path)
-		{
-			FullName = Path.Combine(path, Name);
-			foreach (Model child in Children)
+			OnMount(() =>
 			{
-				child.Parent = this;
-				Configure(FullName);
-			}
+				IsMounted = true;
+			});
+			OnDismount(() =>
+			{
+				FullName = null;
+				Parent = null;
+				IsMounted = false;
+			});
 		}
 
 		public Model UseChildren(params Model[] models)
 		{
 			foreach (Model model in models)
 			{
+				model.Parent = this;
+				Children.RemoveAll(child => child.Name == model.Name);
+				Children.Add(model);
 				if (IsMounted)
 				{
-					Controller.Mount(this, model);
-				}
-				else
-				{
-					Controller.Dismount(model);
-					Children.RemoveAll(child => child.Name == model.Name);
-					Children.Add(model);
+					Controller.Mount(model);
 				}
 			}
 			return this;
@@ -62,6 +92,11 @@ namespace SchemataPreview
 		}
 
 #nullable disable
+
+		public void RemoveChild(string name)
+		{
+			Children.RemoveAll(child => child.Name == name);
+		}
 	}
 
 	public abstract partial class Model
@@ -156,6 +191,23 @@ namespace SchemataPreview
 		public Model OnMount(ScriptBlock command)
 		{
 			MountActions.Add(() => command.Invoke());
+			return this;
+		}
+	}
+
+	public abstract partial class Model
+	{
+		internal List<Action> DismountActions { get; private set; }
+
+		public Model OnDismount(Action action)
+		{
+			DismountActions.Add(action);
+			return this;
+		}
+
+		public Model OnDismount(ScriptBlock command)
+		{
+			DismountActions.Add(() => command.Invoke());
 			return this;
 		}
 	}

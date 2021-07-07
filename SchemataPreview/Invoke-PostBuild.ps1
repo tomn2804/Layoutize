@@ -1,6 +1,7 @@
 ﻿#Requires -Module SchemataPreview
+using namespace SchemataPreview
 
-class A : SchemataPreview.Models.Schematic {
+class A : SchematicModel {
 	A($name) : base($name) {}
 }
 

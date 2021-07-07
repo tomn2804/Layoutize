@@ -4,69 +4,31 @@ namespace SchemataPreview
 {
 	public static class Controller
 	{
-		public static void Mount(Model model)
+		public static void Mount(string path, Model model)
 		{
-			// TODO: check for init
-			if (model.Exists())
-			{
-				if (model.ShouldHardMount)
-				{
-					model.Delete();
-					model.Create();
-				}
-			}
-			else
-			{
-				model.Create();
-			}
-			foreach (Model child in model.Children)
-			{
-				child.FullName = Path.Combine(model.FullName, child.Name);
-				child.Parent = model;
-				Mount(child);
-			}
-			if (!model.IsMounted)
-			{
-				model.IsMounted = true;
-				model.ModelDidMount();
-			}
+			model.FullName = Path.Combine(path, model.Name);
+			model.Configure();
+			Mount(model);
 		}
 
-		public static void Mount(Model model, params Model[] children)
+		internal static void Mount(Model model)
 		{
-			model.UseChildren(children);
-			try
-			{
-				Directory.CreateDirectory(FullName);
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine($"Error: {e}");
-			}
-
-			// TODO: check for init
-			if (model.Exists())
+			if (model.Exists)
 			{
 				if (model.ShouldHardMount)
 				{
-					model.Delete();
-					model.Create();
+					model.DeleteActions.ForEach(action => action());
+					model.CreateActions.ForEach(action => action());
 				}
 			}
 			else
 			{
-				model.Create();
+				model.CreateActions.ForEach(action => action());
 			}
-			foreach (Model child in model.Children)
-			{
-				child.FullName = Path.Combine(model.FullName, child.Name);
-				child.Parent = model;
-				Mount(child);
-			}
+			model.Children.ForEach(child => Mount(child));
 			if (!model.IsMounted)
 			{
-				model.IsMounted = true;
-				model.ModelDidMount();
+				model.MountActions.ForEach(action => action());
 			}
 		}
 
@@ -74,15 +36,9 @@ namespace SchemataPreview
 		{
 			if (model.IsMounted)
 			{
-				model.ModelWillDismount();
-				model.FullName = null;
-				model.Parent = null;
-				model.IsMounted = false;
+				model.DismountActions.ForEach(action => action());
 			}
-			foreach (Model child in model.Children)
-			{
-				Dismount(child);
-			}
+			model.Children.ForEach(child => Dismount(child));
 		}
 
 		public static void Create(Model model)
@@ -91,14 +47,11 @@ namespace SchemataPreview
 			{
 				throw new ModelNotMountedException(model);
 			}
-			if (!model.Exists())
+			if (!model.Exists)
 			{
-				model.OnCreate();
+				model.CreateActions.ForEach(action => action());
 			}
-			foreach (ICreate child in model.Children)
-			{
-				Create(child);
-			}
+			model.Children.ForEach(child => Create(child));
 		}
 
 		public static void Delete(Model model)
@@ -107,14 +60,37 @@ namespace SchemataPreview
 			{
 				throw new ModelNotMountedException(model);
 			}
-			if (model.Exists())
+			if (model.Exists)
 			{
-				model.OnDelete();
+				model.DeleteActions.ForEach(action => action());
 			}
-			foreach (IDelete child in model.Children)
+			model.Children.ForEach(child => Delete(child));
+		}
+
+		public static void Update(Model model)
+		{
+			if (!model.IsMounted)
 			{
-				Delete(child);
+				throw new ModelNotMountedException(model);
 			}
+			if (model.Exists)
+			{
+				model.UpdateActions.ForEach(action => action());
+			}
+			model.Children.ForEach(child => Update(child));
+		}
+
+		public static void Cleanup(Model model)
+		{
+			if (!model.IsMounted)
+			{
+				throw new ModelNotMountedException(model);
+			}
+			if (model.Exists)
+			{
+				model.CleanupActions.ForEach(action => action());
+			}
+			model.Children.ForEach(child => Cleanup(child));
 		}
 	}
 }

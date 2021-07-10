@@ -8,15 +8,25 @@ namespace SchemataPreview
 	public class TextModel : FileModel
 	{
 		public TextModel(string name)
-			: base(name)
+			: this(name, Array.Empty<string>())
 		{
-			InitializerContents = Array.Empty<string>();
 		}
 
 		public TextModel(string name, string[] contents)
 			: base(name)
 		{
 			InitializerContents = contents;
+			Configure(() =>
+			{
+				AddEventListener(EventOption.Create, () =>
+				{
+					Contents = InitializerContents;
+				});
+				AddEventListener(EventOption.Cleanup, () =>
+				{
+					Contents = Format(Contents);
+				});
+			});
 		}
 
 		public string[] Contents
@@ -26,13 +36,6 @@ namespace SchemataPreview
 		}
 
 		private string[] InitializerContents { get; set; }
-
-		public override void Configure()
-		{
-			base.Configure();
-			OnCreate(() => Contents = InitializerContents);
-			OnCleanup(() => Contents = Format(Contents));
-		}
 
 		public static string[] Format(string[] contents)
 		{

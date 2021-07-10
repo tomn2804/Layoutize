@@ -9,31 +9,25 @@ namespace SchemataPreview
 		public DirectoryModel(string name)
 			: base(name)
 		{
-		}
-
-		public override bool Exists
-		{
-			get
+			Configure(() =>
 			{
-				if (Convert.ToBoolean(FullName))
+				AddEventListener(EventOption.Create, () =>
 				{
-					return Directory.Exists(FullName);
-				}
-				return false;
-			}
-		}
-
-		public override void Configure()
-		{
-			base.Configure();
-			OnCreate(() => Directory.CreateDirectory(FullName));
-			OnDelete(() => SendDirectoryToRecycleBin(FullName));
-			OnCleanup(() =>
-			{
-				ForEachNonChild(Directory.EnumerateDirectories(FullName), SendDirectoryToRecycleBin);
-				ForEachNonChild(Directory.EnumerateFiles(FullName), SendFileToRecycleBin);
+					Directory.CreateDirectory(FullName);
+				});
+				AddEventListener(EventOption.Delete, () =>
+				{
+					SendDirectoryToRecycleBin(FullName);
+				});
+				AddEventListener(EventOption.Cleanup, () =>
+				{
+					ForEachNonChild(Directory.EnumerateDirectories(FullName), SendDirectoryToRecycleBin);
+					ForEachNonChild(Directory.EnumerateFiles(FullName), SendFileToRecycleBin);
+				});
 			});
 		}
+
+		public override bool Exists { get => Directory.Exists(FullName); }
 
 		private void ForEachNonChild(IEnumerable<string> paths, Action<string> action)
 		{

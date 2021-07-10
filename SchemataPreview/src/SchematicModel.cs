@@ -7,27 +7,25 @@ namespace SchemataPreview
 		public SchematicModel(string name)
 			: base(name)
 		{
-		}
-
-		public override void Configure()
-		{
-			base.Configure();
-			TextModel schema = new("Get-ModelSchema.ps1");
-			UseChildren(
-				new ExcludeModel("*.ps1"),
-				schema
-			);
-			if (schema.Exists)
+			Configure(() =>
 			{
-				using PowerShell instance = PowerShell.Create().AddScript(schema.FullName);
-				foreach (PSObject obj in instance.Invoke())
+				TextModel schema = new("Get-ModelSchema.ps1");
+				AddChildren(
+					new ExcludeModel("*.ps1"),
+					schema
+				);
+				if (schema.Exists)
 				{
-					if (obj.BaseObject is Model model)
+					using PowerShell instance = PowerShell.Create().AddScript(schema.FullName);
+					foreach (PSObject obj in instance.Invoke())
 					{
-						UseChildren(model);
+						if (obj.BaseObject is Model model)
+						{
+							AddChildren(model);
+						}
 					}
 				}
-			}
+			});
 		}
 	}
 }

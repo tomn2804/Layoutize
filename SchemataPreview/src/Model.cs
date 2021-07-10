@@ -2,74 +2,100 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
+using System.Linq;
 
 namespace SchemataPreview
 {
-	public abstract partial class Model
+	public abstract partial class Model : ICloneable
 	{
+		public object Clone()
+		{
+			Model other = (Model)MemberwiseClone();
+			other.Children = Children.Select(child => (Model)child.Clone()).ToList();
+			other.Parent = (Model)Parent.Clone();
+			return other;
+		}
+
 		public Model(string name)
 		{
 			Name = name;
 			Children = new();
+			configurationHandlers = new();
+			eventHandlers = new();
+			Configure(() =>
+			{
+				AddEventListener(EventOption.Mount, () =>
+				{
+					IsMounted = true;
+				});
+				AddEventListener(EventOption.Dismount, () =>
+				{
+					FullName = null;
+					Parent = null;
+					IsMounted = false;
+				});
+			});
 		}
 
-		public string Name { get; }
+		private string name;
 
-#nullable enable
-
-		public string? FullName
+		public string Name
 		{
-			get => FullName;
-			set
+			get => name;
+			private set
 			{
-				if (IsMounted)
+				if (value != name)
 				{
-					Controller.Dismount(this);
+					name = value;
+					FullName = null;
 				}
-				FullName = value;
-				Children.ForEach(child => child.FullName = string.IsNullOrWhiteSpace(FullName) ? null : Path.Combine(FullName, child.Name));
 			}
 		}
 
+#nullable enable
+
+		private string? fullName;
+
+		public string? FullName
+		{
+			get => fullName;
+			set
+			{
+				if (value != fullName)
+				{
+					if (IsMounted)
+					{
+						Controller.Dismount(this);
+					}
+					fullName = value;
+					if (Path.GetFileName(fullName) != Name)
+					{
+						// throw
+					}
+					Children.ForEach(child => child.FullName = string.IsNullOrWhiteSpace(fullName) ? null : Path.Combine(fullName, child.Name));
+				}
+			}
+		}
+
+		private Model? parent;
+
 		public Model? Parent
 		{
-			get => Parent;
+			get => parent;
 			private set
 			{
-				if (IsMounted)
-				{
-					Controller.Dismount(this);
-				}
-				Parent = value;
-				if (Parent != null && Parent.FullName != null)
-				{
-					FullName = Path.Combine(Parent.FullName, Name);
-				}
+				parent = value;
+				FullName = parent?.FullName != null ? Path.Combine(parent.FullName, Name) : null;
 			}
 		}
 
 #nullable disable
 
-		public List<Model> Children { get; }
-
+		public List<Model> Children { get; private set; }
 		public bool IsMounted { get; internal set; }
 		public abstract bool Exists { get; }
 
-		public virtual void Configure()
-		{
-			OnMount(() =>
-			{
-				IsMounted = true;
-			});
-			OnDismount(() =>
-			{
-				FullName = null;
-				Parent = null;
-				IsMounted = false;
-			});
-		}
-
-		public Model UseChildren(params Model[] models)
+		public Model AddChildren(params Model[] models)
 		{
 			foreach (Model model in models)
 			{
@@ -92,122 +118,54 @@ namespace SchemataPreview
 		}
 
 #nullable disable
+	}
 
-		public void RemoveChild(string name)
+	public abstract partial class Model
+	{
+		private List<Action> configurationHandlers;
+
+		public Model Configure(ScriptBlock action)
 		{
-			Children.RemoveAll(child => child.Name == name);
+			return Configure(() => action.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", this) }));
+		}
+
+		public Model Configure(Action action)
+		{
+			configurationHandlers.Add(action);
+			return this;
 		}
 	}
 
 	public abstract partial class Model
 	{
-		public bool ShouldHardMount { get; internal set; }
+		private Dictionary<string, List<Action>> eventHandlers;
+
+		public void AddEventListener(string type, ScriptBlock action)
+		{
+			AddEventListener(type, () => action.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", this) }));
+		}
+
+		public void AddEventListener(string type, Action action)
+		{
+			List<Action> actions;
+			if (eventHandlers.TryGetValue(type, out actions))
+			{
+				actions.Add(action);
+			}
+			else
+			{
+				eventHandlers.Add(type, new List<Action>() { action });
+			}
+		}
+	}
+
+	public abstract partial class Model
+	{
+		public bool ShouldHardMount { get; private set; }
 
 		public Model UseHardMount()
 		{
 			ShouldHardMount = true;
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		internal List<Action> CreateActions { get; private set; }
-
-		public Model OnCreate(Action action)
-		{
-			CreateActions.Add(action);
-			return this;
-		}
-
-		public Model OnCreate(ScriptBlock command)
-		{
-			CreateActions.Add(() => command.Invoke());
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		internal List<Action> DeleteActions { get; private set; }
-
-		public Model OnDelete(Action action)
-		{
-			DeleteActions.Add(action);
-			return this;
-		}
-
-		public Model OnDelete(ScriptBlock command)
-		{
-			DeleteActions.Add(() => command.Invoke());
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		internal List<Action> UpdateActions { get; private set; }
-
-		public Model OnUpdate(Action action)
-		{
-			UpdateActions.Add(action);
-			return this;
-		}
-
-		public Model OnUpdate(ScriptBlock command)
-		{
-			UpdateActions.Add(() => command.Invoke());
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		internal List<Action> CleanupActions { get; private set; }
-
-		public Model OnCleanup(Action action)
-		{
-			CleanupActions.Add(action);
-			return this;
-		}
-
-		public Model OnCleanup(ScriptBlock command)
-		{
-			CleanupActions.Add(() => command.Invoke());
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		internal List<Action> MountActions { get; private set; }
-
-		public Model OnMount(Action action)
-		{
-			MountActions.Add(action);
-			return this;
-		}
-
-		public Model OnMount(ScriptBlock command)
-		{
-			MountActions.Add(() => command.Invoke());
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		internal List<Action> DismountActions { get; private set; }
-
-		public Model OnDismount(Action action)
-		{
-			DismountActions.Add(action);
-			return this;
-		}
-
-		public Model OnDismount(ScriptBlock command)
-		{
-			DismountActions.Add(() => command.Invoke());
 			return this;
 		}
 	}

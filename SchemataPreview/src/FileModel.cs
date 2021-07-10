@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace SchemataPreview
 {
@@ -8,25 +7,19 @@ namespace SchemataPreview
 		public FileModel(string name)
 			: base(name)
 		{
-		}
-
-		public override bool Exists
-		{
-			get
+			Configure(() =>
 			{
-				if (Convert.ToBoolean(FullName))
+				AddEventListener(EventOption.Create, () =>
 				{
-					return File.Exists(FullName);
-				}
-				return false;
-			}
+					File.Create(FullName).Dispose();
+				});
+				AddEventListener(EventOption.Delete, () =>
+				{
+					SendFileToRecycleBin(FullName);
+				});
+			});
 		}
 
-		public override void Configure()
-		{
-			base.Configure();
-			OnCreate(() => File.Create(FullName).Dispose());
-			OnDelete(() => SendFileToRecycleBin(FullName));
-		}
+		public override bool Exists { get => File.Exists(FullName); }
 	}
 }

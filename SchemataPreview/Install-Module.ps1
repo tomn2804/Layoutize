@@ -6,3 +6,7 @@ param (
 )
 
 Copy-Item -Path $TargetPath -Destination "C:\Users\Tom\Documents\PowerShell\Modules\$(Split-Path -Path $TargetPath -LeafBase)" -Force
+
+test({
+
+	})

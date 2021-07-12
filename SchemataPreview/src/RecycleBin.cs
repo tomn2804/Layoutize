@@ -2,19 +2,14 @@
 
 namespace SchemataPreview
 {
-	public abstract class FileSystemModel : Model
+	public static class RecycleBin
 	{
-		public FileSystemModel(string name)
-			: base(name)
-		{
-		}
-
-		public static void SendDirectoryToRecycleBin(string path)
+		public static void RemoveDirectory(string path)
 		{
 			FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 
-		public static void SendFileToRecycleBin(string path)
+		public static void RemoveFile(string path)
 		{
 			FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}

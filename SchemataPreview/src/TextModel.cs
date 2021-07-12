@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace SchemataPreview
 {
@@ -24,7 +22,7 @@ namespace SchemataPreview
 				});
 				AddEventListener(EventOption.Cleanup, () =>
 				{
-					Contents = Format(Contents);
+					Contents = TextEditor.Format(Contents);
 				});
 			});
 		}
@@ -36,20 +34,5 @@ namespace SchemataPreview
 		}
 
 		private string[] InitializerContents { get; set; }
-
-		public static string[] Format(string[] contents)
-		{
-			List<string> results = new();
-			bool hasPreviousLine = false;
-			foreach (string line in contents)
-			{
-				if (!string.IsNullOrWhiteSpace(line) || hasPreviousLine)
-				{
-					results.Add(Regex.Replace(Regex.Replace(line.TrimEnd(), "(?<=\t) +| +(?=\t)", ""), " {2,}", " "));
-					hasPreviousLine = !hasPreviousLine;
-				}
-			}
-			return results.ToArray();
-		}
 	}
 }

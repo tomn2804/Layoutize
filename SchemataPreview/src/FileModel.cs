@@ -2,7 +2,7 @@
 
 namespace SchemataPreview
 {
-	public class FileModel : FileSystemModel
+	public class FileModel : Model
 	{
 		public FileModel(string name)
 			: base(name)
@@ -15,7 +15,7 @@ namespace SchemataPreview
 				});
 				AddEventListener(EventOption.Delete, () =>
 				{
-					SendFileToRecycleBin(FullName);
+					RecycleBin.RemoveFile(FullName);
 				});
 			});
 		}

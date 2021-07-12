@@ -1,34 +1,25 @@
-﻿using System.IO;
-
-namespace SchemataPreview
+﻿namespace SchemataPreview
 {
-	public static class Controller
+	public static class EventController
 	{
-		public static void Mount(string path, Model model)
-		{
-			model.FullName = Path.Combine(path, model.Name);
-			model.Configure();
-			Mount(model);
-		}
-
-		internal static void Mount(Model model)
+		public static void Mount(Model model)
 		{
 			if (model.Exists)
 			{
 				if (model.ShouldHardMount)
 				{
-					model.DeleteActions.ForEach(action => action());
-					model.CreateActions.ForEach(action => action());
+					model.EventHandler.Invoke(EventOption.Delete);
+					model.EventHandler.Invoke(EventOption.Create);
 				}
 			}
 			else
 			{
-				model.CreateActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Create);
 			}
 			model.Children.ForEach(child => Mount(child));
 			if (!model.IsMounted)
 			{
-				model.MountActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Mount);
 			}
 		}
 
@@ -36,7 +27,7 @@ namespace SchemataPreview
 		{
 			if (model.IsMounted)
 			{
-				model.DismountActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Dismount);
 			}
 			model.Children.ForEach(child => Dismount(child));
 		}
@@ -49,7 +40,7 @@ namespace SchemataPreview
 			}
 			if (!model.Exists)
 			{
-				model.CreateActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Create);
 			}
 			model.Children.ForEach(child => Create(child));
 		}
@@ -62,7 +53,7 @@ namespace SchemataPreview
 			}
 			if (model.Exists)
 			{
-				model.DeleteActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Delete);
 			}
 			model.Children.ForEach(child => Delete(child));
 		}
@@ -75,7 +66,7 @@ namespace SchemataPreview
 			}
 			if (model.Exists)
 			{
-				model.UpdateActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Update);
 			}
 			model.Children.ForEach(child => Update(child));
 		}
@@ -88,7 +79,7 @@ namespace SchemataPreview
 			}
 			if (model.Exists)
 			{
-				model.CleanupActions.ForEach(action => action());
+				model.EventHandler.Invoke(EventOption.Cleanup);
 			}
 			model.Children.ForEach(child => Cleanup(child));
 		}

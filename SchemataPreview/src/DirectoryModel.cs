@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SchemataPreview
 {
-	public class DirectoryModel : FileSystemModel
+	public class DirectoryModel : Model
 	{
 		public DirectoryModel(string name)
 			: base(name)
@@ -17,34 +16,35 @@ namespace SchemataPreview
 				});
 				AddEventListener(EventOption.Delete, () =>
 				{
-					SendDirectoryToRecycleBin(FullName);
+					RecycleBin.RemoveDirectory(FullName);
 				});
 				AddEventListener(EventOption.Cleanup, () =>
 				{
-					ForEachNonChild(Directory.EnumerateDirectories(FullName), SendDirectoryToRecycleBin);
-					ForEachNonChild(Directory.EnumerateFiles(FullName), SendFileToRecycleBin);
+					foreach (string path in Directory.EnumerateFileSystemEntries(FullName))
+					{
+						if (SelectChild(Path.GetFileName(path)) == null)
+						{
+							try
+							{
+								if (Directory.Exists(path))
+								{
+									RecycleBin.RemoveDirectory(path);
+								}
+								else
+								{
+									RecycleBin.RemoveFile(path);
+								}
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine($"Error: {e}");
+							}
+						}
+					}
 				});
 			});
 		}
 
 		public override bool Exists { get => Directory.Exists(FullName); }
-
-		private void ForEachNonChild(IEnumerable<string> paths, Action<string> action)
-		{
-			foreach (string path in paths)
-			{
-				try
-				{
-					if (SelectChild(Path.GetFileName(path)) == null)
-					{
-						action(path);
-					}
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine($"Error: {e}");
-				}
-			}
-		}
 	}
 }

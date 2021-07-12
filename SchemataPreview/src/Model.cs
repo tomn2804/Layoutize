@@ -6,22 +6,13 @@ using System.Linq;
 
 namespace SchemataPreview
 {
-	public abstract partial class Model : ICloneable
+	public abstract partial class Model
 	{
-		public object Clone()
-		{
-			Model other = (Model)MemberwiseClone();
-			other.Children = Children.Select(child => (Model)child.Clone()).ToList();
-			other.Parent = (Model)Parent.Clone();
-			return other;
-		}
-
 		public Model(string name)
 		{
 			Name = name;
-			Children = new();
-			configurationHandlers = new();
-			eventHandlers = new();
+			EventHandler = new(this);
+			ConfigurationHandler = new(this);
 			Configure(() =>
 			{
 				AddEventListener(EventOption.Mount, () =>
@@ -36,6 +27,19 @@ namespace SchemataPreview
 				});
 			});
 		}
+
+		public List<Model> Children { get; } = new();
+		public bool ShouldHardMount { get; private set; }
+
+		internal EventHandler EventHandler { get; private set; }
+		internal ConfigurationHandler ConfigurationHandler { get; private set; }
+
+		public bool IsMounted { get; internal set; }
+		public abstract bool Exists { get; }
+
+		internal HierarchyHandler HierarchyHandler { get; private set; }
+
+		public Model? Test { get => HierarchyHandler.Parent; }
 
 		private string name;
 
@@ -82,7 +86,7 @@ namespace SchemataPreview
 		public Model? Parent
 		{
 			get => parent;
-			private set
+			protected set
 			{
 				parent = value;
 				FullName = parent?.FullName != null ? Path.Combine(parent.FullName, Name) : null;
@@ -91,22 +95,26 @@ namespace SchemataPreview
 
 #nullable disable
 
-		public List<Model> Children { get; private set; }
-		public bool IsMounted { get; internal set; }
-		public abstract bool Exists { get; }
+		public void Mount(string path)
+		{
+			FullName = Path.Combine(path, Name);
+			EventController.Mount(this);
+		}
+
+		public void Dismount()
+		{
+			EventController.Dismount(this);
+		}
+
+		public Model UseHardMount()
+		{
+			ShouldHardMount = true;
+			return this;
+		}
 
 		public Model AddChildren(params Model[] models)
 		{
-			foreach (Model model in models)
-			{
-				model.Parent = this;
-				Children.RemoveAll(child => child.Name == model.Name);
-				Children.Add(model);
-				if (IsMounted)
-				{
-					Controller.Mount(model);
-				}
-			}
+			HierarchyHandler.AddChildren(models);
 			return this;
 		}
 
@@ -114,59 +122,40 @@ namespace SchemataPreview
 
 		public Model? SelectChild(string name)
 		{
-			return Children.Find(child => child.Name == name);
+			return HierarchyHandler.SelectChild(name);
 		}
 
 #nullable disable
-	}
 
-	public abstract partial class Model
-	{
-		private List<Action> configurationHandlers;
-
-		public Model Configure(ScriptBlock action)
+		public void Configure(ScriptBlock callback)
 		{
-			return Configure(() => action.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", this) }));
+			ConfigurationHandler.Add(callback);
 		}
 
-		public Model Configure(Action action)
+		public void Configure(Action callback)
 		{
-			configurationHandlers.Add(action);
-			return this;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		private Dictionary<string, List<Action>> eventHandlers;
-
-		public void AddEventListener(string type, ScriptBlock action)
-		{
-			AddEventListener(type, () => action.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", this) }));
+			ConfigurationHandler.Add(callback);
 		}
 
-		public void AddEventListener(string type, Action action)
+		public void AddEventListener(string type, ScriptBlock callback)
 		{
-			List<Action> actions;
-			if (eventHandlers.TryGetValue(type, out actions))
-			{
-				actions.Add(action);
-			}
-			else
-			{
-				eventHandlers.Add(type, new List<Action>() { action });
-			}
+			EventHandler.Add(type, callback);
+		}
+
+		public void AddEventListener(string type, Action callback)
+		{
+			EventHandler.Add(type, callback);
 		}
 	}
 
-	public abstract partial class Model
+	public abstract partial class Model : ICloneable
 	{
-		public bool ShouldHardMount { get; private set; }
-
-		public Model UseHardMount()
+		public object Clone()
 		{
-			ShouldHardMount = true;
-			return this;
+			Model other = (Model)MemberwiseClone();
+			other.Children = Children.Select(child => (Model)child.Clone()).ToList();
+			other.Parent = (Model)Parent.Clone();
+			return other;
 		}
 	}
 }

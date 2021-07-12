@@ -11,8 +11,11 @@ namespace SchemataPreview
 		public Model(string name)
 		{
 			Name = name;
-			EventHandler = new(this);
+
 			ConfigurationHandler = new(this);
+			EventHandler = new(this);
+			HierarchyHandler = new(this);
+
 			Configure(() =>
 			{
 				AddEventListener(EventOption.Mount, () =>
@@ -22,88 +25,28 @@ namespace SchemataPreview
 				AddEventListener(EventOption.Dismount, () =>
 				{
 					FullName = null;
-					Parent = null;
+					HierarchyHandler.Parent = null;
 					IsMounted = false;
 				});
 			});
 		}
 
-		public List<Model> Children { get; } = new();
-		public bool ShouldHardMount { get; private set; }
-
-		internal EventHandler EventHandler { get; private set; }
-		internal ConfigurationHandler ConfigurationHandler { get; private set; }
-
-		public bool IsMounted { get; internal set; }
 		public abstract bool Exists { get; }
 
-		internal HierarchyHandler HierarchyHandler { get; private set; }
+		public string FullName { get; internal set; }
+		public string Name { get; private set; }
 
-		public Model? Test { get => HierarchyHandler.Parent; }
+		public bool IsMounted { get; internal set; }
+		public bool ShouldHardMount { get; private set; }
+		public List<Model> Children { get => HierarchyHandler.Children; }
 
-		private string name;
+		private ConfigurationHandler ConfigurationHandler { get; set; }
+		private EventHandler EventHandler { get; set; }
+		private HierarchyHandler HierarchyHandler { get; set; }
 
-		public string Name
+		public void InvokeEvent(string type)
 		{
-			get => name;
-			private set
-			{
-				if (value != name)
-				{
-					name = value;
-					FullName = null;
-				}
-			}
-		}
-
-#nullable enable
-
-		private string? fullName;
-
-		public string? FullName
-		{
-			get => fullName;
-			set
-			{
-				if (value != fullName)
-				{
-					if (IsMounted)
-					{
-						Controller.Dismount(this);
-					}
-					fullName = value;
-					if (Path.GetFileName(fullName) != Name)
-					{
-						// throw
-					}
-					Children.ForEach(child => child.FullName = string.IsNullOrWhiteSpace(fullName) ? null : Path.Combine(fullName, child.Name));
-				}
-			}
-		}
-
-		private Model? parent;
-
-		public Model? Parent
-		{
-			get => parent;
-			protected set
-			{
-				parent = value;
-				FullName = parent?.FullName != null ? Path.Combine(parent.FullName, Name) : null;
-			}
-		}
-
-#nullable disable
-
-		public void Mount(string path)
-		{
-			FullName = Path.Combine(path, Name);
-			EventController.Mount(this);
-		}
-
-		public void Dismount()
-		{
-			EventController.Dismount(this);
+			EventHandler.Invoke(type);
 		}
 
 		public Model UseHardMount()
@@ -117,15 +60,6 @@ namespace SchemataPreview
 			HierarchyHandler.AddChildren(models);
 			return this;
 		}
-
-#nullable enable
-
-		public Model? SelectChild(string name)
-		{
-			return HierarchyHandler.SelectChild(name);
-		}
-
-#nullable disable
 
 		public void Configure(ScriptBlock callback)
 		{
@@ -147,6 +81,20 @@ namespace SchemataPreview
 			EventHandler.Add(type, callback);
 		}
 	}
+
+#nullable enable
+
+	public abstract partial class Model
+	{
+		public Model? Parent { get => HierarchyHandler.Parent; internal set => HierarchyHandler.Parent = value; }
+
+		public Model? SelectChild(string name)
+		{
+			return HierarchyHandler.SelectChild(name);
+		}
+	}
+
+#nullable disable
 
 	public abstract partial class Model : ICloneable
 	{

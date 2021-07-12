@@ -1,25 +1,38 @@
-﻿namespace SchemataPreview
+﻿using System.IO;
+
+namespace SchemataPreview
 {
 	public static class EventController
 	{
-		public static void Mount(Model model)
+		public static void Mount(string path, Model model)
+		{
+			model.FullName = Path.Combine(path, model.Name);
+			Mount(model);
+		}
+
+		internal static void Mount(Model model)
 		{
 			if (model.Exists)
 			{
 				if (model.ShouldHardMount)
 				{
-					model.EventHandler.Invoke(EventOption.Delete);
-					model.EventHandler.Invoke(EventOption.Create);
+					model.InvokeEvent(EventOption.Delete);
+					model.InvokeEvent(EventOption.Create);
 				}
 			}
 			else
 			{
-				model.EventHandler.Invoke(EventOption.Create);
+				model.InvokeEvent(EventOption.Create);
 			}
-			model.Children.ForEach(child => Mount(child));
+			model.Children.ForEach(child =>
+			{
+				child.FullName = Path.Combine(model.FullName, child.Name);
+				child.Parent = model;
+				Mount(child);
+			});
 			if (!model.IsMounted)
 			{
-				model.EventHandler.Invoke(EventOption.Mount);
+				model.InvokeEvent(EventOption.Mount);
 			}
 		}
 
@@ -27,7 +40,7 @@
 		{
 			if (model.IsMounted)
 			{
-				model.EventHandler.Invoke(EventOption.Dismount);
+				model.InvokeEvent(EventOption.Dismount);
 			}
 			model.Children.ForEach(child => Dismount(child));
 		}
@@ -40,7 +53,7 @@
 			}
 			if (!model.Exists)
 			{
-				model.EventHandler.Invoke(EventOption.Create);
+				model.InvokeEvent(EventOption.Create);
 			}
 			model.Children.ForEach(child => Create(child));
 		}
@@ -53,7 +66,7 @@
 			}
 			if (model.Exists)
 			{
-				model.EventHandler.Invoke(EventOption.Delete);
+				model.InvokeEvent(EventOption.Delete);
 			}
 			model.Children.ForEach(child => Delete(child));
 		}
@@ -66,7 +79,7 @@
 			}
 			if (model.Exists)
 			{
-				model.EventHandler.Invoke(EventOption.Update);
+				model.InvokeEvent(EventOption.Update);
 			}
 			model.Children.ForEach(child => Update(child));
 		}
@@ -79,7 +92,7 @@
 			}
 			if (model.Exists)
 			{
-				model.EventHandler.Invoke(EventOption.Cleanup);
+				model.InvokeEvent(EventOption.Cleanup);
 			}
 			model.Children.ForEach(child => Cleanup(child));
 		}

@@ -33,7 +33,10 @@ namespace SchemataPreview
 
 		public void Invoke(string type)
 		{
-			EventToCallbacks[type].ForEach(callback => callback());
+			foreach (Action callback in EventToCallbacks[type])
+			{
+				callback();
+			}
 		}
 	}
 }

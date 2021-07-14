@@ -25,7 +25,10 @@ namespace SchemataPreview
 
 		public void Invoke()
 		{
-			Callbacks.ForEach(callback => callback());
+			foreach (Action callback in Callbacks)
+			{
+				callback();
+			}
 		}
 	}
 }

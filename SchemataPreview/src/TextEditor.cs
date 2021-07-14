@@ -5,7 +5,7 @@ namespace SchemataPreview
 {
 	public static class TextEditor
 	{
-		public static string[] Format(string[] contents)
+		public static string[] Format(IEnumerable<string> contents)
 		{
 			List<string> results = new();
 			bool hasPreviousLine = false;

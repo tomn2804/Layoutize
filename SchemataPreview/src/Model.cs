@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Management.Automation;
 using System.Linq;
 
@@ -8,30 +7,12 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public Model(string name)
+		public Model()
 		{
-			Name = name;
-
 			ConfigurationHandler = new(this);
 			EventHandler = new(this);
 			HierarchyHandler = new(this);
-
-			Configure(() =>
-			{
-				AddEventListener(EventOption.Mount, () =>
-				{
-					IsMounted = true;
-				});
-				AddEventListener(EventOption.Dismount, () =>
-				{
-					FullName = null;
-					HierarchyHandler.Parent = null;
-					IsMounted = false;
-				});
-			});
 		}
-
-		public abstract bool Exists { get; }
 
 		public string FullName { get; internal set; }
 		public string Name { get; private set; }
@@ -44,15 +25,15 @@ namespace SchemataPreview
 		private EventHandler EventHandler { get; set; }
 		private HierarchyHandler HierarchyHandler { get; set; }
 
+		public abstract bool Exists { get; }
+
+		public virtual void PresetConfiguration()
+		{
+		}
+
 		public void InvokeEvent(string type)
 		{
 			EventHandler.Invoke(type);
-		}
-
-		public Model UseHardMount()
-		{
-			ShouldHardMount = true;
-			return this;
 		}
 
 		public Model AddChildren(params Model[] models)

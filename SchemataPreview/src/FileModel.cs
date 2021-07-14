@@ -4,19 +4,16 @@ namespace SchemataPreview
 {
 	public class FileModel : Model
 	{
-		public FileModel(string name)
-			: base(name)
+		public override void PresetConfiguration()
 		{
-			Configure(() =>
+			base.PresetConfiguration();
+			AddEventListener(EventOption.Create, () =>
 			{
-				AddEventListener(EventOption.Create, () =>
-				{
-					File.Create(FullName).Dispose();
-				});
-				AddEventListener(EventOption.Delete, () =>
-				{
-					RecycleBin.RemoveFile(FullName);
-				});
+				File.Create(FullName).Dispose();
+			});
+			AddEventListener(EventOption.Delete, () =>
+			{
+				RecycleBin.SendFileToRecycleBin(FullName);
 			});
 		}
 

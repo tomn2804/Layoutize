@@ -5,43 +5,40 @@ namespace SchemataPreview
 {
 	public class DirectoryModel : Model
 	{
-		public DirectoryModel(string name)
-			: base(name)
+		public override void PresetConfiguration()
 		{
-			Configure(() =>
+			base.PresetConfiguration();
+			AddEventListener(EventOption.Create, () =>
 			{
-				AddEventListener(EventOption.Create, () =>
+				Directory.CreateDirectory(FullName);
+			});
+			AddEventListener(EventOption.Delete, () =>
+			{
+				RecycleBin.SendDirectoryToRecycleBin(FullName);
+			});
+			AddEventListener(EventOption.Cleanup, () =>
+			{
+				foreach (string path in Directory.EnumerateFileSystemEntries(FullName))
 				{
-					Directory.CreateDirectory(FullName);
-				});
-				AddEventListener(EventOption.Delete, () =>
-				{
-					RecycleBin.RemoveDirectory(FullName);
-				});
-				AddEventListener(EventOption.Cleanup, () =>
-				{
-					foreach (string path in Directory.EnumerateFileSystemEntries(FullName))
+					if (SelectChild(Path.GetFileName(path)) == null)
 					{
-						if (SelectChild(Path.GetFileName(path)) == null)
+						try
 						{
-							try
+							if (Directory.Exists(path))
 							{
-								if (Directory.Exists(path))
-								{
-									RecycleBin.RemoveDirectory(path);
-								}
-								else
-								{
-									RecycleBin.RemoveFile(path);
-								}
+								RecycleBin.SendDirectoryToRecycleBin(path);
 							}
-							catch (Exception e)
+							else
 							{
-								Console.WriteLine($"Error: {e}");
+								RecycleBin.SendFileToRecycleBin(path);
 							}
 						}
+						catch (Exception e)
+						{
+							Console.WriteLine($"Error: {e}");
+						}
 					}
-				});
+				}
 			});
 		}
 

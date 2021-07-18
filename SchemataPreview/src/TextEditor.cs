@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace SchemataPreview
 {
@@ -16,6 +17,10 @@ namespace SchemataPreview
 					results.Add(Regex.Replace(Regex.Replace(line.TrimEnd(), "(?<=\t) +| +(?=\t)", ""), " {2,}", " "));
 					hasPreviousLine = !hasPreviousLine;
 				}
+			}
+			if (results.Any() && string.IsNullOrWhiteSpace(results.Last()))
+			{
+				results.RemoveAt(results.Count - 1);
 			}
 			return results.ToArray();
 		}

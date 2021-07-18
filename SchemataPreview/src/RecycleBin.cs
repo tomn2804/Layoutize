@@ -4,12 +4,12 @@ namespace SchemataPreview
 {
 	public static class RecycleBin
 	{
-		public static void SendDirectoryToRecycleBin(string path)
+		public static void DeleteDirectory(string path)
 		{
 			FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 
-		public static void SendFileToRecycleBin(string path)
+		public static void DeleteFile(string path)
 		{
 			FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}

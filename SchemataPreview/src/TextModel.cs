@@ -5,16 +5,16 @@ namespace SchemataPreview
 {
 	public class TextModel : FileModel
 	{
-		public override void PresetConfiguration()
+		public override void Build(Builder builder)
 		{
-			base.PresetConfiguration();
-			AddEventListener(EventOption.Create, () =>
+			base.Build(builder);
+			builder.AddEventListener(EventOption.Create, () =>
 			{
 				Contents = ContentsToInitialize;
 			});
-			AddEventListener(EventOption.Cleanup, () =>
+			builder.AddEventListener(EventOption.Cleanup, () =>
 			{
-				Contents = TextEditor.Format(Contents);
+				Contents = TextEditor.Format(Model.Contents);
 			});
 		}
 

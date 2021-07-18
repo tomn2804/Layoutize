@@ -5,18 +5,18 @@ namespace SchemataPreview
 {
 	public class DirectoryModel : Model
 	{
-		public override void PresetConfiguration()
+		public override void Build(Builder builder)
 		{
-			base.PresetConfiguration();
-			AddEventListener(EventOption.Create, () =>
+			base.Build(builder);
+			builder.AddEventListener(EventOption.Create, () =>
 			{
 				Directory.CreateDirectory(FullName);
 			});
-			AddEventListener(EventOption.Delete, () =>
+			builder.AddEventListener(EventOption.Delete, () =>
 			{
-				RecycleBin.SendDirectoryToRecycleBin(FullName);
+				RecycleBin.DeleteDirectory(FullName);
 			});
-			AddEventListener(EventOption.Cleanup, () =>
+			builder.AddEventListener(EventOption.Cleanup, () =>
 			{
 				foreach (string path in Directory.EnumerateFileSystemEntries(FullName))
 				{
@@ -26,11 +26,11 @@ namespace SchemataPreview
 						{
 							if (Directory.Exists(path))
 							{
-								RecycleBin.SendDirectoryToRecycleBin(path);
+								RecycleBin.DeleteDirectory(path);
 							}
 							else
 							{
-								RecycleBin.SendFileToRecycleBin(path);
+								RecycleBin.DeleteFile(path);
 							}
 						}
 						catch (Exception e)

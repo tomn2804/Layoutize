@@ -4,12 +4,12 @@ namespace SchemataPreview
 {
 	public class SchematicModel : DirectoryModel
 	{
-		public override void PresetConfiguration()
+		public override void Build(Builder builder)
 		{
-			base.PresetConfiguration();
-			TextModel schema = new("Get-ModelSchema.ps1");
-			AddChildren(
-				new ExcludeModel("*.ps1"),
+			base.Build(builder);
+			TextModel schema = new() { Name = "Get-CurrentDirectorySchema.ps1" };
+			builder.AddChildren(
+				new ExcludeModel() { Name = "*.ps1" },
 				schema
 			);
 			if (schema.Exists)
@@ -19,7 +19,7 @@ namespace SchemataPreview
 				{
 					if (obj.BaseObject is Model model)
 					{
-						AddChildren(model);
+						builder.AddChildren(model);
 					}
 				}
 			}

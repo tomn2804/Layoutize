@@ -6,7 +6,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\EventController.cs" />
+    <Compile Remove="src\Exclude.cs" />
+    <Compile Remove="src\FileExtension.cs" />
+    <Compile Remove="src\IModel.cs" />
+    <Compile Remove="src\Model\Model.CacheManagerComponent.cs" />
+    <Compile Remove="src\Model\Model.ValidatorComponent.cs" />
+    <Compile Remove="src\Model\ModelNotMountedException.cs" />
+    <Compile Remove="src\ObjectNotFoundException.cs" />
+    <Compile Remove="src\ReadOnlySchema.cs" />
+    <Compile Remove="src\Schema\Schema.AssertionComponent.cs" />
+    <Compile Remove="src\Schema\Schema.Builder.cs" />
+    <Compile Remove="src\Schema\Schema.CacheComponent.cs" />
+    <Compile Remove="src\Schema\Schema.CachePropertyComponent.cs" />
+    <Compile Remove="src\Schema\Schema.Component.cs" />
+    <Compile Remove="src\Schema\Schema.cs" />
+    <Compile Remove="src\Schema\Schema.InitializerPropertyComponent.cs" />
+    <Compile Remove="src\Schema\Schema.PropertyComponent.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Schema\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

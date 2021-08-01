@@ -1,29 +1,18 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace SchemataPreview
 {
-	public class TextModel : FileModel
+	public class TextModel : Model<FileModel>
 	{
-		public override void Build(Builder builder)
+		protected void OnCreate()
 		{
-			base.Build(builder);
-			builder.AddEventListener(EventOption.Create, () =>
-			{
-				Contents = ContentsToInitialize;
-			});
-			builder.AddEventListener(EventOption.Cleanup, () =>
-			{
-				Contents = TextEditor.Format(Model.Contents);
-			});
+			Contents = (string[])Schema["Contents"];
 		}
-
-		public string[] ContentsToInitialize = Array.Empty<string>();
 
 		public string[] Contents
 		{
-			get => File.ReadAllLines(FullName);
-			set => File.WriteAllLines(FullName, value);
+			get => File.ReadAllLines(this);
+			set => File.WriteAllLines(this, value);
 		}
 	}
 }

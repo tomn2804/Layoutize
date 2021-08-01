@@ -2,11 +2,11 @@
 {
 	public static class EventOption
 	{
-		public static string PostMount { get => "__PostMount"; }
-		public static string PreDismount { get => "__PreDismount"; }
-		public static string Create { get => "__Create"; }
-		public static string Delete { get => "__Delete"; }
-		public static string Update { get => "__Update"; }
-		public static string Cleanup { get => "__Cleanup"; }
+		public static string OnPostMount => "OnPostMount";
+		public static string OnPreDismount => "OnPreDismount";
+		public static string OnCreate => "OnCreate";
+		public static string OnDelete => "OnDelete";
+		public static string OnUpdate => "OnUpdate";
+		public static string OnCleanup => "OnCleanup";
 	}
 }

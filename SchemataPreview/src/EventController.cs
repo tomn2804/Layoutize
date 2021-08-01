@@ -4,7 +4,7 @@ namespace SchemataPreview
 {
 	public static class EventController
 	{
-		public static void Create(Model model)
+		public static void Create(Schema model)
 		{
 			if (!model.IsMounted)
 			{
@@ -14,13 +14,13 @@ namespace SchemataPreview
 			{
 				model.InvokeEvent(EventOption.Create);
 			}
-			foreach (Model child in model.Children)
+			foreach (Schema child in model.Children)
 			{
 				Create(child);
 			}
 		}
 
-		public static void Delete(Model model)
+		public static void Delete(Schema model)
 		{
 			if (!model.IsMounted)
 			{
@@ -30,13 +30,13 @@ namespace SchemataPreview
 			{
 				model.InvokeEvent(EventOption.Delete);
 			}
-			foreach (Model child in model.Children)
+			foreach (Schema child in model.Children)
 			{
 				Delete(child);
 			}
 		}
 
-		public static void Update(Model model)
+		public static void Update(Schema model)
 		{
 			if (!model.IsMounted)
 			{
@@ -46,13 +46,13 @@ namespace SchemataPreview
 			{
 				model.InvokeEvent(EventOption.Update);
 			}
-			foreach (Model child in model.Children)
+			foreach (Schema child in model.Children)
 			{
 				Update(child);
 			}
 		}
 
-		public static void Cleanup(Model model)
+		public static void Cleanup(Schema model)
 		{
 			if (!model.IsMounted)
 			{
@@ -62,7 +62,7 @@ namespace SchemataPreview
 			{
 				model.InvokeEvent(EventOption.Cleanup);
 			}
-			foreach (Model child in model.Children)
+			foreach (Schema child in model.Children)
 			{
 				Cleanup(child);
 			}

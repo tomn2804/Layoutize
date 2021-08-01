@@ -1,22 +1,18 @@
-﻿using System.IO;
+﻿using Microsoft.VisualBasic.FileIO;
+using System.IO;
 
 namespace SchemataPreview
 {
 	public class FileModel : Model
 	{
-		public override void Build(Builder builder)
+		protected void OnCreate()
 		{
-			base.Build(builder);
-			builder.AddEventListener(EventOption.Create, () =>
-			{
-				File.Create(FullName).Dispose();
-			});
-			builder.AddEventListener(EventOption.Delete, () =>
-			{
-				RecycleBin.DeleteFile(FullName);
-			});
+			File.Create(this).Dispose();
 		}
 
-		public override bool Exists { get => File.Exists(FullName); }
+		protected void OnDelete()
+		{
+			FileSystem.DeleteFile(this, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+		}
 	}
 }

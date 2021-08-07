@@ -4,9 +4,9 @@
 	{
 		public static string OnPostMount => "OnPostMount";
 		public static string OnPreDismount => "OnPreDismount";
-		public static string OnCreate => "OnCreate";
-		public static string OnDelete => "OnDelete";
+		public static string OnCreated => "OnCreated";
+		public static string OnDeleted => "OnDeleted";
 		public static string OnUpdate => "OnUpdate";
-		public static string OnCleanup => "OnCleanup";
+		public static string OnFormatted => "OnFormatted";
 	}
 }

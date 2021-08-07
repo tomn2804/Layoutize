@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace SchemataPreview
@@ -17,7 +18,7 @@ namespace SchemataPreview
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			return Schema.TryGetValue(binder.Name, out result);
+			return Schema.TryGetMember(binder, out result);
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object value)
@@ -28,32 +29,32 @@ namespace SchemataPreview
 
 	public partial class ReadOnlySchema : IReadOnlyDictionary<object, object>
 	{
+		public object this[object key] => Schema[key];
+
 		public IEnumerable<object> Keys => Schema.Keys;
 
 		public IEnumerable<object> Values => Schema.Values;
 
-		public int Count => Schema.Count;
-
-		public object this[object key] => Schema[key];
+		public int Count => throw new System.NotImplementedException();
 
 		public bool ContainsKey(object key)
 		{
-			return Schema.ContainsKey(key);
-		}
-
-		public bool TryGetValue(object key, out object value)
-		{
-			return Schema.TryGetValue(key, out value);
+			throw new System.NotImplementedException();
 		}
 
 		public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
 		{
-			return Schema.GetEnumerator();
+			throw new System.NotImplementedException();
+		}
+
+		public bool TryGetValue(object key, [MaybeNullWhen(false)] out object value)
+		{
+			throw new System.NotImplementedException();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return Schema.GetEnumerator();
+			throw new System.NotImplementedException();
 		}
 	}
 }

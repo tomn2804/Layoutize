@@ -1,10 +1,11 @@
 ﻿namespace SchemataPreview
 {
-	public class StrictTextModel : Model<TextModel>
+	public class StrictTextModel : TextModel
 	{
-		protected void OnCleanup()
+		public override void Format()
 		{
-			BaseModel.Contents = TextEditor.Format(BaseModel.Contents);
+			base.Format();
+			Contents = TextEditor.Format(Contents);
 		}
 	}
 }

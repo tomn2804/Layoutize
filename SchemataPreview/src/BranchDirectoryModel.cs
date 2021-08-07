@@ -2,22 +2,24 @@
 
 namespace SchemataPreview
 {
-	public class BranchDirectoryModel : Model<StrictDirectoryModel>
+	public class BranchDirectoryModel : StrictDirectoryModel
 	{
-		protected void OnBuild()
+		public override void Build()
 		{
-			Schema.AddChildren(
-				new Schema<ExcludeModel> { { "Name", "*.ps1" } },
-				new Schema<StrictTextModel> { { "Name", "Get-CurrentDirectorySchema.ps1" } }
+			base.Build();
+			StrictTextModel schema = (new Schema<StrictTextModel> { { "Name", "Get-CurrentDirectorySchema.ps1" } }).BuildTo(this);
+			Children.Add(
+				(new Schema<ExcludeModel> { { "Name", "*.ps1" } }).BuildTo(this),
+				schema
 			);
-			if (Schema.GetChild("Get-CurrentDirectorySchema.ps1").Build() is var schema && schema.Exists)
+			if (schema.Exists)
 			{
 				using PowerShell instance = PowerShell.Create().AddScript(schema);
 				foreach (PSObject obj in instance.Invoke())
 				{
 					if (obj.BaseObject is Schema child)
 					{
-						Schema.AddChildren(child);
+						Children.Add(child.BuildTo(this));
 					}
 				}
 			}

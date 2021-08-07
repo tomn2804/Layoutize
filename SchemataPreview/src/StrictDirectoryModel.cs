@@ -4,13 +4,14 @@ using System.IO;
 
 namespace SchemataPreview
 {
-	public class StrictDirectoryModel : Model<DirectoryModel>
+	public class StrictDirectoryModel : DirectoryModel
 	{
-		protected void OnCleanup()
+		public override void Format()
 		{
+			base.Format();
 			foreach (string path in Directory.EnumerateFiles(this))
 			{
-				if (!Schema.HasChild(Path.GetFileName(path)))
+				if (!HasChild(Path.GetFileName(path)))
 				{
 					try
 					{

@@ -1,18 +1,24 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SchemataPreview
 {
 	public class FileModel : Model
 	{
-		protected void OnCreate()
+		public override bool Exists => File.Exists(AbsolutePath);
+		public override List<Model>? Children { get => null; protected internal set { } }
+
+		public override void Create()
 		{
-			File.Create(this).Dispose();
+			base.Create();
+			File.Create(AbsolutePath).Dispose();
 		}
 
-		protected void OnDelete()
+		public override void Delete()
 		{
-			FileSystem.DeleteFile(this, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+			base.Delete();
+			FileSystem.DeleteFile(AbsolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }

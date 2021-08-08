@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
+using System.Management.Automation;
 
 #nullable enable
 
@@ -10,31 +10,32 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
+		internal Model()
+		{
+		}
+
 		private dynamic? _schema;
 
-		public dynamic Schema
+		public virtual dynamic Schema
 		{
-			get => _schema != null ? _schema : throw new InvalidOperationException();
+			get => _schema ?? throw new InvalidOperationException();
 			internal set => _schema = value;
 		}
 
-		public Model? Parent { get; internal set; }
-
 		public abstract bool Exists { get; }
-		public abstract List<Model>? Children { get; protected internal set; }
 	}
 
 	public abstract partial class Model
 	{
 		public string Name => Schema.Name;
 
-		public string RelativePath => Parent != null ? Path.Combine(Parent.RelativePath, Name) : Name;
+		public string RelativePath => Path.Combine(Parent?.RelativePath ?? string.Empty, Name);
 
 		public string AbsolutePath
 		{
 			get
 			{
-				string result = Schema["Path"] != null ? Path.Combine(Schema.Path, RelativePath) : RelativePath;
+				string result = Path.Combine(Schema["Path"] ?? string.Empty, RelativePath);
 				return Path.IsPathFullyQualified(result) ? result : throw new InvalidOperationException();
 			}
 		}
@@ -47,17 +48,45 @@ namespace SchemataPreview
 
 	public abstract partial class Model
 	{
-		public bool HasChild(string name)
-		{
-			return Children?.Find(child => child.Name == name) != null;
-		}
-
-		public virtual void Build()
+		public virtual void Mount()
 		{
 			Debug.Assert(Schema is ReadOnlySchema);
 			Debug.Assert(!string.IsNullOrWhiteSpace(AbsolutePath));
 			Debug.Assert(Path.IsPathFullyQualified(AbsolutePath));
 			Debug.Assert(AbsolutePath.IndexOfAny(Path.GetInvalidPathChars()) == -1);
+
+			if (Exists)
+			{
+				if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
+				{
+					InvokeHandlers((Action)Delete, Schema["OnDeleted"]);
+					InvokeHandlers((Action)Create, Schema["OnCreated"]);
+				}
+			}
+			else
+			{
+				InvokeHandlers((Action)Create, Schema["OnCreated"]);
+			}
+		}
+
+		public void InvokeHandlers(params object?[] callbacks)
+		{
+			foreach (object? callback in callbacks)
+			{
+				switch (callback)
+				{
+					case ScriptBlock scriptBlock:
+						scriptBlock.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) });
+						break;
+
+					case null:
+						break;
+
+					default:
+						((Action)callback).Invoke();
+						break;
+				}
+			}
 		}
 
 		public virtual void Create()
@@ -72,55 +101,60 @@ namespace SchemataPreview
 		{
 		}
 
-		public void InvokeEvent(string methodName, string handlerName)
+		public virtual void Update()
 		{
-			if (GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic) is var method && method != null)
-			{
-				method?.Invoke(this, null);
-			}
-			if (Children != null)
-			{
-				foreach (Model child in Children)
-				{
-					child.InvokeEvent(methodName, handlerName);
-				}
-			}
-			Schema[handlerName]?.Invoke(this, null);
+		}
+	}
+
+	public abstract partial class Model
+	{
+		public virtual Model? Parent { get; internal set; }
+		public abstract List<Model>? Children { get; }
+
+		public bool HasChild(string name)
+		{
+			return Children?.Find(child => child.Name == name) != null;
 		}
 	}
 
 	public class Model<T> : Model where T : Model, new()
 	{
 		public override bool Exists => BaseModel.Exists;
-		public override List<Model>? Children { get => BaseModel.Children; protected internal set => BaseModel.Children = value; }
+		public override dynamic Schema { get => BaseModel.Schema; internal set => BaseModel.Schema = value; }
+
+		public override List<Model>? Children => BaseModel.Children;
+		public override Model? Parent { get => BaseModel.Parent; internal set => BaseModel.Parent = value; }
 
 		protected T BaseModel { get; } = new();
 
-		public override void Build()
+		public override void InternalMount()
 		{
-			base.Build();
-			BaseModel.Schema = Schema;
-			BaseModel.Parent = Parent;
-			BaseModel.Children = Children;
-			BaseModel.Build();
+			BaseModel.Mount();
+			Mount();
 		}
 
-		public override void Create()
+		public override void InternalCreate()
 		{
 			BaseModel.Create();
-			base.Create();
+			Create();
 		}
 
-		public override void Delete()
+		public override void InternalDelete()
 		{
 			BaseModel.Delete();
-			base.Delete();
+			Delete();
 		}
 
-		public override void Format()
+		public override void InternalFormat()
 		{
 			BaseModel.Format();
-			base.Format();
+			Format();
+		}
+
+		public override void InternalUpdate()
+		{
+			BaseModel.Update();
+			Update();
 		}
 	}
 }

@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace SchemataPreview
@@ -27,34 +26,57 @@ namespace SchemataPreview
 		}
 	}
 
-	public partial class ReadOnlySchema : IReadOnlyDictionary<object, object>
+	public partial class ReadOnlySchema : IDictionary
 	{
-		public object this[object key] => Schema[key];
+		public object this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
 
-		public IEnumerable<object> Keys => Schema.Keys;
+		public bool IsFixedSize => Schema.IsFixedSize;
 
-		public IEnumerable<object> Values => Schema.Values;
+		public bool IsReadOnly => true;
 
-		public int Count => throw new System.NotImplementedException();
+		public ICollection Keys => Schema.Keys;
 
-		public bool ContainsKey(object key)
+		public ICollection Values => Schema.Values;
+
+		public int Count => Schema.Count;
+
+		public bool IsSynchronized => Schema.IsSynchronized;
+
+		public object SyncRoot => Schema.SyncRoot;
+
+		public void Add(object key, object value)
 		{
-			throw new System.NotImplementedException();
+			throw new ReadOnlyException();
 		}
 
-		public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
+		public void Clear()
 		{
-			throw new System.NotImplementedException();
+			throw new ReadOnlyException();
 		}
 
-		public bool TryGetValue(object key, [MaybeNullWhen(false)] out object value)
+		public bool Contains(object key)
 		{
-			throw new System.NotImplementedException();
+			return Schema.Contains(key);
+		}
+
+		public void CopyTo(Array array, int index)
+		{
+			Schema.CopyTo(array, index);
+		}
+
+		public IDictionaryEnumerator GetEnumerator()
+		{
+			return Schema.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			throw new System.NotImplementedException();
+			return Schema.GetEnumerator();
+		}
+
+		public void Remove(object key)
+		{
+			throw new ReadOnlyException();
 		}
 	}
 }

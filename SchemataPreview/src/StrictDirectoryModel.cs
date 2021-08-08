@@ -9,7 +9,7 @@ namespace SchemataPreview
 		public override void Format()
 		{
 			base.Format();
-			foreach (string path in Directory.EnumerateFiles(this))
+			foreach (string path in Directory.EnumerateFiles(AbsolutePath))
 			{
 				if (!HasChild(Path.GetFileName(path)))
 				{

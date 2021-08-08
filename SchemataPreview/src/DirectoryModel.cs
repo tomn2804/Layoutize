@@ -7,7 +7,7 @@ namespace SchemataPreview
 	public class DirectoryModel : Model
 	{
 		public override bool Exists => Directory.Exists(AbsolutePath);
-		public override List<Model> Children { get; protected internal set; } = new();
+		public override List<Model> Children { get; } = new();
 
 		public override void Create()
 		{

@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using System.Collections.Generic;
 using System.IO;
 
 #nullable enable
@@ -9,7 +8,7 @@ namespace SchemataPreview
 	public class FileModel : Model
 	{
 		public override bool Exists => File.Exists(AbsolutePath);
-		public override List<Model>? Children => null;
+		public override ModelList? Children => null;
 
 		public override void Create()
 		{

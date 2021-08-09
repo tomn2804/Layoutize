@@ -8,8 +8,31 @@ using System.Management.Automation;
 
 namespace SchemataPreview
 {
+	public abstract partial class Model : IEquatable<Model>
+	{
+		public bool Equals(Model? other)
+		{
+			return Name == other?.Name;
+		}
+	}
+
+	public abstract partial class Model : IComparable<Model>
+	{
+		public int CompareTo(Model? other)
+		{
+			return Name.CompareTo(other?.Name);
+		}
+	}
+
 	public abstract partial class Model
 	{
+		public static operator Model(string name)
+		{
+			Model result = new();
+			result.Name = name;
+			return result;
+		}
+
 		internal Model()
 		{
 		}
@@ -109,7 +132,7 @@ namespace SchemataPreview
 	public abstract partial class Model
 	{
 		public virtual Model? Parent { get; internal set; }
-		public abstract List<Model>? Children { get; }
+		public abstract ModelList? Children { get; }
 
 		public bool HasChild(string name)
 		{

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Management.Automation;
 
 #nullable enable
 
@@ -10,7 +9,6 @@ namespace SchemataPreview
 	public abstract class Schema : DynamicHashtable
 	{
 		public Schema()
-			: base()
 		{
 		}
 
@@ -45,7 +43,7 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			return this["Path"] != null ? AttachTo(null) : throw new InvalidOperationException();
+			return AttachTo(null);
 		}
 
 		public override T Build(string path)
@@ -56,9 +54,13 @@ namespace SchemataPreview
 
 		public override T AttachTo(Model? parent)
 		{
+			if (parent == null && this["Path"] == null)
+			{
+				throw new InvalidOperationException();
+			}
 			T model = new();
-			model.Schema = AsReadOnly();
 			model.Parent = parent;
+			model.Schema = AsReadOnly();
 			model.InvokeHandlers(
 				(Action)model.Mount,
 				(Action)(() =>

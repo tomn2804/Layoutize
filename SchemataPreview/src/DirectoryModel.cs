@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SchemataPreview
@@ -7,7 +6,7 @@ namespace SchemataPreview
 	public class DirectoryModel : Model
 	{
 		public override bool Exists => Directory.Exists(AbsolutePath);
-		public override List<Model> Children { get; } = new();
+		public override ModelList Children { get; } = new();
 
 		public override void Create()
 		{

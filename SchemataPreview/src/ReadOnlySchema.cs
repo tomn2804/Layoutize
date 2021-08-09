@@ -13,7 +13,7 @@ namespace SchemataPreview
 			Schema = schema;
 		}
 
-		protected internal Schema Schema { get; init; }
+		protected Schema Schema { get; init; }
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
@@ -28,21 +28,17 @@ namespace SchemataPreview
 
 	public partial class ReadOnlySchema : IDictionary
 	{
-		public object this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
-
 		public bool IsFixedSize => Schema.IsFixedSize;
-
 		public bool IsReadOnly => true;
-
-		public ICollection Keys => Schema.Keys;
-
-		public ICollection Values => Schema.Values;
+		public bool IsSynchronized => Schema.IsSynchronized;
 
 		public int Count => Schema.Count;
 
-		public bool IsSynchronized => Schema.IsSynchronized;
+		public ICollection Keys => Schema.Keys;
+		public ICollection Values => Schema.Values;
 
 		public object SyncRoot => Schema.SyncRoot;
+		public object this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
 
 		public void Add(object key, object value)
 		{
@@ -64,6 +60,11 @@ namespace SchemataPreview
 			Schema.CopyTo(array, index);
 		}
 
+		public void Remove(object key)
+		{
+			throw new ReadOnlyException();
+		}
+
 		public IDictionaryEnumerator GetEnumerator()
 		{
 			return Schema.GetEnumerator();
@@ -72,11 +73,6 @@ namespace SchemataPreview
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return Schema.GetEnumerator();
-		}
-
-		public void Remove(object key)
-		{
-			throw new ReadOnlyException();
 		}
 	}
 }

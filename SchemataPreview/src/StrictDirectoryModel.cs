@@ -11,7 +11,7 @@ namespace SchemataPreview
 			base.Format();
 			foreach (string path in Directory.EnumerateFiles(AbsolutePath))
 			{
-				if (!HasChild(Path.GetFileName(path)))
+				if (!Children.Contains(Path.GetFileName(path)))
 				{
 					try
 					{

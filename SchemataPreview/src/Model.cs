@@ -132,7 +132,7 @@ namespace SchemataPreview
 	public abstract partial class Model
 	{
 		public virtual Model? Parent { get; internal set; }
-		public abstract ModelList? Children { get; }
+		public abstract ModelSet? Children { get; }
 
 		public bool HasChild(string name)
 		{

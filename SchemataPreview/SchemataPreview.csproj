@@ -18,6 +18,7 @@
     <Compile Remove="src\Model\ModelNotMountedException.cs" />
     <Compile Remove="src\ObjectNotFoundException.cs" />
     <Compile Remove="src\ReadOnlySchema.cs" />
+    <Compile Remove="src\UniqueList.cs" />
   </ItemGroup>
 
   <ItemGroup>

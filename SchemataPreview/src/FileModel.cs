@@ -8,7 +8,7 @@ namespace SchemataPreview
 	public class FileModel : Model
 	{
 		public override bool Exists => File.Exists(AbsolutePath);
-		public override ModelList? Children => null;
+		public override ModelSet? Children => null;
 
 		public override void Create()
 		{

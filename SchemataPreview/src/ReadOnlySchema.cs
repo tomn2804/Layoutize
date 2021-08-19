@@ -7,8 +7,7 @@ namespace SchemataPreview
 {
 	public partial class ReadOnlySchema : DynamicObject
 	{
-		internal ReadOnlySchema(Schema schema)
-			: base()
+		public ReadOnlySchema(Schema schema)
 		{
 			Schema = schema;
 		}
@@ -28,14 +27,14 @@ namespace SchemataPreview
 
 	public partial class ReadOnlySchema : IDictionary
 	{
-		public bool IsFixedSize => Schema.IsFixedSize;
-		public bool IsReadOnly => true;
-		public bool IsSynchronized => Schema.IsSynchronized;
-
 		public int Count => Schema.Count;
 
 		public ICollection Keys => Schema.Keys;
 		public ICollection Values => Schema.Values;
+
+		public bool IsFixedSize => Schema.IsFixedSize;
+		public bool IsReadOnly => true;
+		public bool IsSynchronized => Schema.IsSynchronized;
 
 		public object SyncRoot => Schema.SyncRoot;
 		public object this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
@@ -60,11 +59,6 @@ namespace SchemataPreview
 			Schema.CopyTo(array, index);
 		}
 
-		public void Remove(object key)
-		{
-			throw new ReadOnlyException();
-		}
-
 		public IDictionaryEnumerator GetEnumerator()
 		{
 			return Schema.GetEnumerator();
@@ -73,6 +67,11 @@ namespace SchemataPreview
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return Schema.GetEnumerator();
+		}
+
+		public void Remove(object key)
+		{
+			throw new ReadOnlyException();
 		}
 	}
 }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿#nullable enable
 
-#nullable enable
+using System;
+using System.Collections;
 
 namespace SchemataPreview
 {
@@ -26,13 +25,12 @@ namespace SchemataPreview
 
 		public abstract Model Build(string path);
 
-		public abstract Model AttachTo(Model parent);
+		public abstract Model BuildTo(Model parent);
 	}
 
 	public class Schema<T> : Schema where T : Model, new()
 	{
 		public Schema()
-			: base()
 		{
 		}
 
@@ -43,16 +41,16 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			return AttachTo(null);
+			return BuildTo(null);
 		}
 
 		public override T Build(string path)
 		{
 			this["Path"] = path;
-			return AttachTo(null);
+			return BuildTo(null);
 		}
 
-		public override T AttachTo(Model? parent)
+		public override T BuildTo(Model? parent)
 		{
 			if (parent == null && this["Path"] == null)
 			{
@@ -67,9 +65,9 @@ namespace SchemataPreview
 				{
 					if (this["Children"] != null && model.Children != null)
 					{
-						foreach (Schema child in (List<Schema>)this["Children"])
+						foreach (Schema child in (Schema[])this["Children"])
 						{
-							model.Children.Add(child.AttachTo(model));
+							model.Children.Add(child.BuildTo(model));
 						}
 					}
 				}),

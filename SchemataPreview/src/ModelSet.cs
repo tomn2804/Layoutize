@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,19 +11,36 @@ namespace SchemataPreview
 	{
 		public Model? this[string name] => Models.FirstOrDefault(model => model.Name == name);
 
-		protected HashSet<Model> Models { get; } = new(new ModelComparer());
+		protected SortedSet<Model> Models { get; } = new(new ModelComparer());
 
-		public bool Add(params Model[] models)
+		public bool Add(Model model)
 		{
-			bool result = true;
+			return Models.Add(model);
+		}
+
+		public void Add(params Model[] models)
+		{
 			foreach (Model model in models)
 			{
-				if (!Models.Add(model))
+				Add(model);
+			}
+		}
+
+		public void AddOrReplace(params Model[] models)
+		{
+			foreach (Model model in models)
+			{
+				if (!Add(model))
 				{
-					result = false;
+					Remove(model.Name);
+					Add(model);
 				}
 			}
-			return result;
+		}
+
+		public void Clear()
+		{
+			Models.Clear();
 		}
 
 		public bool Contains(string name)
@@ -33,6 +51,19 @@ namespace SchemataPreview
 		public bool Remove(string name)
 		{
 			return Convert.ToBoolean(Models.RemoveWhere(model => model.Name == name));
+		}
+	}
+
+	public partial class ModelSet : IEnumerable<Model>
+	{
+		public IEnumerator<Model> GetEnumerator()
+		{
+			return Models.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return Models.GetEnumerator();
 		}
 	}
 }

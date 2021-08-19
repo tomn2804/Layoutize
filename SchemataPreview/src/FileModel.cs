@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System.IO;
+﻿#nullable enable
 
-#nullable enable
+using Microsoft.VisualBasic.FileIO;
+using System.IO;
 
 namespace SchemataPreview
 {

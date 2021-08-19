@@ -1,19 +1,22 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
 
-#nullable enable
+using System.Collections.Generic;
 
 namespace SchemataPreview
 {
-	public class ModelComparer : IEqualityComparer<Model>
+	public class ModelComparer : IComparer<Model>
 	{
-		public bool Equals(Model? x, Model? y)
+		public int Compare(Model? x, Model? y)
 		{
-			return x?.Name == y?.Name;
-		}
-
-		public int GetHashCode(Model obj)
-		{
-			return obj.Name.GetHashCode();
+			if (x == null)
+			{
+				return -1;
+			}
+			if (y == null)
+			{
+				return 1;
+			}
+			return x.Schema["Index"]?.CompareTo(y.Schema["Index"]) ?? y.Schema["Index"]?.CompareTo(x.Schema["Index"]) ?? x.Name.CompareTo(y.Name);
 		}
 	}
 }

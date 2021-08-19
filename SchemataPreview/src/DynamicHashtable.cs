@@ -37,14 +37,14 @@ namespace SchemataPreview
 
 	public partial class DynamicHashtable : IDictionary
 	{
-		public bool IsFixedSize => Hashtable.IsFixedSize;
-		public bool IsReadOnly => Hashtable.IsReadOnly;
-		public bool IsSynchronized => Hashtable.IsSynchronized;
-
 		public int Count => Hashtable.Count;
 
 		public ICollection Keys => Hashtable.Keys;
 		public ICollection Values => Hashtable.Values;
+
+		public bool IsFixedSize => Hashtable.IsFixedSize;
+		public bool IsReadOnly => Hashtable.IsReadOnly;
+		public bool IsSynchronized => Hashtable.IsSynchronized;
 
 		public object SyncRoot => Hashtable.SyncRoot;
 		public object this[object key] { get => Hashtable[key]; set => Hashtable[key] = value; }
@@ -69,11 +69,6 @@ namespace SchemataPreview
 			Hashtable.CopyTo(array, index);
 		}
 
-		public void Remove(object key)
-		{
-			Hashtable.Remove(key);
-		}
-
 		public IDictionaryEnumerator GetEnumerator()
 		{
 			return Hashtable.GetEnumerator();
@@ -82,6 +77,11 @@ namespace SchemataPreview
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return Hashtable.GetEnumerator();
+		}
+
+		public void Remove(object key)
+		{
+			Hashtable.Remove(key);
 		}
 	}
 }

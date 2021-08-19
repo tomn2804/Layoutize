@@ -7,9 +7,9 @@ namespace SchemataPreview
 		public override void Mount()
 		{
 			base.Mount();
-			StrictTextModel schematic = (new Schema<StrictTextModel> { { "Name", "Get-CurrentDirectorySchema.ps1" } }).AttachTo(this);
-			Children.Add(
-				(new Schema<ExcludeModel> { { "Name", "*.ps1" } }).AttachTo(this),
+			StrictTextModel schematic = (new Schema<StrictTextModel> { { "Name", "Get-CurrentDirectorySchema.ps1" } }).BuildTo(this);
+			Children.AddOrReplace(
+				(new Schema<ExcludeModel> { { "Name", "*.ps1" } }).BuildTo(this),
 				schematic
 			);
 			if (schematic.Exists)
@@ -19,7 +19,7 @@ namespace SchemataPreview
 				{
 					if (obj.BaseObject is Schema child)
 					{
-						Children.Add(child.AttachTo(this));
+						Children.Add(child.BuildTo(this));
 					}
 				}
 			}

@@ -18,13 +18,13 @@ namespace SchemataPreview
 
 		protected Hashtable Hashtable { get; init; }
 
-		public override bool TryGetMember(GetMemberBinder binder, out object result)
+		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
 			result = this[binder.Name];
 			return result != null;
 		}
 
-		public override bool TrySetMember(SetMemberBinder binder, object value)
+		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
 			if (!Contains(binder.Name))
 			{
@@ -47,9 +47,9 @@ namespace SchemataPreview
 		public bool IsSynchronized => Hashtable.IsSynchronized;
 
 		public object SyncRoot => Hashtable.SyncRoot;
-		public object this[object key] { get => Hashtable[key]; set => Hashtable[key] = value; }
+		public object? this[object key] { get => Hashtable[key]; set => Hashtable[key] = value; }
 
-		public void Add(object key, object value)
+		public void Add(object key, object? value)
 		{
 			Hashtable.Add(key, value);
 		}

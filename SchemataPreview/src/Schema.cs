@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections;
 
 namespace SchemataPreview
@@ -63,9 +61,9 @@ namespace SchemataPreview
 				(Action)model.Mount,
 				(Action)(() =>
 				{
-					if (this["Children"] != null && model.Children != null)
+					if (this["Children"] is Schema[] children && model.Children != null)
 					{
-						foreach (Schema child in (Schema[])this["Children"])
+						foreach (Schema child in children)
 						{
 							model.Children.Add(child.BuildTo(model));
 						}
@@ -77,5 +75,3 @@ namespace SchemataPreview
 		}
 	}
 }
-
-#nullable disable

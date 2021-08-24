@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SchemataPreview
 {
@@ -16,9 +14,7 @@ namespace SchemataPreview
 			{
 				return 1;
 			}
-			return x.Schema["Index"]?.CompareTo(y.Schema["Index"]) ?? y.Schema["Index"]?.CompareTo(x.Schema["Index"]) ?? x.Name.CompareTo(y.Name);
+			return y.Schema["Priority"]?.CompareTo(x.Schema["Priority"]) ?? x.Name.CompareTo(y.Name);
 		}
 	}
 }
-
-#nullable disable

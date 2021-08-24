@@ -2,9 +2,8 @@
 {
 	public class StrictTextModel : TextModel
 	{
-		public override void Format()
+		public virtual void Format()
 		{
-			base.Format();
 			Contents = TextEditor.Format(Contents);
 		}
 	}

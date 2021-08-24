@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -16,30 +14,16 @@ namespace SchemataPreview
 		public virtual dynamic Schema
 		{
 			get => _schema ?? throw new InvalidOperationException();
-			internal set => _schema = value ?? throw new InvalidOperationException();
+			internal set => _schema = value;
 		}
 
 		public abstract bool Exists { get; }
 
-		public virtual void InvokeMethod(string name)
+		public virtual bool InvokeMethod(string name)
 		{
-			GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic)?.Invoke(this, null);
-		}
-
-		public virtual void Create()
-		{
-		}
-
-		public virtual void Delete()
-		{
-		}
-
-		public virtual void Format()
-		{
-		}
-
-		public virtual void Update()
-		{
+			MethodInfo? method = GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
+			method?.Invoke(this, null);
+			return method != null;
 		}
 	}
 
@@ -120,12 +104,9 @@ namespace SchemataPreview
 
 		protected T BaseModel { get; } = new();
 
-		public override void InvokeMethod(string name)
+		public override bool InvokeMethod(string name)
 		{
-			BaseModel.InvokeMethod(name);
-			base.InvokeMethod(name);
+			return BaseModel.InvokeMethod(name) && base.InvokeMethod(name);
 		}
 	}
 }
-
-#nullable disable

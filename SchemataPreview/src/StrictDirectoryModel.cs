@@ -6,9 +6,8 @@ namespace SchemataPreview
 {
 	public class StrictDirectoryModel : DirectoryModel
 	{
-		public override void Format()
+		public virtual void Format()
 		{
-			base.Format();
 			foreach (string path in Directory.EnumerateFiles(AbsolutePath))
 			{
 				if (!Children.Contains(Path.GetFileName(path)))

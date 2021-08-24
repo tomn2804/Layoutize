@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using Microsoft.VisualBasic.FileIO;
+﻿using Microsoft.VisualBasic.FileIO;
 using System.IO;
 
 namespace SchemataPreview
@@ -10,18 +8,14 @@ namespace SchemataPreview
 		public override bool Exists => File.Exists(AbsolutePath);
 		public override ModelSet? Children => null;
 
-		public override void Create()
+		public virtual void Create()
 		{
-			base.Create();
 			File.Create(AbsolutePath).Dispose();
 		}
 
-		public override void Delete()
+		public virtual void Delete()
 		{
-			base.Delete();
 			FileSystem.DeleteFile(AbsolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }
-
-#nullable disable

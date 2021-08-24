@@ -8,7 +8,7 @@ namespace SchemataPreview
 		{
 			base.Mount();
 			StrictTextModel schematic = (new Schema<StrictTextModel> { { "Name", "Get-CurrentDirectorySchema.ps1" } }).BuildTo(this);
-			Children.AddOrReplace(
+			Children.Add(
 				(new Schema<ExcludeModel> { { "Name", "*.ps1" } }).BuildTo(this),
 				schematic
 			);

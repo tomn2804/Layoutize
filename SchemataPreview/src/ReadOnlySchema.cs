@@ -14,12 +14,12 @@ namespace SchemataPreview
 
 		protected Schema Schema { get; init; }
 
-		public override bool TryGetMember(GetMemberBinder binder, out object result)
+		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
 			return Schema.TryGetMember(binder, out result);
 		}
 
-		public override bool TrySetMember(SetMemberBinder binder, object value)
+		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
 			throw new ReadOnlyException();
 		}
@@ -37,9 +37,9 @@ namespace SchemataPreview
 		public bool IsSynchronized => Schema.IsSynchronized;
 
 		public object SyncRoot => Schema.SyncRoot;
-		public object this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
+		public object? this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
 
-		public void Add(object key, object value)
+		public void Add(object key, object? value)
 		{
 			throw new ReadOnlyException();
 		}

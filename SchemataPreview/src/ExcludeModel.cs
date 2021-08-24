@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.IO;
+﻿using System.IO;
 
 namespace SchemataPreview
 {
@@ -10,5 +8,3 @@ namespace SchemataPreview
 		public override ModelSet? Children => null;
 	}
 }
-
-#nullable disable

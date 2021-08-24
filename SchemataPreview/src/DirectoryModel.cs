@@ -8,15 +8,13 @@ namespace SchemataPreview
 		public override bool Exists => Directory.Exists(AbsolutePath);
 		public override ModelSet Children { get; } = new();
 
-		public override void Create()
+		public virtual void Create()
 		{
-			base.Create();
 			Directory.CreateDirectory(AbsolutePath);
 		}
 
-		public override void Delete()
+		public virtual void Delete()
 		{
-			base.Delete();
 			FileSystem.DeleteDirectory(AbsolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}

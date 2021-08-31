@@ -5,17 +5,17 @@ namespace SchemataPreview
 {
 	public class FileModel : Model
 	{
-		public override bool Exists => File.Exists(AbsolutePath);
+		public override bool Exists => File.Exists(FullName);
 		public override ModelSet? Children => null;
 
 		public virtual void Create()
 		{
-			File.Create(AbsolutePath).Dispose();
+			File.Create(FullName).Dispose();
 		}
 
 		public virtual void Delete()
 		{
-			FileSystem.DeleteFile(AbsolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+			FileSystem.DeleteFile(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }

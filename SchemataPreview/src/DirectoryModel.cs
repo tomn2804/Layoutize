@@ -5,17 +5,22 @@ namespace SchemataPreview
 {
 	public class DirectoryModel : Model
 	{
-		public override bool Exists => Directory.Exists(AbsolutePath);
-		public override ModelSet Children { get; } = new();
+		public DirectoryModel()
+		{
+			Children = new(this);
+		}
+
+		public override bool Exists => Directory.Exists(FullName);
+		public override ModelSet Children { get; }
 
 		public virtual void Create()
 		{
-			Directory.CreateDirectory(AbsolutePath);
+			Directory.CreateDirectory(FullName);
 		}
 
 		public virtual void Delete()
 		{
-			FileSystem.DeleteDirectory(AbsolutePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+			FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 		}
 	}
 }

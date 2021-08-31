@@ -13,7 +13,11 @@ namespace SchemataPreview
 
 		public virtual dynamic Schema
 		{
-			get => _schema ?? throw new InvalidOperationException();
+			get
+			{
+				Debug.Assert(_schema != null);
+				return _schema;
+			}
 			internal set => _schema = value;
 		}
 
@@ -22,8 +26,12 @@ namespace SchemataPreview
 		public virtual bool InvokeMethod(string name)
 		{
 			MethodInfo? method = GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
-			method?.Invoke(this, null);
-			return method != null;
+			return method?.Invoke(this, null) != null;
+		}
+
+		public bool InvokeEvent(string name)
+		{
+			return Schema[name]?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) }) != null;
 		}
 	}
 
@@ -31,20 +39,20 @@ namespace SchemataPreview
 	{
 		public string Name => Schema.Name;
 
-		public string RelativePath => Path.Combine(Parent?.RelativePath ?? string.Empty, Name);
+		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
-		public string AbsolutePath
+		public string FullName
 		{
 			get
 			{
-				string result = Path.Combine(Schema["Path"] ?? string.Empty, RelativePath);
+				string result = Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
 				return Path.IsPathFullyQualified(result) ? result : throw new InvalidOperationException();
 			}
 		}
 
 		public static implicit operator string(Model rhs)
 		{
-			return rhs.AbsolutePath;
+			return rhs.FullName;
 		}
 	}
 
@@ -55,58 +63,49 @@ namespace SchemataPreview
 
 		public virtual void Mount()
 		{
+			Build();
+			Children?.Mount();
+		}
+
+		protected void Validate()
+		{
 			Debug.Assert(Schema is ReadOnlySchema);
-			Debug.Assert(!string.IsNullOrWhiteSpace(AbsolutePath));
-			Debug.Assert(Path.IsPathFullyQualified(AbsolutePath));
-			Debug.Assert(AbsolutePath.IndexOfAny(Path.GetInvalidPathChars()) == -1);
+			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
+			Debug.Assert(Path.IsPathFullyQualified(FullName));
+			Debug.Assert(FullName.IndexOfAny(Path.GetInvalidPathChars()) == -1);
+		}
+
+		internal void Build()
+		{
+			Validate();
 			if (Exists)
 			{
 				if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
 				{
-					InvokeHandlers((Action)(() => InvokeMethod("Delete")), Schema["OnDeleted"]);
-					InvokeHandlers((Action)(() => InvokeMethod("Create")), Schema["OnCreated"]);
+					ModelBuilder.HandleDelete(this);
+					ModelBuilder.HandleCreate(this);
 				}
 			}
 			else
 			{
-				InvokeHandlers((Action)(() => InvokeMethod("Create")), Schema["OnCreated"]);
-			}
-		}
-
-		public void InvokeHandlers(params object?[] callbacks)
-		{
-			foreach (object? callback in callbacks)
-			{
-				switch (callback)
-				{
-					case ScriptBlock scriptBlock:
-						scriptBlock.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) });
-						break;
-
-					case null:
-						break;
-
-					default:
-						((Action)callback).Invoke();
-						break;
-				}
+				ModelBuilder.HandleCreate(this);
 			}
 		}
 	}
 
-	public abstract class Model<T> : Model where T : Model, new()
+	public abstract partial class Model : IEquatable<string>
 	{
-		public override bool Exists => BaseModel.Exists;
-		public override dynamic Schema { get => BaseModel.Schema; internal set => BaseModel.Schema = value; }
-
-		public override ModelSet? Children => BaseModel.Children;
-		public override Model? Parent { get => BaseModel.Parent; internal set => BaseModel.Parent = value; }
-
-		protected T BaseModel { get; } = new();
-
-		public override bool InvokeMethod(string name)
+		public bool Equals(string? other)
 		{
-			return BaseModel.InvokeMethod(name) && base.InvokeMethod(name);
+			return Name == other;
+		}
+	}
+
+	public abstract partial class Model : IEquatable<Model>
+	{
+		public bool Equals(Model? other)
+		{
+			return RelativeName == other?.RelativeName;
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace SchemataPreview
 	{
 		public virtual void Format()
 		{
-			foreach (string path in Directory.EnumerateFiles(AbsolutePath))
+			foreach (string path in Directory.EnumerateFiles(FullName))
 			{
 				if (!Children.Contains(Path.GetFileName(path)))
 				{

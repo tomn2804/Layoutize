@@ -6,8 +6,8 @@ namespace SchemataPreview
 	{
 		public string[] Contents
 		{
-			get => File.ReadAllLines(AbsolutePath);
-			set => File.WriteAllLines(AbsolutePath, value);
+			get => File.ReadAllLines(FullName);
+			set => File.WriteAllLines(FullName, value);
 		}
 
 		public override void Create()

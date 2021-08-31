@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 
 namespace SchemataPreview
 {
 	public abstract class Schema : DynamicHashtable
 	{
-		public Schema()
+		protected Schema()
 		{
 		}
 
-		public Schema(Hashtable hashtable)
+		protected Schema(Hashtable hashtable)
 			: base(hashtable)
 		{
 		}
@@ -21,9 +20,9 @@ namespace SchemataPreview
 
 		public abstract Model Build();
 
-		public abstract Model Build(string path);
+		public abstract Model Build(string? path);
 
-		public abstract Model BuildTo(Model parent);
+		public abstract Model NewModel();
 	}
 
 	public class Schema<T> : Schema where T : Model, new()
@@ -39,38 +38,21 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			return BuildTo(null);
+			T model = NewModel();
+			ModelBuilder.HandleMount(model);
+			return model;
 		}
 
-		public override T Build(string path)
+		public override T Build(string? path)
 		{
 			this["Path"] = path;
-			return BuildTo(null);
+			return Build();
 		}
 
-		public override T BuildTo(Model? parent)
+		public override T NewModel()
 		{
-			if (parent == null && this["Path"] == null)
-			{
-				throw new InvalidOperationException();
-			}
 			T model = new();
-			model.Parent = parent;
 			model.Schema = AsReadOnly();
-			model.InvokeHandlers(
-				(Action)model.Mount,
-				(Action)(() =>
-				{
-					if (this["Children"] is Schema[] children && model.Children != null)
-					{
-						foreach (Schema child in children)
-						{
-							model.Children.Add(child.BuildTo(model));
-						}
-					}
-				}),
-				this["OnMounted"]
-			);
 			return model;
 		}
 	}

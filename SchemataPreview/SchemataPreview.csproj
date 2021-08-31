@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="src\AnchorDirectoryModel.cs" />
-    <Compile Remove="src\EventController.cs" />
     <Compile Remove="src\EventOption.cs" />
     <Compile Remove="src\Exclude.cs" />
     <Compile Remove="src\FileExtension.cs" />
@@ -28,7 +27,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot;&#xD;&#xA;start pwsh -NoExit &quot;$(ProjectDir)Invoke-PostBuild.ps1&quot;&#xD;&#xA;" />
+    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot;&#xD;&#xA;start pwsh -NoExit &quot;$(ProjectDir)Invoke-PostBuildEvent.ps1&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

@@ -25,7 +25,7 @@ namespace SchemataPreview
 
 		public virtual bool InvokeMethod(string name)
 		{
-			MethodInfo? method = GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
+			MethodInfo? method = GetType().GetMethod(name);
 			return method?.Invoke(this, null) != null;
 		}
 

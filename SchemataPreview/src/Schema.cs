@@ -20,9 +20,9 @@ namespace SchemataPreview
 			return new(this);
 		}
 
-		public abstract Model Build(string path);
-
 		public abstract Model Build();
+
+		public abstract Model Build(string path);
 
 		public abstract Model NewModel();
 	}
@@ -38,17 +38,17 @@ namespace SchemataPreview
 		{
 		}
 
-		public override T Build(string path)
-		{
-			this["Path"] = path;
-			return Build();
-		}
-
 		public override T Build()
 		{
 			T model = NewModel();
 			ModelBuilder.HandleMount(model);
 			return model;
+		}
+
+		public override T Build(string path)
+		{
+			this["Path"] = path;
+			return Build();
 		}
 
 		public override T NewModel()

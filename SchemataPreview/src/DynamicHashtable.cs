@@ -44,9 +44,8 @@ namespace SchemataPreview
 		public bool IsSynchronized => Hashtable.IsSynchronized;
 
 		public ICollection Keys => Hashtable.Keys;
-		public ICollection Values => Hashtable.Values;
-
 		public object SyncRoot => Hashtable.SyncRoot;
+		public ICollection Values => Hashtable.Values;
 		public object? this[object key] { get => Hashtable[key]; set => Hashtable[key] = value; }
 
 		public void Add(object key, object? value)

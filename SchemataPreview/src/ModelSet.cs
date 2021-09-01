@@ -13,18 +13,8 @@ namespace SchemataPreview
 		}
 
 		public Model Parent { get; init; }
-		public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
-
 		protected SortedSet<Model> Models { get; private set; } = new(new ModelComparer());
-
-		public void Mount()
-		{
-			Models.Clear();
-			if (Parent.Schema["Children"] is object[] schemata)
-			{
-				Add(Array.ConvertAll(schemata, schema => (Schema)schema));
-			}
-		}
+		public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
 
 		public void Add(params Schema[] schemata)
 		{
@@ -63,6 +53,15 @@ namespace SchemataPreview
 		public bool Contains(string name)
 		{
 			return Models.Any(model => model.Equals(name));
+		}
+
+		public void Mount()
+		{
+			Models.Clear();
+			if (Parent.Schema["Children"] is object[] schemata)
+			{
+				Add(Array.ConvertAll(schemata, schema => (Schema)schema));
+			}
 		}
 
 		public bool Remove(string name)

@@ -5,7 +5,7 @@
 		OnMounted,
 		OnCreated,
 		OnDeleted,
-		OnUpdated,
-		OnFormatted
+		OnFormatted,
+		OnUpdated
 	}
 }

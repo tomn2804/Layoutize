@@ -34,9 +34,8 @@ namespace SchemataPreview
 		public bool IsSynchronized => Schema.IsSynchronized;
 
 		public ICollection Keys => Schema.Keys;
-		public ICollection Values => Schema.Values;
-
 		public object SyncRoot => Schema.SyncRoot;
+		public ICollection Values => Schema.Values;
 		public object? this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
 
 		public void Add(object key, object? value)

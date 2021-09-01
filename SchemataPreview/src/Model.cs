@@ -11,6 +11,8 @@ namespace SchemataPreview
 	{
 		private ReadOnlySchema? _schema;
 
+		public abstract bool Exists { get; }
+
 		public virtual dynamic Schema
 		{
 			get
@@ -21,27 +23,34 @@ namespace SchemataPreview
 			internal set => _schema = value;
 		}
 
-		public abstract bool Exists { get; }
-
-		public virtual bool InvokeMethod(string name)
+		public bool InvokeEvent(EventOption option)
 		{
-			MethodInfo? method = GetType().GetMethod(name);
-			return method?.Invoke(this, null) != null;
+			return (Enum.GetName(typeof(EventOption), option) is string name) ? InvokeEvent(name) : false;
 		}
 
 		public bool InvokeEvent(string name)
 		{
 			return Schema[name]?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) }) != null;
 		}
+
+		public bool InvokeMethod(MethodOption option)
+		{
+			return (Enum.GetName(typeof(MethodOption), option) is string name) ? InvokeMethod(name) : false;
+		}
+
+		public virtual bool InvokeMethod(string name)
+		{
+			MethodInfo? method = GetType().GetMethod(name);
+			return method?.Invoke(this, null) != null;
+		}
 	}
 
 	public abstract partial class Model
 	{
+		public string FullName => Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
 		public string Name => Schema.Name;
 
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
-
-		public string FullName => Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
 
 		public static implicit operator string(Model rhs)
 		{
@@ -51,8 +60,8 @@ namespace SchemataPreview
 
 	public abstract partial class Model
 	{
-		public virtual Model? Parent { get; internal set; }
 		public abstract ModelSet? Children { get; }
+		public virtual Model? Parent { get; internal set; }
 
 		public virtual void Mount()
 		{

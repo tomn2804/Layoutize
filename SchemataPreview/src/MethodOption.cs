@@ -5,7 +5,7 @@
 		Mount,
 		Create,
 		Delete,
-		Update,
-		Format
+		Format,
+		Update
 	}
 }

@@ -4,26 +4,26 @@
 	{
 		public static void HandleCreate(in Model model)
 		{
-			model.InvokeMethod("Create");
-			model.InvokeEvent("OnCreated");
+			model.InvokeMethod(nameof(MethodOption.Mount));
+			model.InvokeEvent(nameof(EventOption.OnCreated));
 		}
 
 		public static void HandleDelete(in Model model)
 		{
-			model.InvokeMethod("Delete");
-			model.InvokeEvent("OnDeleted");
+			model.InvokeMethod(nameof(MethodOption.Delete));
+			model.InvokeEvent(nameof(EventOption.OnDeleted));
 		}
 
 		public static void HandleMount(in Model model)
 		{
 			model.Mount();
-			model.InvokeEvent("OnMounted");
+			model.InvokeEvent(nameof(EventOption.OnMounted));
 		}
 
 		public static void HandleMount(in ModelSet models)
 		{
 			models.Mount();
-			models.Parent.InvokeEvent("OnMounted");
+			models.Parent.InvokeEvent(nameof(EventOption.OnMounted));
 		}
 	}
 }

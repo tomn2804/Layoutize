@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Compile Remove="src\AnchorDirectoryModel.cs" />
-    <Compile Remove="src\EventOption.cs" />
     <Compile Remove="src\Exclude.cs" />
     <Compile Remove="src\FileExtension.cs" />
     <Compile Remove="src\IModel.cs" />

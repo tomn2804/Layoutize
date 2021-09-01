@@ -1,5 +1,5 @@
 ﻿#Requires -Module SchemataPreview
 using namespace SchemataPreview
 
-class A : Extension[SchematicDirectoryModel] {
+class A : DirectoryModel {
 }

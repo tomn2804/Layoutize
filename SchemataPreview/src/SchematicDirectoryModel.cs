@@ -21,9 +21,9 @@ namespace SchemataPreview
 			List<Schema> schemata = new();
 			foreach (PSObject obj in instance.Invoke())
 			{
-				if (obj.BaseObject is Schema child)
+				if (obj.BaseObject is Schema schema)
 				{
-					schemata.Add(child);
+					schemata.Add(schema);
 				}
 			}
 			Children.Add(schemata.ToArray());

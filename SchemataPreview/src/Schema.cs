@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.IO;
 
 namespace SchemataPreview
 {
@@ -18,9 +20,9 @@ namespace SchemataPreview
 			return new(this);
 		}
 
-		public abstract Model Build();
+		public abstract Model Build(string path);
 
-		public abstract Model Build(string? path);
+		public abstract Model Build();
 
 		public abstract Model NewModel();
 	}
@@ -36,6 +38,12 @@ namespace SchemataPreview
 		{
 		}
 
+		public override T Build(string path)
+		{
+			this["Path"] = path;
+			return Build();
+		}
+
 		public override T Build()
 		{
 			T model = NewModel();
@@ -43,17 +51,20 @@ namespace SchemataPreview
 			return model;
 		}
 
-		public override T Build(string? path)
-		{
-			this["Path"] = path;
-			return Build();
-		}
-
 		public override T NewModel()
 		{
+			Validate();
 			T model = new();
 			model.Schema = AsReadOnly();
 			return model;
+		}
+
+		private void Validate()
+		{
+			if ((this["Name"] is not string name) || (name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1))
+			{
+				throw new InvalidOperationException();
+			}
 		}
 	}
 }

@@ -10,8 +10,8 @@ namespace SchemataPreview
 			Children = new(this);
 		}
 
-		public override bool Exists => Directory.Exists(FullName);
 		public override ModelSet Children { get; }
+		public override bool Exists => Directory.Exists(FullName);
 
 		public virtual void Create()
 		{

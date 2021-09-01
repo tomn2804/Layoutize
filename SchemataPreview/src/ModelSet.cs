@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,17 +12,17 @@ namespace SchemataPreview
 			Parent = parent;
 		}
 
+		public Model Parent { get; init; }
 		public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
 
-		public Model Parent { get; init; }
 		protected SortedSet<Model> Models { get; private set; } = new(new ModelComparer());
 
 		public void Mount()
 		{
 			Models.Clear();
-			if (Parent.Schema["Children"] is Schema[] schemata)
+			if (Parent.Schema["Children"] is object[] schemata)
 			{
-				Add(schemata);
+				Add(Array.ConvertAll(schemata, schema => (Schema)schema));
 			}
 		}
 

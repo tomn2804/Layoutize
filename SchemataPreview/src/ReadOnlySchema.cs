@@ -29,12 +29,12 @@ namespace SchemataPreview
 	{
 		public int Count => Schema.Count;
 
-		public ICollection Keys => Schema.Keys;
-		public ICollection Values => Schema.Values;
-
 		public bool IsFixedSize => Schema.IsFixedSize;
 		public bool IsReadOnly => true;
 		public bool IsSynchronized => Schema.IsSynchronized;
+
+		public ICollection Keys => Schema.Keys;
+		public ICollection Values => Schema.Values;
 
 		public object SyncRoot => Schema.SyncRoot;
 		public object? this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }

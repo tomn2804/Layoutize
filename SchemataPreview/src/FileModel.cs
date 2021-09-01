@@ -5,8 +5,8 @@ namespace SchemataPreview
 {
 	public class FileModel : Model
 	{
-		public override bool Exists => File.Exists(FullName);
 		public override ModelSet? Children => null;
+		public override bool Exists => File.Exists(FullName);
 
 		public virtual void Create()
 		{

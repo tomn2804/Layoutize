@@ -41,14 +41,7 @@ namespace SchemataPreview
 
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
-		public string FullName
-		{
-			get
-			{
-				string result = Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
-				return Path.IsPathFullyQualified(result) ? result : throw new InvalidOperationException();
-			}
-		}
+		public string FullName => Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
 
 		public static implicit operator string(Model rhs)
 		{
@@ -67,14 +60,6 @@ namespace SchemataPreview
 			Children?.Mount();
 		}
 
-		protected void Validate()
-		{
-			Debug.Assert(Schema is ReadOnlySchema);
-			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
-			Debug.Assert(Path.IsPathFullyQualified(FullName));
-			Debug.Assert(FullName.IndexOfAny(Path.GetInvalidPathChars()) == -1);
-		}
-
 		internal void Build()
 		{
 			Validate();
@@ -89,6 +74,20 @@ namespace SchemataPreview
 			else
 			{
 				ModelBuilder.HandleCreate(this);
+			}
+		}
+
+		private void Validate()
+		{
+			Debug.Assert(Schema is ReadOnlySchema);
+			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
+			if (!Path.IsPathFullyQualified(FullName))
+			{
+				throw new InvalidOperationException();
+			}
+			if (FullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+			{
+				throw new InvalidOperationException();
 			}
 		}
 	}

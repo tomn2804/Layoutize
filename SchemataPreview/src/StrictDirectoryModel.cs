@@ -10,7 +10,7 @@ namespace SchemataPreview
 		{
 			foreach (string path in Directory.EnumerateFiles(FullName))
 			{
-				if (!Children.Contains(Path.GetFileName(path)))
+				if (!Children.ContainsName(Path.GetFileName(path)))
 				{
 					try
 					{

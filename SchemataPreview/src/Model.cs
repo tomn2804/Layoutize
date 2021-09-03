@@ -9,47 +9,8 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		private ReadOnlySchema? _schema;
-
-		public abstract bool Exists { get; }
-
-		public virtual dynamic Schema
-		{
-			get
-			{
-				Debug.Assert(_schema != null);
-				return _schema;
-			}
-			internal set => _schema = value;
-		}
-
-		public bool InvokeEvent(EventOption option)
-		{
-			return (Enum.GetName(typeof(EventOption), option) is string name) ? InvokeEvent(name) : false;
-		}
-
-		public bool InvokeEvent(string name)
-		{
-			return Schema[name]?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) }) != null;
-		}
-
-		public bool InvokeMethod(MethodOption option)
-		{
-			return (Enum.GetName(typeof(MethodOption), option) is string name) ? InvokeMethod(name) : false;
-		}
-
-		public virtual bool InvokeMethod(string name)
-		{
-			MethodInfo? method = GetType().GetMethod(name);
-			return method?.Invoke(this, null) != null;
-		}
-	}
-
-	public abstract partial class Model
-	{
 		public string FullName => Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
 		public string Name => Schema.Name;
-
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
 		public static implicit operator string(Model rhs)
@@ -61,8 +22,52 @@ namespace SchemataPreview
 	public abstract partial class Model
 	{
 		public abstract ModelSet? Children { get; }
+		public abstract bool Exists { get; }
 		public virtual Model? Parent { get; internal set; }
 
+		public virtual dynamic Schema
+		{
+			get
+			{
+				Debug.Assert(_schema != null);
+				return _schema;
+			}
+			internal set => _schema = value;
+		}
+
+		private ReadOnlySchema? _schema;
+	}
+
+	public abstract partial class Model
+	{
+		public bool InvokeEvent(EventOption option)
+		{
+			string? name = Enum.GetName(option);
+			Debug.Assert(name != null);
+			return InvokeEvent(name);
+		}
+
+		public bool InvokeEvent(string name)
+		{
+			return Schema[name]?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) }) != null;
+		}
+
+		public bool InvokeMethod(MethodOption option)
+		{
+			string? name = Enum.GetName(option);
+			Debug.Assert(name != null);
+			return InvokeMethod(name);
+		}
+
+		public virtual bool InvokeMethod(string name)
+		{
+			MethodInfo? method = GetType().GetMethod(name);
+			return method?.Invoke(this, null) != null;
+		}
+	}
+
+	public abstract partial class Model
+	{
 		public virtual void Mount()
 		{
 			Build();

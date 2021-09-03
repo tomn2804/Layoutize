@@ -16,23 +16,23 @@ namespace SchemataPreview
 			Hashtable = hashtable;
 		}
 
-		protected Hashtable Hashtable { get; init; }
-
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
 			result = this[binder.Name];
-			return result != null;
+			return result != null ? true : throw new NullReferenceException();
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
 			if (!Contains(binder.Name))
 			{
-				return false;
+				throw new NullReferenceException();
 			}
 			this[binder.Name] = value;
 			return true;
 		}
+
+		protected Hashtable Hashtable { get; init; }
 	}
 
 	public partial class DynamicHashtable : IDictionary
@@ -73,14 +73,14 @@ namespace SchemataPreview
 			return Hashtable.GetEnumerator();
 		}
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return Hashtable.GetEnumerator();
-		}
-
 		public void Remove(object key)
 		{
 			Hashtable.Remove(key);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return Hashtable.GetEnumerator();
 		}
 	}
 }

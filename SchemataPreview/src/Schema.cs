@@ -6,15 +6,6 @@ namespace SchemataPreview
 {
 	public abstract class Schema : DynamicHashtable
 	{
-		protected Schema()
-		{
-		}
-
-		protected Schema(Hashtable hashtable)
-			: base(hashtable)
-		{
-		}
-
 		public ReadOnlySchema AsReadOnly()
 		{
 			return new(this);
@@ -25,6 +16,15 @@ namespace SchemataPreview
 		public abstract Model Build(string path);
 
 		public abstract Model NewModel();
+
+		protected Schema()
+		{
+		}
+
+		protected Schema(Hashtable hashtable)
+			: base(hashtable)
+		{
+		}
 	}
 
 	public class Schema<T> : Schema where T : Model, new()

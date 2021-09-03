@@ -15,7 +15,7 @@ namespace SchemataPreview
 			);
 
 			Model? schematic = Children["Get-CurrentDirectorySchema.ps1"];
-			Debug.Assert(schematic is StrictTextModel && schematic.Exists);
+			Debug.Assert(schematic != null && schematic.Exists);
 
 			using PowerShell instance = PowerShell.Create().AddScript(schematic);
 			List<Schema> schemata = new();

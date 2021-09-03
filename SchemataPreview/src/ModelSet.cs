@@ -13,7 +13,6 @@ namespace SchemataPreview
 		}
 
 		public Model Parent { get; init; }
-		protected SortedSet<Model> Models { get; private set; } = new(new ModelComparer());
 		public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
 
 		public void Add(params Schema[] schemata)
@@ -50,7 +49,12 @@ namespace SchemataPreview
 			}
 		}
 
-		public bool Contains(string name)
+		public bool Contains(Model model)
+		{
+			return Models.Contains(model);
+		}
+
+		public bool ContainsName(string name)
 		{
 			return Models.Any(model => model.Equals(name));
 		}
@@ -64,12 +68,18 @@ namespace SchemataPreview
 			}
 		}
 
-		public bool Remove(string name)
+		public bool Remove(Model model)
 		{
-			Model model = Models.First(model => model.Equals(name));
 			ModelBuilder.HandleDelete(model);
 			return Models.Remove(model);
 		}
+
+		public bool RemoveByName(string name)
+		{
+			return Remove(Models.First(model => model.Equals(name)));
+		}
+
+		protected SortedSet<Model> Models { get; private set; } = new(new ModelComparer());
 	}
 
 	public partial class ModelSet : IEnumerable<Model>

@@ -17,9 +17,9 @@ namespace SchemataPreview
 			Model? schematic = Children["Get-CurrentDirectorySchema.ps1"];
 			Debug.Assert(schematic != null && schematic.Exists);
 
-			using PowerShell instance = PowerShell.Create().AddScript(schematic);
+			using PowerShell shell = PowerShell.Create();
 			List<Schema> schemata = new();
-			foreach (PSObject obj in instance.Invoke())
+			foreach (PSObject obj in shell.AddScript(schematic).Invoke())
 			{
 				if (obj.BaseObject is Schema schema)
 				{

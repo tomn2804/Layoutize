@@ -19,14 +19,20 @@ namespace SchemataPreview
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
 			result = this[binder.Name];
-			return result != null ? true : throw new NullReferenceException();
+			if (result == null)
+			{
+				CurrentShell.WriteWarning(new NullReferenceException());
+				return false;
+			}
+			return true;
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
 			if (!Contains(binder.Name))
 			{
-				throw new NullReferenceException();
+				CurrentShell.WriteWarning(new NullReferenceException());
+				return false;
 			}
 			this[binder.Name] = value;
 			return true;

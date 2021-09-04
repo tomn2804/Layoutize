@@ -16,7 +16,7 @@
 
 		public static void HandleMount(in Model model)
 		{
-			model.Mount();
+			model.InvokeMethod(MethodOption.Mount);
 			model.InvokeEvent(EventOption.OnMounted);
 		}
 

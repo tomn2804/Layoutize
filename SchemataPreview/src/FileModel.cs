@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SchemataPreview
 {
-	public class FileModel : Model
+	public class FileModel : FileSystemModel
 	{
 		public override ModelSet? Children => null;
 		public override bool Exists => File.Exists(FullName);

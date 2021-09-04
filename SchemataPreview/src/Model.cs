@@ -9,7 +9,7 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public string FullName => Path.Combine(Schema["Path"] ?? string.Empty, RelativeName);
+		public string FullName => Parent != null ? Path.Combine(Parent.FullName, Name) : Path.Combine(Schema.Path, Name);
 		public string Name => Schema.Name;
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
@@ -49,7 +49,20 @@ namespace SchemataPreview
 
 		public bool InvokeEvent(string name)
 		{
-			return Schema[name]?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) }) != null;
+			switch (Schema[name])
+			{
+				case ScriptBlock script:
+					script.GetNewClosure().InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) });
+					break;
+
+				case Action action:
+					action.Invoke();
+					break;
+
+				default:
+					return false;
+			}
+			return true;
 		}
 
 		public bool InvokeMethod(MethodOption option)
@@ -62,7 +75,12 @@ namespace SchemataPreview
 		public virtual bool InvokeMethod(string name)
 		{
 			MethodInfo? method = GetType().GetMethod(name);
-			return method?.Invoke(this, null) != null;
+			if (method == null)
+			{
+				return false;
+			}
+			method.Invoke(this, null);
+			return true;
 		}
 	}
 
@@ -91,17 +109,17 @@ namespace SchemataPreview
 			}
 		}
 
-		private void Validate()
+		protected virtual void Validate()
 		{
 			Debug.Assert(Schema is ReadOnlySchema);
 			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
 			if (!Path.IsPathFullyQualified(FullName))
 			{
-				throw new InvalidOperationException();
+				throw new InvalidOperationException($"Cannot resolve property 'FullName: {FullName}' to an absolute path");
 			}
 			if (FullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
 			{
-				throw new InvalidOperationException();
+				throw new InvalidOperationException($"Property 'FullName: {FullName}' contains invalid characters.");
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.IO;
 
 namespace SchemataPreview
 {
@@ -61,9 +60,9 @@ namespace SchemataPreview
 
 		private void Validate()
 		{
-			if ((this["Name"] is not string name) || (name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1))
+			if (this["Name"] == null)
 			{
-				throw new InvalidOperationException();
+				throw new InvalidOperationException("Property 'Name' is null or missing.");
 			}
 		}
 	}

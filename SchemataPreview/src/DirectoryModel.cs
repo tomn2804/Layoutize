@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SchemataPreview
 {
-	public class DirectoryModel : Model
+	public class DirectoryModel : FileSystemModel
 	{
 		public DirectoryModel()
 		{

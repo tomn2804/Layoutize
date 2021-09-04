@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Dynamic;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {
@@ -8,12 +9,14 @@ namespace SchemataPreview
 	{
 		public DynamicHashtable()
 		{
-			Hashtable = new();
 		}
 
 		public DynamicHashtable(Hashtable hashtable)
 		{
-			Hashtable = hashtable;
+			foreach (DictionaryEntry entry in hashtable)
+			{
+				Hashtable.Add(entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+			}
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
@@ -21,7 +24,7 @@ namespace SchemataPreview
 			result = this[binder.Name];
 			if (result == null)
 			{
-				CurrentShell.WriteWarning(new NullReferenceException());
+				CurrentShell.WriteWarning(new NullReferenceException($"Property {binder.Name} is uninstalized."));
 				return false;
 			}
 			return true;
@@ -31,14 +34,14 @@ namespace SchemataPreview
 		{
 			if (!Contains(binder.Name))
 			{
-				CurrentShell.WriteWarning(new NullReferenceException());
+				CurrentShell.WriteWarning(new NullReferenceException($"Property {binder.Name} is uninstalized."));
 				return false;
 			}
 			this[binder.Name] = value;
 			return true;
 		}
 
-		protected Hashtable Hashtable { get; init; }
+		protected Hashtable Hashtable { get; } = new(StringComparer.InvariantCultureIgnoreCase);
 	}
 
 	public partial class DynamicHashtable : IDictionary

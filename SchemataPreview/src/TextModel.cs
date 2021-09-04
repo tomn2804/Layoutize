@@ -13,7 +13,19 @@ namespace SchemataPreview
 		public override void Create()
 		{
 			base.Create();
-			Contents = Schema["Contents"];
+			switch (Schema["Contents"])
+			{
+				case string content:
+					Contents = new string[] { content };
+					break;
+
+				case string[] contents:
+					Contents = contents;
+					break;
+
+				default:
+					break;
+			}
 		}
 	}
 }

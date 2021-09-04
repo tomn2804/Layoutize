@@ -11,7 +11,10 @@ namespace SchemataPreview
 			base.Mount();
 			Children.Add(
 				new Schema<ExcludeModel> { { "Name", "*.ps1" } },
-				new Schema<StrictTextModel> { { "Name", "Get-CurrentDirectorySchema.ps1" } }
+				new Schema<StrictTextModel> {
+					{ "Name", "Get-CurrentDirectorySchema.ps1" },
+					{ "Contents", new string[] { "#Requires -Module SchemataPreview", "using namespace SchemataPreview" } }
+				}
 			);
 
 			Model? schematic = Children["Get-CurrentDirectorySchema.ps1"];

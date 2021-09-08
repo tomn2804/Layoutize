@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Management.Automation;
 
 namespace SchemataPreview
@@ -6,30 +7,62 @@ namespace SchemataPreview
 	[Cmdlet(VerbsLifecycle.Invoke, "Event")]
 	public class InvokeEventCmdlet : Cmdlet
 	{
-		public ScriptBlock? Begin { get; set; }
-		public ScriptBlock? End { get; set; }
-		public Model InputObject { get; set; }
-		public ScriptBlock? Process { get; set; }
-		public string Traversal { get; set; }
+		[Parameter(Mandatory = true, Position = 0)]
+		[ValidateNotNull]
+		public ScriptBlock? Callback { get; set; }
+
+		[Parameter(Mandatory = true, ValueFromPipeline = true)]
+		[ValidateNotNull]
+		public Model? InputObject { get; set; }
+
+		[Parameter]
+		public string? Traversal { get; set; }
 
 		protected override void ProcessRecord()
 		{
-			Begin?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", InputObject) });
-			InvokePostOrder(InputObject);
-			End?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", InputObject) });
+			Debug.Assert(Callback != null);
+			Debug.Assert(InputObject != null);
+			Callback.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("_", InputObject) });
+			switch (Traversal)
+			{
+				case "ReversePostOrder":
+					InvokeReversePostOrder(InputObject);
+					break;
+
+				case "ReversePreOrder":
+				default:
+					InvokeReversePreOrder(InputObject);
+					break;
+			}
 		}
 
-		private void InvokePostOrder(Model model)
+		private void InvokeReversePostOrder(Model model)
 		{
-			ScriptBlock? postProcess = Process?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("_", model) });
+			Debug.Assert(Callback != null);
 			if (model.Children != null)
 			{
 				foreach (Model child in model.Children)
 				{
-					InvokePostOrder(child);
+					Callback.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("_", child) });
+				}
+				foreach (Model child in model.Children)
+				{
+					InvokeReversePostOrder(child);
 				}
 			}
-			postProcess?.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("_", model) });
+		}
+
+		private void InvokeReversePreOrder(Model model)
+		{
+			Debug.Assert(Callback != null);
+			if (model.Children != null)
+			{
+				foreach (Model child in model.Children)
+				{
+					Callback.InvokeWithContext(null, new List<PSVariable>() { new PSVariable("_", child) });
+					InvokeReversePostOrder(child);
+				}
+			}
 		}
 	}
 }

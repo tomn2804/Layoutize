@@ -3,22 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
-using System.Reflection;
 
 namespace SchemataPreview
 {
-	public abstract partial class Model
-	{
-		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
-		public string Name => Schema.Name;
-		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
-
-		public static implicit operator string(Model rhs)
-		{
-			return rhs.FullName;
-		}
-	}
-
 	public abstract partial class Model
 	{
 		public abstract ModelSet? Children { get; }
@@ -34,16 +21,15 @@ namespace SchemataPreview
 			}
 		}
 
-		internal void Init(ReadOnlySchema schema)
+		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
+		public string Name => Schema.Name;
+		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
+
+		public static implicit operator string(Model rhs)
 		{
-			_schema = schema;
+			return rhs.FullName;
 		}
 
-		private ReadOnlySchema? _schema;
-	}
-
-	public abstract partial class Model
-	{
 		public virtual void Mount()
 		{
 			Build();
@@ -67,6 +53,11 @@ namespace SchemataPreview
 			}
 		}
 
+		internal void Init(ReadOnlySchema schema)
+		{
+			_schema = schema;
+		}
+
 		protected virtual void Validate()
 		{
 			Debug.Assert(Schema is ReadOnlySchema);
@@ -80,50 +71,27 @@ namespace SchemataPreview
 				throw new InvalidOperationException($"Property 'FullName' contains invalid characters. Recieved value: '{FullName}'");
 			}
 		}
+
+		private ReadOnlySchema? _schema;
 	}
 
-	public abstract partial class Model
+	public abstract partial class Model : DynamicHandler
 	{
-		public bool InvokeEvent(EventOption option)
-		{
-			string? name = Enum.GetName(option);
-			Debug.Assert(name != null);
-			return InvokeEvent(name);
-		}
-
-		public bool InvokeEvent(string name)
+		public override bool InvokeCallback(string name)
 		{
 			switch (Schema[name])
 			{
-				case ScriptBlock script:
-					script.GetNewClosure().InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) });
+				case ScriptBlock callback:
+					callback.GetNewClosure().InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) });
 					break;
 
-				case Action action:
-					action.Invoke();
+				case Action callback:
+					callback.Invoke();
 					break;
 
 				default:
 					return false;
 			}
-			return true;
-		}
-
-		public bool InvokeMethod(MethodOption option)
-		{
-			string? name = Enum.GetName(option);
-			Debug.Assert(name != null);
-			return InvokeMethod(name);
-		}
-
-		public virtual bool InvokeMethod(string name)
-		{
-			MethodInfo? method = GetType().GetMethod(name);
-			if (method == null)
-			{
-				return false;
-			}
-			method.Invoke(this, null);
 			return true;
 		}
 	}

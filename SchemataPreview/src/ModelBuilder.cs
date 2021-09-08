@@ -5,25 +5,25 @@
 		public static void HandleCreate(in Model model)
 		{
 			model.InvokeMethod(MethodOption.Create);
-			model.InvokeEvent(EventOption.OnCreated);
+			model.InvokeCallback(EventOption.OnCreated);
 		}
 
 		public static void HandleDelete(in Model model)
 		{
 			model.InvokeMethod(MethodOption.Delete);
-			model.InvokeEvent(EventOption.OnDeleted);
+			model.InvokeCallback(EventOption.OnDeleted);
 		}
 
 		public static void HandleMount(in Model model)
 		{
 			model.InvokeMethod(MethodOption.Mount);
-			model.InvokeEvent(EventOption.OnMounted);
+			model.InvokeCallback(EventOption.OnMounted);
 		}
 
 		public static void HandleMount(in Model.ModelSet models)
 		{
-			models.Mount();
-			models.Parent.InvokeEvent(EventOption.OnMounted);
+			models.InvokeMethod(MethodOption.Mount);
+			models.InvokeCallback(EventOption.OnMounted);
 		}
 	}
 }

@@ -7,7 +7,7 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public partial class ModelSet
+		public partial class ModelSet : DynamicHandler
 		{
 			public ModelSet(Model parent)
 			{
@@ -15,6 +15,7 @@ namespace SchemataPreview
 			}
 
 			public Model Parent { get; init; }
+
 			public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
 
 			public void Add(params Schema[] schemata)
@@ -59,6 +60,11 @@ namespace SchemataPreview
 			public bool ContainsName(string name)
 			{
 				return Models.Any(model => model.Equals(name));
+			}
+
+			public override bool InvokeCallback(string name)
+			{
+				return Parent.InvokeCallback(name);
 			}
 
 			public void Mount()

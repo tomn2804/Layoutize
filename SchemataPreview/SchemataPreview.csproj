@@ -11,7 +11,6 @@
     <Compile Remove="src\Exclude.cs" />
     <Compile Remove="src\FileExtension.cs" />
     <Compile Remove="src\IModel.cs" />
-    <Compile Remove="src\InvokeEventCmdlet.cs" />
     <Compile Remove="src\ListExtensions.cs" />
     <Compile Remove="src\Model\Model.CacheManagerComponent.cs" />
     <Compile Remove="src\Model\Model.ValidatorComponent.cs" />

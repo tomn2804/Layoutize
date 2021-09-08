@@ -9,7 +9,7 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public string FullName => Parent != null ? Path.Combine(Parent.FullName, Name) : Path.Combine(Schema.Path, Name);
+		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
 		public string Name => Schema.Name;
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
@@ -23,19 +23,63 @@ namespace SchemataPreview
 	{
 		public abstract ModelSet? Children { get; }
 		public abstract bool Exists { get; }
-		public virtual Model? Parent { get; internal set; }
+		public Model? Parent { get; private set; }
 
-		public virtual dynamic Schema
+		public dynamic Schema
 		{
 			get
 			{
-				Debug.Assert(_schema != null);
+				Debug.Assert(_schema is ReadOnlySchema);
 				return _schema;
 			}
-			internal set => _schema = value;
+		}
+
+		internal void Init(ReadOnlySchema schema)
+		{
+			_schema = schema;
 		}
 
 		private ReadOnlySchema? _schema;
+	}
+
+	public abstract partial class Model
+	{
+		public virtual void Mount()
+		{
+			Build();
+			Children?.Mount();
+		}
+
+		internal void Build()
+		{
+			Validate();
+			if (Exists)
+			{
+				if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
+				{
+					ModelBuilder.HandleDelete(this);
+					ModelBuilder.HandleCreate(this);
+				}
+			}
+			else
+			{
+				ModelBuilder.HandleCreate(this);
+			}
+		}
+
+		protected virtual void Validate()
+		{
+			Debug.Assert(Schema is ReadOnlySchema);
+			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
+			if (!Path.IsPathFullyQualified(FullName))
+			{
+				throw new InvalidOperationException($"Cannot resolve property 'FullName' to an absolute path. Recieved value: '{FullName}'");
+			}
+			if (FullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+			{
+				throw new InvalidOperationException($"Property 'FullName' contains invalid characters. Recieved value: '{FullName}'");
+			}
+		}
 	}
 
 	public abstract partial class Model
@@ -81,46 +125,6 @@ namespace SchemataPreview
 			}
 			method.Invoke(this, null);
 			return true;
-		}
-	}
-
-	public abstract partial class Model
-	{
-		public virtual void Mount()
-		{
-			Build();
-			Children?.Mount();
-		}
-
-		internal void Build()
-		{
-			Validate();
-			if (Exists)
-			{
-				if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
-				{
-					ModelBuilder.HandleDelete(this);
-					ModelBuilder.HandleCreate(this);
-				}
-			}
-			else
-			{
-				ModelBuilder.HandleCreate(this);
-			}
-		}
-
-		protected virtual void Validate()
-		{
-			Debug.Assert(Schema is ReadOnlySchema);
-			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
-			if (!Path.IsPathFullyQualified(FullName))
-			{
-				throw new InvalidOperationException($"Cannot resolve property 'FullName: {FullName}' to an absolute path");
-			}
-			if (FullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
-			{
-				throw new InvalidOperationException($"Property 'FullName: {FullName}' contains invalid characters.");
-			}
 		}
 	}
 

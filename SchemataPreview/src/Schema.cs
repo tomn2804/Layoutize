@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Dynamic;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {
@@ -16,13 +18,37 @@ namespace SchemataPreview
 
 		public abstract Model NewModel();
 
+		public override bool TryGetMember(GetMemberBinder binder, out object? result)
+		{
+			bool hasResult = base.TryGetMember(binder, out result);
+			if (!hasResult)
+			{
+				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
+			}
+			return hasResult;
+		}
+
+		public override bool TrySetMember(SetMemberBinder binder, object? value)
+		{
+			bool hasResult = base.TrySetMember(binder, value);
+			if (!hasResult)
+			{
+				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
+			}
+			return hasResult;
+		}
+
 		protected Schema()
 		{
 		}
 
 		protected Schema(Hashtable hashtable)
-			: base(hashtable)
+			: base()
 		{
+			foreach (DictionaryEntry entry in hashtable)
+			{
+				Add(entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+			}
 		}
 	}
 
@@ -54,7 +80,7 @@ namespace SchemataPreview
 		{
 			Validate();
 			T model = new();
-			model.Schema = AsReadOnly();
+			model.Init(AsReadOnly());
 			return model;
 		}
 
@@ -62,7 +88,7 @@ namespace SchemataPreview
 		{
 			if (this["Name"] == null)
 			{
-				throw new InvalidOperationException("Property 'Name' is null or missing.");
+				throw new InvalidOperationException("Property 'Name' is uninitialized.");
 			}
 		}
 	}

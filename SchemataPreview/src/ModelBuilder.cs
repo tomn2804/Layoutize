@@ -20,7 +20,7 @@
 			model.InvokeEvent(EventOption.OnMounted);
 		}
 
-		public static void HandleMount(in ModelSet models)
+		public static void HandleMount(in Model.ModelSet models)
 		{
 			models.Mount();
 			models.Parent.InvokeEvent(EventOption.OnMounted);

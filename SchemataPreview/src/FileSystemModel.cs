@@ -10,7 +10,7 @@ namespace SchemataPreview
 			base.Validate();
 			if (Name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
 			{
-				throw new InvalidOperationException($"Property 'Name: {Name}' contains invalid characters.");
+				throw new InvalidOperationException($"Property 'Name' contains invalid characters. Recieved value: '{Name}'");
 			}
 		}
 	}

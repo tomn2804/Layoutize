@@ -6,15 +6,11 @@ namespace SchemataPreview
 	[Cmdlet(VerbsLifecycle.Invoke, "Event")]
 	public class InvokeEventCmdlet : Cmdlet
 	{
-		public string Traversal { get; set; } = "PostOrder";
-
 		public ScriptBlock? Begin { get; set; }
-
-		public ScriptBlock? Process { get; set; }
-
 		public ScriptBlock? End { get; set; }
-
 		public Model InputObject { get; set; }
+		public ScriptBlock? Process { get; set; }
+		public string Traversal { get; set; }
 
 		protected override void ProcessRecord()
 		{

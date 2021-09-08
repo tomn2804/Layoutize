@@ -3,3 +3,5 @@ using namespace SchemataPreview
 
 class A : DirectoryModel {
 }
+
+Write-Host 'Invoked'

@@ -78,18 +78,9 @@ namespace SchemataPreview
 
 		public override T NewModel()
 		{
-			Validate();
 			T model = new();
 			model.Init(AsReadOnly());
 			return model;
-		}
-
-		private void Validate()
-		{
-			if (this["Name"] == null)
-			{
-				throw new InvalidOperationException("Property 'Name' is uninitialized.");
-			}
 		}
 	}
 }

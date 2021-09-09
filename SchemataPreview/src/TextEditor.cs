@@ -12,10 +12,11 @@ namespace SchemataPreview
 			bool hasPreviousLine = false;
 			foreach (string line in contents)
 			{
-				if (!string.IsNullOrWhiteSpace(line) || hasPreviousLine)
+				bool containsText = string.IsNullOrWhiteSpace(line);
+				if (!containsText || hasPreviousLine)
 				{
 					results.Add(Regex.Replace(Regex.Replace(line.TrimEnd(), "(?<=\t) +| +(?=\t)", ""), " {2,}", " "));
-					hasPreviousLine = !hasPreviousLine;
+					hasPreviousLine = !containsText;
 				}
 			}
 			if (results.Any() && string.IsNullOrWhiteSpace(results.Last()))

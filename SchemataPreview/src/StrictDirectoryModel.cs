@@ -10,13 +10,9 @@ namespace SchemataPreview
 		{
 			foreach (string path in Directory.EnumerateFiles(FullName))
 			{
-				try
+				if (!Children.MatchName(Path.GetFileName(path)))
 				{
-					if (Children[Path.GetFileName(path)] is FileSystemModel child)
-					{
-						ModelBuilder.HandleDelete(child);
-					}
-					else
+					try
 					{
 						if (Directory.Exists(path))
 						{
@@ -27,10 +23,10 @@ namespace SchemataPreview
 							FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 						}
 					}
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine($"Error: {e}");
+					catch (Exception e)
+					{
+						Console.WriteLine($"Error: {e}");
+					}
 				}
 			}
 		}

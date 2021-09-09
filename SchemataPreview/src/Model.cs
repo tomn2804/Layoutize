@@ -12,6 +12,15 @@ namespace SchemataPreview
 		public abstract bool Exists { get; }
 		public Model? Parent { get; private set; }
 
+		public WildcardPattern Pattern
+		{
+			get
+			{
+				Debug.Assert(_pattern != null);
+				return _pattern;
+			}
+		}
+
 		public dynamic Schema
 		{
 			get
@@ -22,7 +31,6 @@ namespace SchemataPreview
 		}
 
 		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
-		public string Name => Schema.Name;
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
 		public static implicit operator string(Model rhs)
@@ -56,12 +64,17 @@ namespace SchemataPreview
 		internal void Init(ReadOnlySchema schema)
 		{
 			_schema = schema;
+			_pattern = new(Schema.Name);
 		}
 
 		protected virtual void Validate()
 		{
 			Debug.Assert(Schema is ReadOnlySchema);
 			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
+			if (Schema["Name"] == null)
+			{
+				throw new InvalidOperationException("Property 'Name' is uninitialized.");
+			}
 			if (!Path.IsPathFullyQualified(FullName))
 			{
 				throw new InvalidOperationException($"Cannot resolve property 'FullName' to an absolute path. Recieved value: '{FullName}'");
@@ -72,6 +85,7 @@ namespace SchemataPreview
 			}
 		}
 
+		private WildcardPattern? _pattern;
 		private ReadOnlySchema? _schema;
 	}
 
@@ -96,11 +110,13 @@ namespace SchemataPreview
 		}
 	}
 
-	public abstract partial class Model : IEquatable<string>
+	public partial class Model : IEquatable<string>
 	{
-		public bool Equals(string? other)
+		public virtual string Name => Schema.Name;
+
+		public bool Equals(string? name)
 		{
-			return Name == other;
+			return Name == name;
 		}
 	}
 

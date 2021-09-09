@@ -15,7 +15,7 @@ namespace SchemataPreview
 			}
 
 			public Model Parent { get; init; }
-
+			public int Count => Models.Count;
 			public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
 
 			public void Add(params Schema[] schemata)
@@ -65,6 +65,11 @@ namespace SchemataPreview
 			public override bool InvokeCallback(string name)
 			{
 				return Parent.InvokeCallback(name);
+			}
+
+			public bool MatchName(string pattern)
+			{
+				return Models.Any(model => model.Pattern.IsMatch(pattern));
 			}
 
 			public void Mount()

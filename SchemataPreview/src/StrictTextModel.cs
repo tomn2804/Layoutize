@@ -2,9 +2,13 @@
 {
 	public class StrictTextModel : TextModel
 	{
-		public virtual void Format()
+		public StrictTextModel(ReadOnlySchema schema)
+			: base(schema)
 		{
-			Contents = TextEditor.Format(Contents);
+			PipeAssembly.Register(PipelineOption.Format).OnProcessing += () =>
+			{
+				Contents = TextEditor.Format(Contents);
+			});
 		}
 	}
 }

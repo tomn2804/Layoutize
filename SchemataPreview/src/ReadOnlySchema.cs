@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace SchemataPreview
@@ -25,52 +26,67 @@ namespace SchemataPreview
 		protected Schema Schema { get; init; }
 	}
 
-	public partial class ReadOnlySchema : IDictionary
+	public partial class ReadOnlySchema : IDictionary<string, object>
 	{
-		public bool IsReadOnly => true;
-		public int Count => Schema.Count;
+		public int Count => ((ICollection<KeyValuePair<string, object>>)Schema).Count;
+		public bool IsReadOnly => ((ICollection<KeyValuePair<string, object>>)Schema).IsReadOnly;
+		public ICollection<string> Keys => ((IDictionary<string, object>)Schema).Keys;
+		public ICollection<object> Values => ((IDictionary<string, object>)Schema).Values;
+		public object this[string key] { get => ((IDictionary<string, object>)Schema)[key]; set => ((IDictionary<string, object>)Schema)[key] = value; }
 
-		public bool IsFixedSize => Schema.IsFixedSize;
-		public bool IsSynchronized => Schema.IsSynchronized;
-
-		public ICollection Keys => Schema.Keys;
-		public object SyncRoot => Schema.SyncRoot;
-		public ICollection Values => Schema.Values;
-		public object? this[object key] { get => Schema[key]; set => throw new ReadOnlyException(); }
-
-		public void Add(object key, object? value)
+		public void Add(string key, object value)
 		{
-			throw new ReadOnlyException();
+			((IDictionary<string, object>)Schema).Add(key, value);
+		}
+
+		public void Add(KeyValuePair<string, object> item)
+		{
+			((ICollection<KeyValuePair<string, object>>)Schema).Add(item);
 		}
 
 		public void Clear()
 		{
-			throw new ReadOnlyException();
+			((ICollection<KeyValuePair<string, object>>)Schema).Clear();
 		}
 
-		public bool Contains(object key)
+		public bool Contains(KeyValuePair<string, object> item)
 		{
-			return Schema.Contains(key);
+			return ((ICollection<KeyValuePair<string, object>>)Schema).Contains(item);
 		}
 
-		public void CopyTo(Array array, int index)
+		public bool ContainsKey(string key)
 		{
-			Schema.CopyTo(array, index);
+			return ((IDictionary<string, object>)Schema).ContainsKey(key);
 		}
 
-		public IDictionaryEnumerator GetEnumerator()
+		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
 		{
-			return Schema.GetEnumerator();
+			((ICollection<KeyValuePair<string, object>>)Schema).CopyTo(array, arrayIndex);
 		}
 
-		public void Remove(object key)
+		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
-			throw new ReadOnlyException();
+			return ((IEnumerable<KeyValuePair<string, object>>)Schema).GetEnumerator();
+		}
+
+		public bool Remove(string key)
+		{
+			return ((IDictionary<string, object>)Schema).Remove(key);
+		}
+
+		public bool Remove(KeyValuePair<string, object> item)
+		{
+			return ((ICollection<KeyValuePair<string, object>>)Schema).Remove(item);
+		}
+
+		public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
+		{
+			return ((IDictionary<string, object>)Schema).TryGetValue(key, out value);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return Schema.GetEnumerator();
+			return ((IEnumerable)Schema).GetEnumerator();
 		}
 	}
 }

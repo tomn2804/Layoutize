@@ -1,34 +1,38 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using System;
 using System.IO;
+using System;
 
 namespace SchemataPreview
 {
 	public class StrictDirectoryModel : DirectoryModel
 	{
-		public virtual void Format()
+		public StrictDirectoryModel(ReadOnlySchema schema)
+			: base(schema)
 		{
-			foreach (string path in Directory.EnumerateFiles(FullName))
+			PipeAssembly.Register(PipelineOption.Format).OnProcessing += () =>
 			{
-				if (!Children.MatchName(Path.GetFileName(path)))
+				foreach (string path in Directory.EnumerateFiles(FullName))
 				{
-					try
+					if (!Children.ContainsName(Path.GetFileName(path)))
 					{
-						if (Directory.Exists(path))
+						try
 						{
-							FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+							if (Directory.Exists(path))
+							{
+								FileSystem.DeleteDirectory(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+							}
+							else
+							{
+								FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+							}
 						}
-						else
+						catch (Exception e)
 						{
-							FileSystem.DeleteFile(path, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+							Console.WriteLine($"Error: {e}");
 						}
-					}
-					catch (Exception e)
-					{
-						Console.WriteLine($"Error: {e}");
 					}
 				}
-			}
+			};
 		}
 	}
 }

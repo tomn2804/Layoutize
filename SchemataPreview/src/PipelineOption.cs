@@ -1,6 +1,6 @@
 ﻿namespace SchemataPreview
 {
-	public enum MethodOption
+	public enum PipelineOption
 	{
 		Mount,
 		Create,

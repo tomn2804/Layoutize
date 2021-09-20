@@ -7,17 +7,29 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="src\AnchorDirectoryModel.cs" />
-    <Compile Remove="src\Exclude.cs" />
-    <Compile Remove="src\FileExtension.cs" />
-    <Compile Remove="src\IModel.cs" />
-    <Compile Remove="src\ListExtensions.cs" />
-    <Compile Remove="src\Model\Model.CacheManagerComponent.cs" />
-    <Compile Remove="src\Model\Model.ValidatorComponent.cs" />
-    <Compile Remove="src\Model\ModelNotMountedException.cs" />
-    <Compile Remove="src\ObjectNotFoundException.cs" />
-    <Compile Remove="src\PathInfo.cs" />
-    <Compile Remove="src\UniqueList.cs" />
+    <Compile Remove="src\**" />
+    <EmbeddedResource Remove="src\**" />
+    <None Remove="src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="src\DirectoryModel.cs" />
+    <Compile Include="src\DynamicDictionary.cs" />
+    <Compile Include="src\Pipe.cs" />
+    <Compile Include="src\PipeAssembly.cs" />
+    <Compile Include="src\Pipeline.cs" />
+    <Compile Include="src\PipelineOption.cs" />
+    <Compile Include="src\ExcludeModel.cs" />
+    <Compile Include="src\FileModel.cs" />
+    <Compile Include="src\Model.cs" />
+    <Compile Include="src\PipeSegment.cs" />
+    <Compile Include="src\ReadOnlySchema.cs" />
+    <Compile Include="src\Schema.cs" />
+    <Compile Include="src\SchematicDirectoryModel.cs" />
+    <Compile Include="src\StrictDirectoryModel.cs" />
+    <Compile Include="src\StrictTextModel.cs" />
+    <Compile Include="src\TextEditor.cs" />
+    <Compile Include="src\TextModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

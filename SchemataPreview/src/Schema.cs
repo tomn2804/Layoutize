@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Dynamic;
+using System.Diagnostics;
 using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicHashtable
+	public abstract class Schema : DynamicDictionary
 	{
 		public ReadOnlySchema AsReadOnly()
 		{
@@ -16,43 +16,25 @@ namespace SchemataPreview
 
 		public abstract Model Build(string path);
 
-		public abstract Model NewModel();
-
-		public override bool TryGetMember(GetMemberBinder binder, out object? result)
-		{
-			bool hasResult = base.TryGetMember(binder, out result);
-			if (!hasResult)
-			{
-				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
-			}
-			return hasResult;
-		}
-
-		public override bool TrySetMember(SetMemberBinder binder, object? value)
-		{
-			bool hasResult = base.TrySetMember(binder, value);
-			if (!hasResult)
-			{
-				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
-			}
-			return hasResult;
-		}
+		public abstract Model GetNewModel();
 
 		protected Schema()
 		{
 		}
 
 		protected Schema(Hashtable hashtable)
-			: base()
 		{
 			foreach (DictionaryEntry entry in hashtable)
 			{
-				Add(entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+				if (entry.Value != null)
+				{
+					Add((string)entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+				}
 			}
 		}
 	}
 
-	public class Schema<T> : Schema where T : Model, new()
+	public class Schema<T> : Schema where T : Model
 	{
 		public Schema()
 		{
@@ -65,21 +47,21 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			T model = NewModel();
-			ModelBuilder.HandleMount(model);
+			T model = GetNewModel();
+			(new Pipeline(model)).Invoke(PipelineOption.Mount);
 			return model;
 		}
 
 		public override T Build(string path)
 		{
-			this["Path"] = path;
+			Add("Path", path);
 			return Build();
 		}
 
-		public override T NewModel()
+		public override T GetNewModel()
 		{
-			T model = new();
-			model.Init(AsReadOnly());
+			T? model = (T?)Activator.CreateInstance(typeof(T), AsReadOnly());
+			Debug.Assert(model != null);
 			return model;
 		}
 	}

@@ -6,31 +6,34 @@ namespace SchemataPreview
 {
 	public class SchematicDirectoryModel : StrictDirectoryModel
 	{
-		public override void Mount()
+		public SchematicDirectoryModel(ReadOnlySchema schema)
+			: base(schema)
 		{
-			base.Mount();
-			Children.Add(
-				new Schema<ExcludeModel> { { "Name", "*.ps1" } },
-				new Schema<StrictTextModel> {
-					{ "Name", "Get-CurrentDirectorySchema.ps1" },
-					{ "Contents", new string[] { "#Requires -Module SchemataPreview", "using namespace SchemataPreview" } }
-				}
-			);
-
-			Model? schematic = Children["Get-CurrentDirectorySchema.ps1"];
-			Debug.Assert(schematic != null && schematic.Exists);
-
-			using PowerShell instance = PowerShell.Create();
-			List<Schema> schemata = new();
-
-			foreach (PSObject obj in instance.AddScript(schematic).Invoke())
+			PipeAssembly[PipelineOption.Mount].OnProcessed += () =>
 			{
-				if (obj.BaseObject is Schema schema)
+				Children.Add(
+					new Schema<StrictTextModel>
+					{
+						{ "Name", "Get-CurrentDirectorySchema.ps1" },
+						{ "Contents", new string[] { "#Requires -Module SchemataPreview", "using namespace SchemataPreview" } }
+					}
+				);
+				Children.Add<ExcludeModel>("*.ps1");
+
+				Model schematic = Children["Get-CurrentDirectorySchema.ps1"];
+				Debug.Assert(schematic is StrictTextModel && schematic.Exists);
+
+				using PowerShell instance = PowerShell.Create();
+				List<Schema> schemata = new();
+				foreach (PSObject obj in instance.AddScript(schematic).Invoke())
 				{
-					schemata.Add(schema);
+					if (obj.BaseObject is Schema s)
+					{
+						schemata.Add(s);
+					}
 				}
-			}
-			Children.Add(schemata.ToArray());
+				Children.Add(schemata.ToArray());
+			};
 		}
 	}
 }

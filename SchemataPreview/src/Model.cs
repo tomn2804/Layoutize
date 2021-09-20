@@ -1,35 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Management.Automation;
 
 namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
+		public Model(ReadOnlySchema schema)
+		{
+			_schema = schema;
+			Parent = Schema["Parent"];
+			PipeAssembly[PipelineOption.Mount] += (stack) =>
+			{
+				if (Exists)
+				{
+					if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
+					{
+						stack.Push(PipeAssembly[PipelineOption.Delete].Handler);
+						stack.Push(PipeAssembly[PipelineOption.Create].Handler);
+					}
+				}
+				else
+				{
+					stack.Push(PipeAssembly[PipelineOption.Create].Handler);
+				}
+			});
+		}
+
 		public abstract ModelSet? Children { get; }
 		public abstract bool Exists { get; }
-		public Model? Parent { get; private set; }
-
-		public WildcardPattern Pattern
-		{
-			get
-			{
-				Debug.Assert(_pattern != null);
-				return _pattern;
-			}
-		}
-
-		public dynamic Schema
-		{
-			get
-			{
-				Debug.Assert(_schema is ReadOnlySchema);
-				return _schema;
-			}
-		}
-
+		public Model? Parent { get; init; }
+		public PipeAssembly PipeAssembly { get; } = new();
+		public dynamic Schema => _schema;
 		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
@@ -38,6 +40,11 @@ namespace SchemataPreview
 			return rhs.FullName;
 		}
 
+		private ReadOnlySchema _schema;
+	}
+
+	public abstract partial class Model
+	{
 		public virtual void Mount()
 		{
 			Build();
@@ -51,29 +58,27 @@ namespace SchemataPreview
 			{
 				if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
 				{
-					ModelBuilder.HandleDelete(this);
-					ModelBuilder.HandleCreate(this);
+					EventHandler[PipelineOption.Delete].Invoke();
+					EventHandler[PipelineOption.Create].Invoke();
 				}
 			}
 			else
 			{
-				ModelBuilder.HandleCreate(this);
+				EventHandler[PipelineOption.Create].Invoke();
 			}
-		}
-
-		internal void Init(ReadOnlySchema schema)
-		{
-			_schema = schema;
-			_pattern = new(Schema.Name);
 		}
 
 		protected virtual void Validate()
 		{
 			Debug.Assert(Schema is ReadOnlySchema);
 			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
-			if (Schema["Name"] == null)
+			if (Name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
 			{
-				throw new InvalidOperationException("Property 'Name' is uninitialized.");
+				throw new InvalidOperationException($"Property 'Name' contains invalid characters. Recieved value: '{Name}'");
+			}
+			if (Schema["Name"] is not string)
+			{
+				throw new InvalidOperationException("Property 'Name' is not initialized to type [string].");
 			}
 			if (!Path.IsPathFullyQualified(FullName))
 			{
@@ -84,35 +89,11 @@ namespace SchemataPreview
 				throw new InvalidOperationException($"Property 'FullName' contains invalid characters. Recieved value: '{FullName}'");
 			}
 		}
-
-		private WildcardPattern? _pattern;
-		private ReadOnlySchema? _schema;
-	}
-
-	public abstract partial class Model : DynamicHandler
-	{
-		public override bool InvokeCallback(string name)
-		{
-			switch (Schema[name])
-			{
-				case ScriptBlock callback:
-					callback.GetNewClosure().InvokeWithContext(null, new List<PSVariable>() { new PSVariable("this", Schema), new PSVariable("_", this) });
-					break;
-
-				case Action callback:
-					callback.Invoke();
-					break;
-
-				default:
-					return false;
-			}
-			return true;
-		}
 	}
 
 	public partial class Model : IEquatable<string>
 	{
-		public virtual string Name => Schema.Name;
+		public string Name => Schema.Name;
 
 		public bool Equals(string? name)
 		{

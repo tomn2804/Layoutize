@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public partial class ModelSet : DynamicHandler
+		public partial class ModelSet
 		{
 			public ModelSet(Model parent)
 			{
@@ -20,36 +22,39 @@ namespace SchemataPreview
 
 			public void Add(params Schema[] schemata)
 			{
-				switch (Parent.Schema["Traversal"])
+				ModelSet children = new(Parent);
+				foreach (Schema schema in schemata)
 				{
-					case "ReversePostOrder":
-						foreach (Schema schema in schemata)
-						{
-							Model child = schema.NewModel();
-							child.Parent = Parent;
-							Models.Add(child);
-							child.Build();
-						}
-						foreach (Model child in Models)
-						{
-							if (child.Children != null)
-							{
-								ModelBuilder.HandleMount(child.Children);
-							}
-						}
-						break;
-
-					case "ReversePreOrder":
-					default:
-						foreach (Schema schema in schemata)
-						{
-							Model child = schema.NewModel();
-							child.Parent = Parent;
-							Models.Add(child);
-							ModelBuilder.HandleMount(child);
-						}
-						break;
+					schema["Parent"] = Parent;
+					Model child = schema.NewModel();
+					if (Models.Add(child))
+					{
+						children.Models.Add(child);
+					}
 				}
+				children.Mount();
+			}
+
+			public void Add<T>(params string[] patterns) where T : Model, new()
+			{
+				Add<T, T>(patterns);
+			}
+
+			public void Add<TDirectory, TFile>(params string[] patterns) where TDirectory : Model, new() where TFile : Model, new()
+			{
+				List<Schema> children = new();
+				foreach (string pattern in patterns)
+				{
+					foreach (string path in Directory.GetDirectories(Parent, pattern))
+					{
+						children.Add(new Schema<TDirectory> { { "Name", Path.GetFileName(path) } });
+					}
+					foreach (string path in Directory.GetFiles(Parent, pattern))
+					{
+						children.Add(new Schema<TFile> { { "Name", Path.GetFileName(path) } });
+					}
+				}
+				Add(children.ToArray());
 			}
 
 			public bool Contains(Model model)

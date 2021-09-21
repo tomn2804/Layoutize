@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using System.Collections;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace SchemataPreview
@@ -26,62 +25,45 @@ namespace SchemataPreview
 		protected Schema Schema { get; init; }
 	}
 
-	public partial class ReadOnlySchema : IDictionary<string, object>
+	public partial class ReadOnlySchema : IDictionary
 	{
-		public int Count => ((ICollection<KeyValuePair<string, object>>)Schema).Count;
-		public bool IsReadOnly => ((ICollection<KeyValuePair<string, object>>)Schema).IsReadOnly;
-		public ICollection<string> Keys => ((IDictionary<string, object>)Schema).Keys;
-		public ICollection<object> Values => ((IDictionary<string, object>)Schema).Values;
-		public object this[string key] { get => ((IDictionary<string, object>)Schema)[key]; set => ((IDictionary<string, object>)Schema)[key] = value; }
+		public bool IsReadOnly => true;
+		public int Count => ((ICollection)Schema).Count;
+		public bool IsFixedSize => ((IDictionary)Schema).IsFixedSize;
+		public bool IsSynchronized => ((ICollection)Schema).IsSynchronized;
+		public ICollection Keys => ((IDictionary)Schema).Keys;
+		public object SyncRoot => ((ICollection)Schema).SyncRoot;
+		public ICollection Values => ((IDictionary)Schema).Values;
+		public object? this[object key] { get => ((IDictionary)Schema)[key]; set => ((IDictionary)Schema)[key] = value; }
 
-		public void Add(string key, object value)
+		public void Add(object key, object? value)
 		{
-			((IDictionary<string, object>)Schema).Add(key, value);
-		}
-
-		public void Add(KeyValuePair<string, object> item)
-		{
-			((ICollection<KeyValuePair<string, object>>)Schema).Add(item);
+			((IDictionary)Schema).Add(key, value);
 		}
 
 		public void Clear()
 		{
-			((ICollection<KeyValuePair<string, object>>)Schema).Clear();
+			((IDictionary)Schema).Clear();
 		}
 
-		public bool Contains(KeyValuePair<string, object> item)
+		public bool Contains(object key)
 		{
-			return ((ICollection<KeyValuePair<string, object>>)Schema).Contains(item);
+			return ((IDictionary)Schema).Contains(key);
 		}
 
-		public bool ContainsKey(string key)
+		public void CopyTo(Array array, int index)
 		{
-			return ((IDictionary<string, object>)Schema).ContainsKey(key);
+			((ICollection)Schema).CopyTo(array, index);
 		}
 
-		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+		public IDictionaryEnumerator GetEnumerator()
 		{
-			((ICollection<KeyValuePair<string, object>>)Schema).CopyTo(array, arrayIndex);
+			return ((IDictionary)Schema).GetEnumerator();
 		}
 
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+		public void Remove(object key)
 		{
-			return ((IEnumerable<KeyValuePair<string, object>>)Schema).GetEnumerator();
-		}
-
-		public bool Remove(string key)
-		{
-			return ((IDictionary<string, object>)Schema).Remove(key);
-		}
-
-		public bool Remove(KeyValuePair<string, object> item)
-		{
-			return ((ICollection<KeyValuePair<string, object>>)Schema).Remove(item);
-		}
-
-		public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
-		{
-			return ((IDictionary<string, object>)Schema).TryGetValue(key, out value);
+			((IDictionary)Schema).Remove(key);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

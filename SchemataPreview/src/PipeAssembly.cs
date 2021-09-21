@@ -6,6 +6,13 @@ namespace SchemataPreview
 {
 	public partial class PipeAssembly
 	{
+		public Pipe Register(object key)
+		{
+			Pipe value = new();
+			Add(key, value);
+			return value;
+		}
+
 		protected Dictionary<object, Pipe> KeyToPipe { get; } = new();
 	}
 

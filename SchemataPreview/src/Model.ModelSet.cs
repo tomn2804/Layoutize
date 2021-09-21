@@ -16,23 +16,44 @@ namespace SchemataPreview
 				Parent = parent;
 			}
 
+			public ModelSet(Model parent, Schema[] schemata)
+				: this(parent)
+			{
+				foreach (Schema schema in schemata)
+				{
+					Model child = schema.GetNewModel();
+					child.Parent = parent;
+					Models.Add(child);
+				}
+			}
+
 			public Model Parent { get; init; }
 			public int Count => Models.Count;
-			public Model? this[string name] => Models.FirstOrDefault(model => model.Equals(name));
+			public Model? this[string name] => Models.FirstOrDefault(model => model.Name == name);
 
 			public void Add(params Schema[] schemata)
 			{
-				ModelSet children = new(Parent);
+				SortedSet<Model> models = new(new ModelComparer());
 				foreach (Schema schema in schemata)
 				{
-					schema["Parent"] = Parent;
-					Model child = schema.NewModel();
+					Model child = schema.GetNewModel();
+					child.Parent = Parent;
 					if (Models.Add(child))
 					{
-						children.Models.Add(child);
+						models.Add(child);
 					}
 				}
-				children.Mount();
+				switch (Parent.TraversalOption)
+				{
+					case PipelineTraversalOption.PostOrder:
+						Pipeline.TraverseReversePostOrder(PipelineOption.Mount, models);
+						break;
+
+					case PipelineTraversalOption.PreOrder:
+					default:
+						Pipeline.TraverseReversePreOrder(PipelineOption.Mount, models);
+						break;
+				}
 			}
 
 			public void Add<T>(params string[] patterns) where T : Model, new()
@@ -67,23 +88,9 @@ namespace SchemataPreview
 				return Models.Any(model => model.Equals(name));
 			}
 
-			public override bool InvokeCallback(string name)
-			{
-				return Parent.InvokeCallback(name);
-			}
-
 			public bool MatchName(string pattern)
 			{
 				return Models.Any(model => model.Pattern.IsMatch(pattern));
-			}
-
-			public void Mount()
-			{
-				Models.Clear();
-				if (Parent.Schema["Children"] is object[] schemata)
-				{
-					Add(Array.ConvertAll(schemata, schema => (Schema)schema));
-				}
 			}
 
 			public bool Remove(Model model)

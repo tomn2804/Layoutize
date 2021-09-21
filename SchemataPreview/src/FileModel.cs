@@ -3,16 +3,16 @@ using System.IO;
 
 namespace SchemataPreview
 {
-	public class FileModel : Model
+	public class FileModel : FileSystemModel
 	{
 		public FileModel(ReadOnlySchema schema)
 			: base(schema)
 		{
-			PipeAssembly.Register(PipelineOption.Create).OnProcessing += () =>
+			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
 			{
 				File.Create(FullName).Dispose();
 			});
-			PipeAssembly.Register(PipelineOption.Delete).OnProcessing += () =>
+			PipeAssembly[PipelineOption.Delete].OnProcessing += () =>
 			{
 				FileSystem.DeleteFile(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			});

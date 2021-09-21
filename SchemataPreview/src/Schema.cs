@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics;
+using System.Dynamic;
 using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicDictionary
+	public abstract class Schema : DynamicHashtable
 	{
 		public ReadOnlySchema AsReadOnly()
 		{
@@ -18,6 +18,26 @@ namespace SchemataPreview
 
 		public abstract Model GetNewModel();
 
+		public override bool TryGetMember(GetMemberBinder binder, out object? result)
+		{
+			bool hasResult = base.TryGetMember(binder, out result);
+			if (!hasResult)
+			{
+				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
+			}
+			return hasResult;
+		}
+
+		public override bool TrySetMember(SetMemberBinder binder, object? value)
+		{
+			bool hasResult = base.TrySetMember(binder, value);
+			if (!hasResult)
+			{
+				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
+			}
+			return hasResult;
+		}
+
 		protected Schema()
 		{
 		}
@@ -26,15 +46,12 @@ namespace SchemataPreview
 		{
 			foreach (DictionaryEntry entry in hashtable)
 			{
-				if (entry.Value != null)
-				{
-					Add((string)entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
-				}
+				Add((string)entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
 			}
 		}
 	}
 
-	public class Schema<T> : Schema where T : Model
+	public class Schema<T> : Schema where T : Model, new()
 	{
 		public Schema()
 		{
@@ -54,14 +71,17 @@ namespace SchemataPreview
 
 		public override T Build(string path)
 		{
-			Add("Path", path);
+			this["Path"] = path;
 			return Build();
 		}
 
 		public override T GetNewModel()
 		{
 			T? model = (T?)Activator.CreateInstance(typeof(T), AsReadOnly());
-			Debug.Assert(model != null);
+			if (model == null)
+			{
+				throw new MissingMethodException();
+			}
 			return model;
 		}
 	}

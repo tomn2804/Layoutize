@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace SchemataPreview
@@ -8,104 +7,37 @@ namespace SchemataPreview
 	{
 		public Model(ReadOnlySchema schema)
 		{
-			_schema = schema;
-			Parent = Schema["Parent"];
-			PipeAssembly[PipelineOption.Mount] += (stack) =>
-			{
-				if (Exists)
-				{
-					if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
-					{
-						stack.Push(PipeAssembly[PipelineOption.Delete].Handler);
-						stack.Push(PipeAssembly[PipelineOption.Create].Handler);
-					}
-				}
-				else
-				{
-					stack.Push(PipeAssembly[PipelineOption.Create].Handler);
-				}
-			});
+			Schema = schema;
 		}
 
 		public abstract ModelSet? Children { get; }
 		public abstract bool Exists { get; }
-		public Model? Parent { get; init; }
+
+		public Model? Parent { get; private set; }
 		public PipeAssembly PipeAssembly { get; } = new();
-		public dynamic Schema => _schema;
+		public PipelineTraversalOption? TraversalOption => Schema["Traversal"];
+
 		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
+		public string Name => Schema.Name;
 
 		public static implicit operator string(Model rhs)
 		{
 			return rhs.FullName;
 		}
 
-		private ReadOnlySchema _schema;
+		protected dynamic Schema { get; init; }
 	}
 
-	public abstract partial class Model
+	public abstract partial class Model : IComparable<Model>
 	{
-		public virtual void Mount()
+		public int CompareTo(Model? other)
 		{
-			Build();
-			Children?.Mount();
-		}
-
-		internal void Build()
-		{
-			Validate();
-			if (Exists)
+			if (other != null)
 			{
-				if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
-				{
-					EventHandler[PipelineOption.Delete].Invoke();
-					EventHandler[PipelineOption.Create].Invoke();
-				}
+				return Schema["Priority"]?.CompareTo(other.Schema["Priority"]) ?? Name.CompareTo(other.Name);
 			}
-			else
-			{
-				EventHandler[PipelineOption.Create].Invoke();
-			}
-		}
-
-		protected virtual void Validate()
-		{
-			Debug.Assert(Schema is ReadOnlySchema);
-			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
-			if (Name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-			{
-				throw new InvalidOperationException($"Property 'Name' contains invalid characters. Recieved value: '{Name}'");
-			}
-			if (Schema["Name"] is not string)
-			{
-				throw new InvalidOperationException("Property 'Name' is not initialized to type [string].");
-			}
-			if (!Path.IsPathFullyQualified(FullName))
-			{
-				throw new InvalidOperationException($"Cannot resolve property 'FullName' to an absolute path. Recieved value: '{FullName}'");
-			}
-			if (FullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
-			{
-				throw new InvalidOperationException($"Property 'FullName' contains invalid characters. Recieved value: '{FullName}'");
-			}
-		}
-	}
-
-	public partial class Model : IEquatable<string>
-	{
-		public string Name => Schema.Name;
-
-		public bool Equals(string? name)
-		{
-			return Name == name;
-		}
-	}
-
-	public abstract partial class Model : IEquatable<Model>
-	{
-		public bool Equals(Model? other)
-		{
-			return RelativeName == other?.RelativeName;
+			return 1;
 		}
 	}
 }

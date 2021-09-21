@@ -3,20 +3,27 @@ using System.IO;
 
 namespace SchemataPreview
 {
-	public class DirectoryModel : Model
+	public class DirectoryModel : FileSystemModel
 	{
 		public DirectoryModel(ReadOnlySchema schema)
 			: base(schema)
 		{
-			Children = new(this);
-			PipeAssembly.Register(PipelineOption.Create).OnProcessing += () =>
+			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
 			{
 				Directory.CreateDirectory(FullName);
 			});
-			PipeAssembly.Register(PipelineOption.Delete).OnProcessing += () =>
+			PipeAssembly[PipelineOption.Delete].OnProcessing += () =>
 			{
 				FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			});
+			if (Schema["Children"] is Schema[] children)
+			{
+				Children = new(this, children);
+			}
+			else
+			{
+				Children = new(this);
+			}
 		}
 
 		public override ModelSet Children { get; }

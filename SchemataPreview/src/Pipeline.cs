@@ -10,7 +10,7 @@ namespace SchemataPreview
 			Model = model;
 		}
 
-		public static void TraverseReversePostOrder(object key, IEnumerator<Model> children)
+		public static void TraverseReversePostOrder(object key, IEnumerable<Model> children)
 		{
 			Stack<PipeSegment> segments = new();
 			foreach (Model child in children)
@@ -29,7 +29,7 @@ namespace SchemataPreview
 			}
 		}
 
-		public static void TraverseReversePreOrder(object key, IEnumerator<Model> children)
+		public static void TraverseReversePreOrder(object key, IEnumerable<Model> children)
 		{
 			foreach (Model child in children)
 			{
@@ -43,7 +43,7 @@ namespace SchemataPreview
 			}
 		}
 
-		public static void TraverseReversePreOrderParallel(object key, IEnumerator<Model> children)
+		public static void TraverseReversePreOrderParallel(object key, IEnumerable<Model> children)
 		{
 			List<Task> tasks = new();
 			foreach (Model child in children)

@@ -6,7 +6,7 @@ namespace SchemataPreview
 {
 	public class StrictDirectoryModel : DirectoryModel
 	{
-		public StrictDirectoryModel(ReadOnlySchema schema)
+		public StrictDirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
 			PipeAssembly.Register(PipelineOption.Format).OnProcessing += () =>

@@ -5,7 +5,7 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public Model(ReadOnlySchema schema)
+		public Model(ImmutableSchema schema)
 		{
 			Schema = schema;
 		}
@@ -17,7 +17,7 @@ namespace SchemataPreview
 		public PipeAssembly PipeAssembly { get; } = new();
 		public PipelineTraversalOption? TraversalOption => Schema["Traversal"];
 
-		public string FullName => Path.Combine(Parent?.FullName ?? Schema.Path, Name);
+		public string FullName => Path.Combine(Parent?.FullName ?? Schema["Path"], Name);
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 		public string Name => Schema.Name;
 

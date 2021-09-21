@@ -4,7 +4,7 @@ namespace SchemataPreview
 {
 	public class TextModel : FileModel
 	{
-		public TextModel(ReadOnlySchema schema)
+		public TextModel(ImmutableSchema schema)
 			: base(schema)
 		{
 			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
@@ -19,7 +19,7 @@ namespace SchemataPreview
 						Contents = contents;
 						break;
 				}
-			});
+			};
 		}
 
 		public string[] Contents

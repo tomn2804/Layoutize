@@ -88,21 +88,21 @@ namespace SchemataPreview
 				return Models.Any(model => model.Equals(name));
 			}
 
-			public bool MatchName(string pattern)
-			{
-				return Models.Any(model => model.Pattern.IsMatch(pattern));
-			}
+			//public bool MatchName(string pattern)
+			//{
+			//	return Models.Any(model => model.Pattern.IsMatch(pattern));
+			//}
 
-			public bool Remove(Model model)
-			{
-				ModelBuilder.HandleDelete(model);
-				return Models.Remove(model);
-			}
+			//public bool Remove(Model model)
+			//{
+			//	ModelBuilder.HandleDelete(model);
+			//	return Models.Remove(model);
+			//}
 
-			public bool RemoveByName(string name)
-			{
-				return Remove(Models.First(model => model.Equals(name)));
-			}
+			//public bool RemoveByName(string name)
+			//{
+			//	return Remove(Models.First(model => model.Equals(name)));
+			//}
 
 			protected SortedSet<Model> Models { get; } = new(new ModelComparer());
 		}

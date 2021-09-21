@@ -17,7 +17,10 @@ namespace SchemataPreview
 			{
 				PipeSegment segment = new();
 				segments.Push(segment);
-				segment.Extend(child.PipeAssembly[key]);
+				if (child.PipeAssembly[key] is Pipe pipe)
+				{
+					segment.Extend(pipe);
+				}
 			}
 			foreach (Model child in children)
 			{
@@ -34,7 +37,10 @@ namespace SchemataPreview
 			foreach (Model child in children)
 			{
 				PipeSegment segment = new();
-				segment.Extend(child.PipeAssembly[key]);
+				if (child.PipeAssembly[key] is Pipe pipe)
+				{
+					segment.Extend(pipe);
+				}
 				if (child.Children != null)
 				{
 					TraverseReversePreOrder(key, child.Children);
@@ -51,7 +57,10 @@ namespace SchemataPreview
 				tasks.Add(Task.Run(() =>
 				{
 					PipeSegment segment = new();
-					segment.Extend(child.PipeAssembly[key]);
+					if (child.PipeAssembly[key] is Pipe pipe)
+					{
+						segment.Extend(pipe);
+					}
 					if (child.Children != null)
 					{
 						TraverseReversePreOrderParallel(key, child.Children);
@@ -65,7 +74,10 @@ namespace SchemataPreview
 		public void Invoke(object key)
 		{
 			PipeSegment segment = new();
-			segment.Extend(Model.PipeAssembly[key]);
+			if (Model.PipeAssembly[key] is Pipe pipe)
+			{
+				segment.Extend(pipe);
+			}
 			if (Model.Children != null)
 			{
 				switch (Model.TraversalOption)
@@ -93,7 +105,10 @@ namespace SchemataPreview
 			await Task.Run(() =>
 			{
 				PipeSegment segment = new();
-				segment.Extend(Model.PipeAssembly[key]);
+				if (Model.PipeAssembly[key] is Pipe pipe)
+				{
+					segment.Extend(pipe);
+				}
 				if (Model.Children != null)
 				{
 					TraverseReversePreOrderParallel(key, Model.Children);

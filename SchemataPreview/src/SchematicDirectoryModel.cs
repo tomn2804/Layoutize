@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management.Automation;
 
@@ -6,7 +7,7 @@ namespace SchemataPreview
 {
 	public class SchematicDirectoryModel : StrictDirectoryModel
 	{
-		public SchematicDirectoryModel(ReadOnlySchema schema)
+		public SchematicDirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
 			PipeAssembly[PipelineOption.Mount].OnProcessed += () =>

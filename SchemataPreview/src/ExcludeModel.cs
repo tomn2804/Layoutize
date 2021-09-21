@@ -4,12 +4,12 @@ namespace SchemataPreview
 {
 	public class ExcludeModel : Model
 	{
-		public ExcludeModel(ReadOnlySchema schema)
+		public ExcludeModel(ImmutableSchema schema)
 			: base(schema)
 		{
 		}
 
 		public override ModelSet? Children => null;
-		public override bool Exists => Directory.GetFiles(Parent ?? Schema.Path, Name).Length != 0;
+		public override bool Exists => Directory.GetFiles(Parent ?? Schema["Path"], Name).Length != 0;
 	}
 }

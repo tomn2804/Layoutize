@@ -1,10 +1,8 @@
-﻿using System;
-
-namespace SchemataPreview
+﻿namespace SchemataPreview
 {
 	public class Pipe
 	{
-		public Action<PipeSegment>? OnProcessed { get; set; }
-		public Action<PipeSegment>? OnProcessing { get; set; }
+		public PipeEventHandler? OnProcessed { get; set; }
+		public PipeEventHandler? OnProcessing { get; set; }
 	}
 }

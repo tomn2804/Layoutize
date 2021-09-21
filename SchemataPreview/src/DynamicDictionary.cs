@@ -1,83 +1,108 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace SchemataPreview
 {
-	public partial class DynamicHashtable : DynamicObject
+	public partial class DynamicDictionary : DynamicObject
 	{
-		public DynamicHashtable()
+		public DynamicDictionary()
 		{
 		}
 
-		public DynamicHashtable(Hashtable hashtable)
+		public DynamicDictionary(Hashtable hashtable)
 		{
-			Hashtable = hashtable;
+			foreach (DictionaryEntry entry in hashtable)
+			{
+				if (entry.Value != null)
+				{
+					Add((string)entry.Key, entry.Value);
+				}
+			}
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
-			result = this[binder.Name];
-			return result != null;
+			return TryGetValue(binder.Name, out result);
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
-			if (!Contains(binder.Name))
+			if (value == null)
 			{
-				return false;
+				throw new ArgumentNullException();
 			}
 			this[binder.Name] = value;
 			return true;
 		}
 
-		protected Hashtable Hashtable { get; } = new(StringComparer.InvariantCultureIgnoreCase);
+		protected ImmutableDictionary<string, object>.Builder Dictionary { get; } = ImmutableDictionary.CreateBuilder<string, object>(StringComparer.InvariantCultureIgnoreCase);
 	}
 
-	public partial class DynamicHashtable : IDictionary
+	public partial class DynamicDictionary : IDictionary<string, object>
 	{
-		public int Count => ((ICollection)Hashtable).Count;
-		public bool IsFixedSize => ((IDictionary)Hashtable).IsFixedSize;
-		public bool IsReadOnly => ((IDictionary)Hashtable).IsReadOnly;
-		public bool IsSynchronized => ((ICollection)Hashtable).IsSynchronized;
-		public ICollection Keys => ((IDictionary)Hashtable).Keys;
-		public object SyncRoot => ((ICollection)Hashtable).SyncRoot;
-		public ICollection Values => ((IDictionary)Hashtable).Values;
-		public object? this[object key] { get => ((IDictionary)Hashtable)[key]; set => ((IDictionary)Hashtable)[key] = value; }
+		public int Count => ((ICollection<KeyValuePair<string, object>>)Dictionary).Count;
+		public bool IsReadOnly => ((ICollection<KeyValuePair<string, object>>)Dictionary).IsReadOnly;
+		public ICollection<string> Keys => ((IDictionary<string, object>)Dictionary).Keys;
+		public ICollection<object> Values => ((IDictionary<string, object>)Dictionary).Values;
+		public object this[string key] { get => ((IDictionary<string, object>)Dictionary)[key]; set => ((IDictionary<string, object>)Dictionary)[key] = value; }
 
-		public void Add(object key, object? value)
+		public void Add(string key, object value)
 		{
-			((IDictionary)Hashtable).Add(key, value);
+			((IDictionary<string, object>)Dictionary).Add(key, value);
+		}
+
+		public void Add(KeyValuePair<string, object> item)
+		{
+			((ICollection<KeyValuePair<string, object>>)Dictionary).Add(item);
 		}
 
 		public void Clear()
 		{
-			((IDictionary)Hashtable).Clear();
+			((ICollection<KeyValuePair<string, object>>)Dictionary).Clear();
 		}
 
-		public bool Contains(object key)
+		public bool Contains(KeyValuePair<string, object> item)
 		{
-			return ((IDictionary)Hashtable).Contains(key);
+			return ((ICollection<KeyValuePair<string, object>>)Dictionary).Contains(item);
 		}
 
-		public void CopyTo(Array array, int index)
+		public bool ContainsKey(string key)
 		{
-			((ICollection)Hashtable).CopyTo(array, index);
+			return ((IDictionary<string, object>)Dictionary).ContainsKey(key);
 		}
 
-		public IDictionaryEnumerator GetEnumerator()
+		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
 		{
-			return ((IDictionary)Hashtable).GetEnumerator();
+			((ICollection<KeyValuePair<string, object>>)Dictionary).CopyTo(array, arrayIndex);
 		}
 
-		public void Remove(object key)
+		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
-			((IDictionary)Hashtable).Remove(key);
+			return ((IEnumerable<KeyValuePair<string, object>>)Dictionary).GetEnumerator();
+		}
+
+		public bool Remove(string key)
+		{
+			return ((IDictionary<string, object>)Dictionary).Remove(key);
+		}
+
+		public bool Remove(KeyValuePair<string, object> item)
+		{
+			return ((ICollection<KeyValuePair<string, object>>)Dictionary).Remove(item);
+		}
+
+		public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
+		{
+			return ((IDictionary<string, object>)Dictionary).TryGetValue(key, out value);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable)Hashtable).GetEnumerator();
+			return ((IEnumerable)Dictionary).GetEnumerator();
 		}
 	}
 }

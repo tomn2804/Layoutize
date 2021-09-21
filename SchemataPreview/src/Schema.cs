@@ -1,41 +1,20 @@
 ﻿using System;
 using System.Collections;
-using System.Dynamic;
 using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicHashtable
+	public abstract class Schema : DynamicDictionary
 	{
-		public ReadOnlySchema AsReadOnly()
-		{
-			return new(this);
-		}
-
 		public abstract Model Build();
 
 		public abstract Model Build(string path);
 
 		public abstract Model GetNewModel();
 
-		public override bool TryGetMember(GetMemberBinder binder, out object? result)
+		public ImmutableSchema ToImmutable()
 		{
-			bool hasResult = base.TryGetMember(binder, out result);
-			if (!hasResult)
-			{
-				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
-			}
-			return hasResult;
-		}
-
-		public override bool TrySetMember(SetMemberBinder binder, object? value)
-		{
-			bool hasResult = base.TrySetMember(binder, value);
-			if (!hasResult)
-			{
-				CurrentRunspace.WriteWarning($"Property '{binder.Name}' is uninitialized.");
-			}
-			return hasResult;
+			return new(Dictionary.ToImmutable());
 		}
 
 		protected Schema()
@@ -46,7 +25,10 @@ namespace SchemataPreview
 		{
 			foreach (DictionaryEntry entry in hashtable)
 			{
-				Add((string)entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+				if (entry.Value != null)
+				{
+					Add((string)entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+				}
 			}
 		}
 	}
@@ -64,25 +46,20 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			T model = GetNewModel();
-			(new Pipeline(model)).Invoke(PipelineOption.Mount);
-			return model;
+			T result = GetNewModel();
+			(new Pipeline(result)).Invoke(PipelineOption.Mount);
+			return result;
 		}
 
 		public override T Build(string path)
 		{
-			this["Path"] = path;
+			Add("Path", path);
 			return Build();
 		}
 
 		public override T GetNewModel()
 		{
-			T? model = (T?)Activator.CreateInstance(typeof(T), AsReadOnly());
-			if (model == null)
-			{
-				throw new MissingMethodException();
-			}
-			return model;
+			return (T)(Activator.CreateInstance(typeof(T), ToImmutable()) ?? throw new MissingMethodException());
 		}
 	}
 }

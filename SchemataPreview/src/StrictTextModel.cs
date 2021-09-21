@@ -2,13 +2,13 @@
 {
 	public class StrictTextModel : TextModel
 	{
-		public StrictTextModel(ReadOnlySchema schema)
+		public StrictTextModel(ImmutableSchema schema)
 			: base(schema)
 		{
 			PipeAssembly.Register(PipelineOption.Format).OnProcessing += () =>
 			{
 				Contents = TextEditor.Format(Contents);
-			});
+			};
 		}
 	}
 }

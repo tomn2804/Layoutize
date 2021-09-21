@@ -5,17 +5,17 @@ namespace SchemataPreview
 {
 	public class FileModel : FileSystemModel
 	{
-		public FileModel(ReadOnlySchema schema)
+		public FileModel(ImmutableSchema schema)
 			: base(schema)
 		{
 			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
 			{
 				File.Create(FullName).Dispose();
-			});
+			};
 			PipeAssembly[PipelineOption.Delete].OnProcessing += () =>
 			{
 				FileSystem.DeleteFile(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-			});
+			};
 		}
 
 		public override ModelSet? Children => null;

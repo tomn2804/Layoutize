@@ -7,37 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="src\**" />
-    <EmbeddedResource Remove="src\**" />
-    <None Remove="src\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="src\CurrentRunspace.cs" />
-    <Compile Include="src\DirectoryModel.cs" />
-    <Compile Include="src\DynamicDictionary.cs" />
-    <Compile Include="src\Model.ModelSet.cs" />
-    <Compile Include="src\Model.cs" />
-    <Compile Include="src\ModelComparer.cs" />
-    <Compile Include="src\Pipe.cs" />
-    <Compile Include="src\PipeAssembly.cs" />
-    <Compile Include="src\Pipeline.cs" />
-    <Compile Include="src\PipelineOption.cs" />
-    <Compile Include="src\ExcludeModel.cs" />
-    <Compile Include="src\FileModel.cs" />
-    <Compile Include="src\FileSystemModel.cs" />
-    <Compile Include="src\PipelineTraversalOption.cs" />
-    <Compile Include="src\PipeSegment.cs" />
-    <Compile Include="src\ReadOnlySchema.cs" />
-    <Compile Include="src\Schema.cs" />
-    <Compile Include="src\SchematicDirectoryModel.cs" />
-    <Compile Include="src\StrictDirectoryModel.cs" />
-    <Compile Include="src\StrictTextModel.cs" />
-    <Compile Include="src\TextEditor.cs" />
-    <Compile Include="src\TextModel.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.1.3" />
   </ItemGroup>
 

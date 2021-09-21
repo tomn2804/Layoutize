@@ -5,17 +5,17 @@ namespace SchemataPreview
 {
 	public class DirectoryModel : FileSystemModel
 	{
-		public DirectoryModel(ReadOnlySchema schema)
+		public DirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
 			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
 			{
 				Directory.CreateDirectory(FullName);
-			});
+			};
 			PipeAssembly[PipelineOption.Delete].OnProcessing += () =>
 			{
 				FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-			});
+			};
 			if (Schema["Children"] is Schema[] children)
 			{
 				Children = new(this, children);

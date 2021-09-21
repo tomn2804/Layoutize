@@ -22,6 +22,6 @@ namespace SchemataPreview
 			}
 		}
 
-		protected Stack<Action<PipeSegment>> Callbacks { get; } = new();
+		protected Stack<PipeEventHandler> Callbacks { get; } = new();
 	}
 }

@@ -61,7 +61,7 @@ namespace SchemataPreview
 			{
 				Schema.TryGetValue("Priority", out object? lhs_priority);
 				other.Schema.TryGetValue("Priority", out object? rhs_priority);
-				return ((int?)lhs_priority)?.CompareTo(rhs_priority) ?? Name.CompareTo(other.Name);
+				return ((int?)rhs_priority)?.CompareTo(lhs_priority) ?? Name.CompareTo(other.Name);
 			}
 			return 1;
 		}

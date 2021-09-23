@@ -22,7 +22,7 @@
     <Compile Include="src\FileSystemModel.cs" />
     <Compile Include="src\ImmutableSchema.cs" />
     <Compile Include="src\Model.cs" />
-    <Compile Include="src\Model.ModelSet.cs" />
+    <Compile Include="src\ModelSet.cs" />
     <Compile Include="src\ModelComparer.cs" />
     <Compile Include="src\PipelineAsync.cs" />
     <Compile Include="src\PipelineBase.cs" />

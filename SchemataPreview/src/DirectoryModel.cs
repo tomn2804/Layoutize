@@ -8,15 +8,15 @@ namespace SchemataPreview
 		public DirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
+			PipeAssembly[PipelineOption.Create].OnProcessing += (_, _) =>
 			{
 				Directory.CreateDirectory(FullName);
 			};
-			PipeAssembly[PipelineOption.Delete].OnProcessing += () =>
+			PipeAssembly[PipelineOption.Delete].OnProcessing += (_, _) =>
 			{
 				FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			};
-			if (Schema["Children"] is Schema[] children)
+			if (schema.TryGetValue("Children") is Schema[] children)
 			{
 				Children = new(this, children);
 			}

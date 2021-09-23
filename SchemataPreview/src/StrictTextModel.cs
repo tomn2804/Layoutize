@@ -5,7 +5,7 @@
 		public StrictTextModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly.Register(PipelineOption.Format).OnProcessing += () =>
+			PipeAssembly.Register(PipelineOption.Format).OnProcessing += (_, _) =>
 			{
 				Contents = TextEditor.Format(Contents);
 			};

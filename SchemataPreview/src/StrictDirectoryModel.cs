@@ -9,7 +9,7 @@ namespace SchemataPreview
 		public StrictDirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly.Register(PipelineOption.Format).OnProcessing += () =>
+			PipeAssembly.Register(PipelineOption.Format).OnProcessing += (_, _) =>
 			{
 				foreach (string path in Directory.EnumerateFiles(FullName))
 				{

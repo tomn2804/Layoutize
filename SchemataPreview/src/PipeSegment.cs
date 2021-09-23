@@ -8,7 +8,7 @@
 			OnProcessing = new(model);
 		}
 
-		public PipeEventHandler OnProcessed { get; }
-		public PipeEventHandler OnProcessing { get; }
+		public PipeEventHandler OnProcessed { get; set; }
+		public PipeEventHandler OnProcessing { get; set; }
 	}
 }

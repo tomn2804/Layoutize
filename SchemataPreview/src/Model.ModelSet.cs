@@ -21,8 +21,8 @@ namespace SchemataPreview
 			{
 				foreach (Schema schema in schemata)
 				{
+					schema["Parent"] = parent;
 					Model child = schema.GetNewModel();
-					child.Parent = parent;
 					Models.Add(child);
 				}
 			}
@@ -36,8 +36,8 @@ namespace SchemataPreview
 				SortedSet<Model> models = new(new ModelComparer());
 				foreach (Schema schema in schemata)
 				{
+					schema["Parent"] = Parent;
 					Model child = schema.GetNewModel();
-					child.Parent = Parent;
 					if (Models.Add(child))
 					{
 						models.Add(child);

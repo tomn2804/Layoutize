@@ -23,8 +23,7 @@ namespace SchemataPreview
 
 		internal bool Build(object key, in Pipe pipe)
 		{
-			PipeSegment? segment;
-			if (TryGetValue(key, out segment))
+			if (this.TryGetValue(key) is PipeSegment segment)
 			{
 				pipe.Extend(segment);
 				return Model.Children != null;

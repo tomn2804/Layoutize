@@ -10,7 +10,7 @@ namespace SchemataPreview
 		public SchematicDirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly[PipelineOption.Mount].OnProcessed += () =>
+			PipeAssembly[PipelineOption.Mount].OnProcessed += (_, _) =>
 			{
 				Children.Add(
 					new Schema<StrictTextModel>

@@ -10,22 +10,22 @@ namespace SchemataPreview
 		{
 			PipeAssembly.Register(PipelineOption.Create);
 			PipeAssembly.Register(PipelineOption.Delete);
-			PipeAssembly.Register(PipelineOption.Mount).OnProcessing += (segment) =>
-			{
-				Validate();
-				if (Exists)
-				{
-					if (Schema["UseHardMount"] is bool useHardMount && useHardMount)
-					{
-						segment.Extend(PipeAssembly[PipelineOption.Delete]);
-						segment.Extend(PipeAssembly[PipelineOption.Create]);
-					}
-				}
-				else
-				{
-					segment.Extend(PipeAssembly[PipelineOption.Create]);
-				}
-			};
+			PipeAssembly.Register(PipelineOption.Mount).OnProcessing += (segment, _) =>
+			 {
+				 Validate();
+				 if (Exists)
+				 {
+					 if (schema.TryGetValue("UseHardMount") is bool useHardMount && useHardMount)
+					 {
+						 segment.Extend(PipeAssembly[PipelineOption.Delete]);
+						 segment.Extend(PipeAssembly[PipelineOption.Create]);
+					 }
+				 }
+				 else
+				 {
+					 segment.Extend(PipeAssembly[PipelineOption.Create]);
+				 }
+			 };
 		}
 
 		protected virtual void Validate()

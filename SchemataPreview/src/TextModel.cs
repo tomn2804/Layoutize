@@ -7,9 +7,9 @@ namespace SchemataPreview
 		public TextModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
+			PipeAssembly[PipelineOption.Create].OnProcessing += (_, _) =>
 			{
-				switch (schema["Contents"])
+				switch (schema.TryGetValue("Contents"))
 				{
 					case string content:
 						Contents = new string[] { content };

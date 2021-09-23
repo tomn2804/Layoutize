@@ -13,11 +13,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src\DictionaryExtension.cs" />
+    <Compile Include="src\DirectoryModel.cs" />
     <Compile Include="src\DynamicDictionary.cs" />
     <Compile Include="src\DynamicImmutableDictionary.cs" />
+    <Compile Include="src\ExcludeModel.cs" />
+    <Compile Include="src\FileModel.cs" />
+    <Compile Include="src\FileSystemModel.cs" />
     <Compile Include="src\ImmutableSchema.cs" />
     <Compile Include="src\Model.cs" />
     <Compile Include="src\Model.ModelSet.cs" />
+    <Compile Include="src\ModelComparer.cs" />
     <Compile Include="src\PipelineAsync.cs" />
     <Compile Include="src\PipelineBase.cs" />
     <Compile Include="src\PipelineParallel.cs" />
@@ -29,6 +35,11 @@
     <Compile Include="src\PipelineTraversalOption.cs" />
     <Compile Include="src\Pipe.cs" />
     <Compile Include="src\Schema.cs" />
+    <Compile Include="src\SchematicDirectoryModel.cs" />
+    <Compile Include="src\StrictDirectoryModel.cs" />
+    <Compile Include="src\StrictTextModel.cs" />
+    <Compile Include="src\TextEditor.cs" />
+    <Compile Include="src\TextModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

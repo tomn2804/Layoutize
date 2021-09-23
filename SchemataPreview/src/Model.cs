@@ -9,23 +9,24 @@ namespace SchemataPreview
 		public Model(ImmutableSchema schema)
 		{
 			Schema = schema;
+			PipeAssembly = new(this);
 		}
 
 		public abstract ModelSet? Children { get; }
 
 		public abstract bool Exists { get; }
 
-		public Model? Parent { get; private set; }
+		public string Name => (string)Schema["Path"];
 
-		public bool PassThru { get; }
+		public Model? Parent => (Model?)Schema.TryGetValue("Parent");
 
-		public PipeAssembly PipeAssembly { get; } = new();
+		public bool PassThru => (bool?)Schema.TryGetValue("PassThru") ?? false;
 
-		public PipelineTraversalOption? Traversal => Schema["Traversal"];
+		public PipeAssembly PipeAssembly { get; }
 
-		public string FullName => Path.Combine(Parent?.FullName ?? Schema["Path"], Name);
+		public PipelineTraversalOption Traversal => (PipelineTraversalOption?)Schema.TryGetValue("Traversal") ?? PipelineTraversalOption.PreOrder;
 
-		public string Name => Schema.Name;
+		public string FullName => Path.Combine(Parent?.FullName ?? (string)Schema["Path"], Name);
 
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
@@ -44,7 +45,7 @@ namespace SchemataPreview
 			}, args);
 		}
 
-		protected dynamic Schema { get; }
+		protected ImmutableSchema Schema { get; }
 	}
 
 	public abstract partial class Model : IComparable<Model>
@@ -53,7 +54,7 @@ namespace SchemataPreview
 		{
 			if (other != null)
 			{
-				return Schema["Priority"]?.CompareTo(other.Schema["Priority"]) ?? Name.CompareTo(other.Name);
+				return ((int?)Schema.TryGetValue("Priority"))?.CompareTo(other.Schema.TryGetValue("Priority")) ?? Name.CompareTo(other.Name);
 			}
 			return 1;
 		}

@@ -8,11 +8,11 @@ namespace SchemataPreview
 		public FileModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly[PipelineOption.Create].OnProcessing += () =>
+			PipeAssembly[PipelineOption.Create].OnProcessing += (_, _) =>
 			{
 				File.Create(FullName).Dispose();
 			};
-			PipeAssembly[PipelineOption.Delete].OnProcessing += () =>
+			PipeAssembly[PipelineOption.Delete].OnProcessing += (_, _) =>
 			{
 				FileSystem.DeleteFile(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			};

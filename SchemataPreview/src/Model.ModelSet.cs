@@ -27,9 +27,9 @@ namespace SchemataPreview
 				}
 			}
 
-			public Model Parent { get; init; }
+			public Model Parent { get; }
 			public int Count => Models.Count;
-			public Model? this[string name] => Models.FirstOrDefault(model => model.Name == name);
+			public Model this[string name] => Models.First(model => model.Name == name);
 
 			public void Add(params Schema[] schemata)
 			{
@@ -43,7 +43,7 @@ namespace SchemataPreview
 						models.Add(child);
 					}
 				}
-				switch (Parent.TraversalOption)
+				switch (Parent.Traversal)
 				{
 					case PipelineTraversalOption.PostOrder:
 						Pipeline.TraverseReversePostOrder(PipelineOption.Mount, models);

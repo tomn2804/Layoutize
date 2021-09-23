@@ -7,9 +7,9 @@ using System.Dynamic;
 
 namespace SchemataPreview
 {
-	public partial class DynamicImmutableDictionary : DynamicObject
+	public partial class DynamicImmutableDictionary<T> : DynamicObject where T : IImmutableDictionary<string, object>
 	{
-		public DynamicImmutableDictionary(IImmutableDictionary<string, object> dictionary)
+		public DynamicImmutableDictionary(T dictionary)
 		{
 			Dictionary = dictionary;
 		}
@@ -24,10 +24,10 @@ namespace SchemataPreview
 			throw new ReadOnlyException();
 		}
 
-		protected IImmutableDictionary<string, object> Dictionary { get; init; }
+		protected T Dictionary { get; }
 	}
 
-	public partial class DynamicImmutableDictionary : IImmutableDictionary<string, object>
+	public partial class DynamicImmutableDictionary<T> : IImmutableDictionary<string, object>
 	{
 		public int Count => Dictionary.Count;
 		public IEnumerable<string> Keys => Dictionary.Keys;

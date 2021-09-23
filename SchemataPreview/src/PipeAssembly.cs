@@ -2,27 +2,36 @@
 
 namespace SchemataPreview
 {
-	public class PipeAssembly
+	public class PipeAssembly : Dictionary<object, PipeSegment>
 	{
-		public Pipe this[object key] { get => KeyToPipe[key]; set => KeyToPipe[key] = value; }
-
-		public bool Contains(object key)
+		public PipeAssembly(Model model)
 		{
-			return KeyToPipe.ContainsKey(key);
+			Model = model;
 		}
 
-		public Pipe Register(object key)
+		public PipeSegment Register(object key)
 		{
-			Pipe value = new();
-			KeyToPipe.Add(key, value);
+			PipeSegment value = new(Model);
+			Add(key, value);
 			return value;
 		}
 
 		public void Unregister(object key)
 		{
-			KeyToPipe.Remove(key);
+			Remove(key);
 		}
 
-		protected Dictionary<object, Pipe> KeyToPipe { get; } = new();
+		internal bool Build(object key, in Pipe pipe)
+		{
+			PipeSegment? segment;
+			if (TryGetValue(key, out segment))
+			{
+				pipe.Extend(segment);
+				return Model.Children != null;
+			}
+			return Model.PassThru && (Model.Children != null);
+		}
+
+		protected Model Model { get; }
 	}
 }

@@ -1,27 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace SchemataPreview
 {
-	public partial class DynamicDictionary : DynamicObject
+	public partial class DynamicDictionary<T> : DynamicObject where T : IDictionary<string, object>
 	{
-		public DynamicDictionary()
+		public DynamicDictionary(T dictionary)
 		{
-		}
-
-		public DynamicDictionary(Hashtable hashtable)
-		{
-			foreach (DictionaryEntry entry in hashtable)
-			{
-				if (entry.Value != null)
-				{
-					Add((string)entry.Key, entry.Value);
-				}
-			}
+			Dictionary = dictionary;
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
@@ -31,73 +20,69 @@ namespace SchemataPreview
 
 		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
-			if (value == null)
-			{
-				throw new ArgumentNullException();
-			}
-			this[binder.Name] = value;
+			this[binder.Name] = value ?? throw new ArgumentNullException(nameof(value));
 			return true;
 		}
 
-		protected ImmutableDictionary<string, object>.Builder Dictionary { get; } = ImmutableDictionary.CreateBuilder<string, object>(StringComparer.InvariantCultureIgnoreCase);
+		protected T Dictionary { get; }
 	}
 
-	public partial class DynamicDictionary : IDictionary<string, object>
+	public partial class DynamicDictionary<T> : IDictionary<string, object>
 	{
-		public int Count => ((ICollection<KeyValuePair<string, object>>)Dictionary).Count;
-		public bool IsReadOnly => ((ICollection<KeyValuePair<string, object>>)Dictionary).IsReadOnly;
-		public ICollection<string> Keys => ((IDictionary<string, object>)Dictionary).Keys;
-		public ICollection<object> Values => ((IDictionary<string, object>)Dictionary).Values;
-		public object this[string key] { get => ((IDictionary<string, object>)Dictionary)[key]; set => ((IDictionary<string, object>)Dictionary)[key] = value; }
+		public int Count => Dictionary.Count;
+		public bool IsReadOnly => Dictionary.IsReadOnly;
+		public ICollection<string> Keys => Dictionary.Keys;
+		public ICollection<object> Values => Dictionary.Values;
+		public object this[string key] { get => Dictionary[key]; set => Dictionary[key] = value; }
 
 		public void Add(string key, object value)
 		{
-			((IDictionary<string, object>)Dictionary).Add(key, value);
+			Dictionary.Add(key, value);
 		}
 
 		public void Add(KeyValuePair<string, object> item)
 		{
-			((ICollection<KeyValuePair<string, object>>)Dictionary).Add(item);
+			Dictionary.Add(item);
 		}
 
 		public void Clear()
 		{
-			((ICollection<KeyValuePair<string, object>>)Dictionary).Clear();
+			Dictionary.Clear();
 		}
 
 		public bool Contains(KeyValuePair<string, object> item)
 		{
-			return ((ICollection<KeyValuePair<string, object>>)Dictionary).Contains(item);
+			return Dictionary.Contains(item);
 		}
 
 		public bool ContainsKey(string key)
 		{
-			return ((IDictionary<string, object>)Dictionary).ContainsKey(key);
+			return Dictionary.ContainsKey(key);
 		}
 
 		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
 		{
-			((ICollection<KeyValuePair<string, object>>)Dictionary).CopyTo(array, arrayIndex);
+			Dictionary.CopyTo(array, arrayIndex);
 		}
 
 		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
-			return ((IEnumerable<KeyValuePair<string, object>>)Dictionary).GetEnumerator();
+			return Dictionary.GetEnumerator();
 		}
 
 		public bool Remove(string key)
 		{
-			return ((IDictionary<string, object>)Dictionary).Remove(key);
+			return Dictionary.Remove(key);
 		}
 
 		public bool Remove(KeyValuePair<string, object> item)
 		{
-			return ((ICollection<KeyValuePair<string, object>>)Dictionary).Remove(item);
+			return Dictionary.Remove(item);
 		}
 
 		public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
 		{
-			return ((IDictionary<string, object>)Dictionary).TryGetValue(key, out value);
+			return Dictionary.TryGetValue(key, out value);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

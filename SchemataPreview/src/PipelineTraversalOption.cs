@@ -2,7 +2,7 @@
 {
 	public enum PipelineTraversalOption
 	{
-		PostOrder,
-		PreOrder
+		PreOrder,
+		PostOrder
 	}
 }

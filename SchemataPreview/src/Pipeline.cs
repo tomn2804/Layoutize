@@ -1,34 +1,35 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SchemataPreview
 {
-	public class Pipeline
+	public class Pipeline : PipelineBase
 	{
 		public Pipeline(Model model)
+			: base(model)
 		{
-			Model = model;
 		}
 
 		public static void TraverseReversePostOrder(object key, IEnumerable<Model> children)
 		{
-			Stack<PipeSegment> segments = new();
+			Queue<Tuple<Model, Pipe>> pipes = new();
 			foreach (Model child in children)
 			{
-				PipeSegment segment = new();
-				segments.Push(segment);
-				if (child.PipeAssembly[key] is Pipe pipe)
+				Pipe pipe = new();
+				if (child.PipeAssembly.Build(key, pipe))
 				{
-					segment.Extend(pipe);
+					pipes.Enqueue(new(child, pipe));
+					break;
 				}
+				pipe.Flush();
 			}
-			foreach (Model child in children)
+			while (pipes.Count != 0)
 			{
-				if (child.Children != null)
-				{
-					TraverseReversePostOrder(key, child.Children);
-				}
-				segments.Pop().Flush();
+				Tuple<Model, Pipe> pipe = pipes.Dequeue();
+				Debug.Assert(pipe.Item1.Children != null);
+				TraverseReversePostOrder(key, pipe.Item1.Children);
+				pipe.Item2.Flush();
 			}
 		}
 
@@ -36,51 +37,23 @@ namespace SchemataPreview
 		{
 			foreach (Model child in children)
 			{
-				PipeSegment segment = new();
-				if (child.PipeAssembly[key] is Pipe pipe)
+				Pipe pipe = new();
+				if (child.PipeAssembly.Build(key, pipe))
 				{
-					segment.Extend(pipe);
-				}
-				if (child.Children != null)
-				{
+					Debug.Assert(child.Children != null);
 					TraverseReversePreOrder(key, child.Children);
 				}
-				segment.Flush();
+				pipe.Flush();
 			}
-		}
-
-		public static void TraverseReversePreOrderParallel(object key, IEnumerable<Model> children)
-		{
-			List<Task> tasks = new();
-			foreach (Model child in children)
-			{
-				tasks.Add(Task.Run(() =>
-				{
-					PipeSegment segment = new();
-					if (child.PipeAssembly[key] is Pipe pipe)
-					{
-						segment.Extend(pipe);
-					}
-					if (child.Children != null)
-					{
-						TraverseReversePreOrderParallel(key, child.Children);
-					}
-					segment.Flush();
-				}));
-			}
-			Task.WaitAll(tasks.ToArray());
 		}
 
 		public void Invoke(object key)
 		{
-			PipeSegment segment = new();
-			if (Model.PipeAssembly[key] is Pipe pipe)
+			Pipe pipe = new();
+			if (Model.PipeAssembly.Build(key, pipe))
 			{
-				segment.Extend(pipe);
-			}
-			if (Model.Children != null)
-			{
-				switch (Model.TraversalOption)
+				Debug.Assert(Model.Children != null);
+				switch (Model.Traversal)
 				{
 					case PipelineTraversalOption.PostOrder:
 						TraverseReversePostOrder(key, Model.Children);
@@ -92,31 +65,7 @@ namespace SchemataPreview
 						break;
 				}
 			}
-			segment.Flush();
+			pipe.Flush();
 		}
-
-		public async Task InvokeAsync(object key)
-		{
-			await Task.Run(() => Invoke(key));
-		}
-
-		public async Task InvokeParallel(object key)
-		{
-			await Task.Run(() =>
-			{
-				PipeSegment segment = new();
-				if (Model.PipeAssembly[key] is Pipe pipe)
-				{
-					segment.Extend(pipe);
-				}
-				if (Model.Children != null)
-				{
-					TraverseReversePreOrderParallel(key, Model.Children);
-				}
-				segment.Flush();
-			});
-		}
-
-		protected Model Model { get; init; }
 	}
 }

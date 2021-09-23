@@ -2,9 +2,9 @@
 
 namespace SchemataPreview
 {
-	public class ImmutableSchema : DynamicImmutableDictionary
+	public class ImmutableSchema : DynamicImmutableDictionary<ImmutableDictionary<string, object>>
 	{
-		internal ImmutableSchema(IImmutableDictionary<string, object> dictionary)
+		public ImmutableSchema(ImmutableDictionary<string, object> dictionary)
 			: base(dictionary)
 		{
 		}

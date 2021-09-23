@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SchemataPreview
+﻿namespace SchemataPreview
 {
 	public class PipeSegment
 	{
-		public void Extend(Pipe pipe)
+		public PipeSegment(Model model)
 		{
-			if (pipe.OnProcessed != null)
-			{
-				Callbacks.Push(pipe.OnProcessed);
-			}
-			pipe.OnProcessing?.Invoke(this);
+			OnProcessed = new(model);
+			OnProcessing = new(model);
 		}
 
-		public void Flush()
-		{
-			while (Callbacks.Count != 0)
-			{
-				Callbacks.Pop().Invoke(this);
-			}
-		}
-
-		protected Stack<PipeEventHandler> Callbacks { get; } = new();
+		public PipeEventHandler OnProcessed { get; }
+		public PipeEventHandler OnProcessing { get; }
 	}
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Immutable;
 using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicDictionary
+	public abstract class Schema : DynamicDictionary<ImmutableDictionary<string, object>.Builder>
 	{
 		public abstract Model Build();
 
@@ -18,10 +19,12 @@ namespace SchemataPreview
 		}
 
 		protected Schema()
+			: base(ImmutableDictionary.CreateBuilder<string, object>())
 		{
 		}
 
 		protected Schema(Hashtable hashtable)
+			: base(ImmutableDictionary.CreateBuilder<string, object>())
 		{
 			foreach (DictionaryEntry entry in hashtable)
 			{
@@ -33,7 +36,7 @@ namespace SchemataPreview
 		}
 	}
 
-	public class Schema<T> : Schema where T : Model, new()
+	public class Schema<T> : Schema where T : Model
 	{
 		public Schema()
 		{
@@ -47,13 +50,13 @@ namespace SchemataPreview
 		public override T Build()
 		{
 			T result = GetNewModel();
-			(new Pipeline(result)).Invoke(PipelineOption.Mount);
+			new Pipeline(result).Invoke(PipelineOption.Mount);
 			return result;
 		}
 
 		public override T Build(string path)
 		{
-			Add("Path", path);
+			this["Path"] = path;
 			return Build();
 		}
 

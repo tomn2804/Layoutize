@@ -7,6 +7,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\**" />
+    <EmbeddedResource Remove="src\**" />
+    <None Remove="src\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="src\DynamicDictionary.cs" />
+    <Compile Include="src\DynamicImmutableDictionary.cs" />
+    <Compile Include="src\ImmutableSchema.cs" />
+    <Compile Include="src\Model.cs" />
+    <Compile Include="src\Model.ModelSet.cs" />
+    <Compile Include="src\PipelineAsync.cs" />
+    <Compile Include="src\PipelineBase.cs" />
+    <Compile Include="src\PipelineParallel.cs" />
+    <Compile Include="src\PipeSegment.cs" />
+    <Compile Include="src\PipeAssembly.cs" />
+    <Compile Include="src\PipeEventHandler.cs" />
+    <Compile Include="src\Pipeline.cs" />
+    <Compile Include="src\PipelineOption.cs" />
+    <Compile Include="src\PipelineTraversalOption.cs" />
+    <Compile Include="src\Pipe.cs" />
+    <Compile Include="src\Schema.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.1.3" />
   </ItemGroup>
 

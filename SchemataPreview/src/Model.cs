@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {
@@ -11,22 +12,39 @@ namespace SchemataPreview
 		}
 
 		public abstract ModelSet? Children { get; }
+
 		public abstract bool Exists { get; }
 
 		public Model? Parent { get; private set; }
+
+		public bool PassThru { get; }
+
 		public PipeAssembly PipeAssembly { get; } = new();
-		public PipelineTraversalOption? TraversalOption => Schema["Traversal"];
+
+		public PipelineTraversalOption? Traversal => Schema["Traversal"];
 
 		public string FullName => Path.Combine(Parent?.FullName ?? Schema["Path"], Name);
-		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
+
 		public string Name => Schema.Name;
+
+		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
 		public static implicit operator string(Model rhs)
 		{
 			return rhs.FullName;
 		}
 
-		protected dynamic Schema { get; init; }
+		public Action CaptureContext(ScriptBlock script, params object[] args)
+		{
+			script = script.GetNewClosure();
+			return () => script.InvokeWithContext(null, new()
+			{
+				{ new PSVariable("this", this) },
+				{ new PSVariable("_", Schema) }
+			}, args);
+		}
+
+		protected dynamic Schema { get; }
 	}
 
 	public abstract partial class Model : IComparable<Model>

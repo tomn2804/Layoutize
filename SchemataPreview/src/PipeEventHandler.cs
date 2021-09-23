@@ -10,9 +10,11 @@ namespace SchemataPreview
 			Model = model;
 		}
 
+		public Model Model { get; }
+
 		public static PipeEventHandler operator +(PipeEventHandler lhs, ScriptBlock rhs)
 		{
-			return lhs += (segment, args) => lhs.Model.CaptureContext(rhs, segment, args).Invoke();
+			return lhs += (pipe, args) => lhs.Model.CaptureContext(rhs, pipe, args).Invoke();
 		}
 
 		public static PipeEventHandler operator +(PipeEventHandler lhs, Action<Pipe, EventArgs> rhs)
@@ -27,6 +29,5 @@ namespace SchemataPreview
 		}
 
 		protected Action<Pipe, EventArgs>? Action { get; set; }
-		protected Model Model { get; }
 	}
 }

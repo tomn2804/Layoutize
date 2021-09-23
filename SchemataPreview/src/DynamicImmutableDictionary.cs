@@ -7,16 +7,18 @@ using System.Dynamic;
 
 namespace SchemataPreview
 {
-	public partial class DynamicImmutableDictionary<T> : DynamicObject where T : IImmutableDictionary<string, object>
+	public partial class DynamicImmutableDictionary<TDictionary, TValue> : DynamicObject where TDictionary : IImmutableDictionary<string, TValue>
 	{
-		public DynamicImmutableDictionary(T dictionary)
+		public DynamicImmutableDictionary(TDictionary dictionary)
 		{
 			Dictionary = dictionary;
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
-			return TryGetValue(binder.Name, out result);
+			bool hasResult = TryGetValue(binder.Name, out TValue? value);
+			result = value;
+			return hasResult;
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object? value)
@@ -24,32 +26,32 @@ namespace SchemataPreview
 			throw new ReadOnlyException();
 		}
 
-		protected T Dictionary { get; }
+		protected TDictionary Dictionary { get; }
 	}
 
-	public partial class DynamicImmutableDictionary<T> : IImmutableDictionary<string, object>
+	public partial class DynamicImmutableDictionary<TDictionary, TValue> : IImmutableDictionary<string, TValue>
 	{
 		public int Count => Dictionary.Count;
 		public IEnumerable<string> Keys => Dictionary.Keys;
-		public IEnumerable<object> Values => Dictionary.Values;
-		public object this[string key] => Dictionary[key];
+		public IEnumerable<TValue> Values => Dictionary.Values;
+		public TValue this[string key] => Dictionary[key];
 
-		public IImmutableDictionary<string, object> Add(string key, object value)
+		public IImmutableDictionary<string, TValue> Add(string key, TValue value)
 		{
 			return Dictionary.Add(key, value);
 		}
 
-		public IImmutableDictionary<string, object> AddRange(IEnumerable<KeyValuePair<string, object>> pairs)
+		public IImmutableDictionary<string, TValue> AddRange(IEnumerable<KeyValuePair<string, TValue>> pairs)
 		{
 			return Dictionary.AddRange(pairs);
 		}
 
-		public IImmutableDictionary<string, object> Clear()
+		public IImmutableDictionary<string, TValue> Clear()
 		{
 			return Dictionary.Clear();
 		}
 
-		public bool Contains(KeyValuePair<string, object> pair)
+		public bool Contains(KeyValuePair<string, TValue> pair)
 		{
 			return Dictionary.Contains(pair);
 		}
@@ -59,27 +61,27 @@ namespace SchemataPreview
 			return Dictionary.ContainsKey(key);
 		}
 
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+		public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
 		{
 			return Dictionary.GetEnumerator();
 		}
 
-		public IImmutableDictionary<string, object> Remove(string key)
+		public IImmutableDictionary<string, TValue> Remove(string key)
 		{
 			return Dictionary.Remove(key);
 		}
 
-		public IImmutableDictionary<string, object> RemoveRange(IEnumerable<string> keys)
+		public IImmutableDictionary<string, TValue> RemoveRange(IEnumerable<string> keys)
 		{
 			return Dictionary.RemoveRange(keys);
 		}
 
-		public IImmutableDictionary<string, object> SetItem(string key, object value)
+		public IImmutableDictionary<string, TValue> SetItem(string key, TValue value)
 		{
 			return Dictionary.SetItem(key, value);
 		}
 
-		public IImmutableDictionary<string, object> SetItems(IEnumerable<KeyValuePair<string, object>> items)
+		public IImmutableDictionary<string, TValue> SetItems(IEnumerable<KeyValuePair<string, TValue>> items)
 		{
 			return Dictionary.SetItems(items);
 		}
@@ -89,7 +91,7 @@ namespace SchemataPreview
 			return Dictionary.TryGetKey(equalKey, out actualKey);
 		}
 
-		public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
+		public bool TryGetValue(string key, [MaybeNullWhen(false)] out TValue value)
 		{
 			return Dictionary.TryGetValue(key, out value);
 		}

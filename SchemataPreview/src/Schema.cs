@@ -5,7 +5,7 @@ using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicDictionary<ImmutableDictionary<string, object>.Builder>
+	public abstract class Schema : DynamicDictionary<ImmutableDictionary<string, object>.Builder, object>
 	{
 		public abstract Model Build();
 
@@ -49,9 +49,9 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			T result = GetNewModel();
-			new Pipeline(result).Invoke(PipelineOption.Mount);
-			return result;
+			T model = GetNewModel();
+			new Pipeline(model).Invoke(PipeOption.Mount);
+			return model;
 		}
 
 		public override T Build(string path)

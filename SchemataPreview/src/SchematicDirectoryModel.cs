@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Management.Automation;
 
@@ -10,7 +9,7 @@ namespace SchemataPreview
 		public SchematicDirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly[PipelineOption.Mount].OnProcessed += (_, _) =>
+			PipeAssembly[PipeOption.Mount].OnProcessed += (_, _) =>
 			{
 				Children.Add(
 					new Schema<StrictTextModel>

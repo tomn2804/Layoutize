@@ -6,41 +6,43 @@ using System.Dynamic;
 
 namespace SchemataPreview
 {
-	public partial class DynamicDictionary<T> : DynamicObject where T : IDictionary<string, object>
+	public partial class DynamicDictionary<TDictionary, TValue> : DynamicObject where TDictionary : IDictionary<string, TValue>
 	{
-		public DynamicDictionary(T dictionary)
+		public DynamicDictionary(TDictionary dictionary)
 		{
 			Dictionary = dictionary;
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object? result)
 		{
-			return TryGetValue(binder.Name, out result);
+			bool hasResult = TryGetValue(binder.Name, out TValue? value);
+			result = value;
+			return hasResult;
 		}
 
 		public override bool TrySetMember(SetMemberBinder binder, object? value)
 		{
-			this[binder.Name] = value ?? throw new ArgumentNullException(nameof(value));
+			this[binder.Name] = (TValue?)value ?? throw new ArgumentNullException(nameof(value));
 			return true;
 		}
 
-		protected T Dictionary { get; }
+		protected TDictionary Dictionary { get; }
 	}
 
-	public partial class DynamicDictionary<T> : IDictionary<string, object>
+	public partial class DynamicDictionary<TDictionary, TValue> : IDictionary<string, TValue>
 	{
 		public int Count => Dictionary.Count;
 		public bool IsReadOnly => Dictionary.IsReadOnly;
 		public ICollection<string> Keys => Dictionary.Keys;
-		public ICollection<object> Values => Dictionary.Values;
-		public object this[string key] { get => Dictionary[key]; set => Dictionary[key] = value; }
+		public ICollection<TValue> Values => Dictionary.Values;
+		public TValue this[string key] { get => Dictionary[key]; set => Dictionary[key] = value; }
 
-		public void Add(string key, object value)
+		public void Add(string key, TValue value)
 		{
 			Dictionary.Add(key, value);
 		}
 
-		public void Add(KeyValuePair<string, object> item)
+		public void Add(KeyValuePair<string, TValue> item)
 		{
 			Dictionary.Add(item);
 		}
@@ -50,7 +52,7 @@ namespace SchemataPreview
 			Dictionary.Clear();
 		}
 
-		public bool Contains(KeyValuePair<string, object> item)
+		public bool Contains(KeyValuePair<string, TValue> item)
 		{
 			return Dictionary.Contains(item);
 		}
@@ -60,12 +62,12 @@ namespace SchemataPreview
 			return Dictionary.ContainsKey(key);
 		}
 
-		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+		public void CopyTo(KeyValuePair<string, TValue>[] array, int arrayIndex)
 		{
 			Dictionary.CopyTo(array, arrayIndex);
 		}
 
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+		public IEnumerator<KeyValuePair<string, TValue>> GetEnumerator()
 		{
 			return Dictionary.GetEnumerator();
 		}
@@ -75,12 +77,12 @@ namespace SchemataPreview
 			return Dictionary.Remove(key);
 		}
 
-		public bool Remove(KeyValuePair<string, object> item)
+		public bool Remove(KeyValuePair<string, TValue> item)
 		{
 			return Dictionary.Remove(item);
 		}
 
-		public bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
+		public bool TryGetValue(string key, [MaybeNullWhen(false)] out TValue value)
 		{
 			return Dictionary.TryGetValue(key, out value);
 		}

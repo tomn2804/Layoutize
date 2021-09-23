@@ -9,6 +9,8 @@ namespace SchemataPreview
 			Model = model;
 		}
 
+		public Model Model { get; }
+
 		public PipeSegment Register(object key)
 		{
 			PipeSegment value = new(Model);
@@ -20,17 +22,5 @@ namespace SchemataPreview
 		{
 			Remove(key);
 		}
-
-		internal bool Build(object key, in Pipe pipe)
-		{
-			if (this.TryGetValue(key) is PipeSegment segment)
-			{
-				pipe.Extend(segment);
-				return Model.Children != null;
-			}
-			return Model.PassThru && (Model.Children != null);
-		}
-
-		protected Model Model { get; }
 	}
 }

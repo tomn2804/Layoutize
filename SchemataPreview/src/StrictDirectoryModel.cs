@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using System.IO;
 using System;
+using System.IO;
 
 namespace SchemataPreview
 {
@@ -9,7 +9,7 @@ namespace SchemataPreview
 		public StrictDirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly.Register(PipelineOption.Format).OnProcessing += (_, _) =>
+			PipeAssembly.Register(PipeOption.Format).OnProcessing += (_, _) =>
 			{
 				foreach (string path in Directory.EnumerateFiles(FullName))
 				{

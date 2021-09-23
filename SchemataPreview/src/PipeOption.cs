@@ -1,11 +1,11 @@
 ﻿namespace SchemataPreview
 {
-	public enum PipelineOption
+	public enum PipeOption
 	{
-		Mount,
 		Create,
 		Delete,
 		Format,
+		Mount,
 		Update
 	}
 }

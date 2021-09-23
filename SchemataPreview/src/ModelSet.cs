@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
 
 namespace SchemataPreview
 {
@@ -20,8 +18,7 @@ namespace SchemataPreview
 			foreach (Schema schema in schemata)
 			{
 				schema["Parent"] = parent;
-				Model child = schema.GetNewModel();
-				Models.Add(child);
+				Models.Add(schema.GetNewModel());
 			}
 		}
 
@@ -44,22 +41,22 @@ namespace SchemataPreview
 			switch (Parent.Traversal)
 			{
 				case PipelineTraversalOption.PostOrder:
-					Pipeline.TraverseReversePostOrder(PipelineOption.Mount, models);
+					PipelineSequential.TraverseReversePostOrder(PipeOption.Mount, models);
 					break;
 
 				case PipelineTraversalOption.PreOrder:
 				default:
-					Pipeline.TraverseReversePreOrder(PipelineOption.Mount, models);
+					PipelineSequential.TraverseReversePreOrder(PipeOption.Mount, models);
 					break;
 			}
 		}
 
-		public void Add<T>(params string[] patterns) where T : Model, new()
+		public void Add<T>(params string[] patterns) where T : Model
 		{
 			Add<T, T>(patterns);
 		}
 
-		public void Add<TDirectory, TFile>(params string[] patterns) where TDirectory : Model, new() where TFile : Model, new()
+		public void Add<TDirectory, TFile>(params string[] patterns) where TDirectory : Model where TFile : Model
 		{
 			List<Schema> children = new();
 			foreach (string pattern in patterns)
@@ -86,21 +83,16 @@ namespace SchemataPreview
 			return Models.Any(model => model.Equals(name));
 		}
 
-		//public bool MatchName(string pattern)
-		//{
-		//	return Models.Any(model => model.Pattern.IsMatch(pattern));
-		//}
+		public void Remove(Model model)
+		{
+			(new Pipeline(model)).Invoke(PipeOption.Delete);
+			Models.Remove(model);
+		}
 
-		//public bool Remove(Model model)
-		//{
-		//	ModelBuilder.HandleDelete(model);
-		//	return Models.Remove(model);
-		//}
-
-		//public bool RemoveByName(string name)
-		//{
-		//	return Remove(Models.First(model => model.Equals(name)));
-		//}
+		public void RemoveByName(string name)
+		{
+			Remove(Models.First(model => model.Equals(name)));
+		}
 
 		protected SortedSet<Model> Models { get; } = new(new ModelComparer());
 	}

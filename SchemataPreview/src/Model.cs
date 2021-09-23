@@ -6,28 +6,15 @@ namespace SchemataPreview
 {
 	public abstract partial class Model
 	{
-		public Model(ImmutableSchema schema)
-		{
-			Schema = schema;
-			PipeAssembly = new(this);
-		}
-
 		public abstract ModelSet? Children { get; }
-
 		public abstract bool Exists { get; }
 
-		public string Name => (string)Schema["Path"];
-
-		public Model? Parent => (Model?)Schema.TryGetValue("Parent");
-
-		public bool PassThru => (bool?)Schema.TryGetValue("PassThru") ?? false;
-
+		public string Name { get; }
+		public Model? Parent { get; }
+		public bool PassThru { get; }
 		public PipeAssembly PipeAssembly { get; }
-
-		public PipelineTraversalOption Traversal => (PipelineTraversalOption?)Schema.TryGetValue("Traversal") ?? PipelineTraversalOption.PreOrder;
-
+		public PipelineTraversalOption Traversal { get; }
 		public string FullName => Path.Combine(Parent?.FullName ?? (string)Schema["Path"], Name);
-
 		public string RelativeName => Path.Combine(Parent?.RelativeName ?? string.Empty, Name);
 
 		public static implicit operator string(Model rhs)
@@ -45,6 +32,24 @@ namespace SchemataPreview
 			}, args);
 		}
 
+		protected Model(ImmutableSchema schema)
+		{
+			Schema = schema;
+			PipeAssembly = new(this);
+
+			schema.TryGetValue("Name", out object? name);
+			Name = (string?)name ?? throw new NullReferenceException(nameof(name));
+
+			schema.TryGetValue("Parent", out object? parent);
+			Parent = (Model?)parent;
+
+			schema.TryGetValue("PassThru", out object? passThru);
+			PassThru = (bool?)passThru ?? false;
+
+			schema.TryGetValue("Traversal", out object? traversal);
+			Traversal = (PipelineTraversalOption?)traversal ?? PipelineTraversalOption.PreOrder;
+		}
+
 		protected ImmutableSchema Schema { get; }
 	}
 
@@ -54,7 +59,9 @@ namespace SchemataPreview
 		{
 			if (other != null)
 			{
-				return ((int?)Schema.TryGetValue("Priority"))?.CompareTo(other.Schema.TryGetValue("Priority")) ?? Name.CompareTo(other.Name);
+				Schema.TryGetValue("Priority", out object? lhs_priority);
+				other.Schema.TryGetValue("Priority", out object? rhs_priority);
+				return ((int?)lhs_priority)?.CompareTo(rhs_priority) ?? Name.CompareTo(other.Name);
 			}
 			return 1;
 		}

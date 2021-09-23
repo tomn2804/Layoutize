@@ -8,17 +8,17 @@ namespace SchemataPreview
 		public DirectoryModel(ImmutableSchema schema)
 			: base(schema)
 		{
-			PipeAssembly[PipelineOption.Create].OnProcessing += (_, _) =>
+			PipeAssembly[PipeOption.Create].OnProcessing += (_, _) =>
 			{
 				Directory.CreateDirectory(FullName);
 			};
-			PipeAssembly[PipelineOption.Delete].OnProcessing += (_, _) =>
+			PipeAssembly[PipeOption.Delete].OnProcessing += (_, _) =>
 			{
 				FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			};
-			if (schema.TryGetValue("Children") is Schema[] children)
+			if (schema.TryGetValue("Children", out object? children))
 			{
-				Children = new(this, children);
+				Children = new(this, (Schema[])children);
 			}
 			else
 			{

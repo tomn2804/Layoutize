@@ -32,6 +32,11 @@ namespace SchemataPreview
 			}, args);
 		}
 
+		public override string ToString()
+		{
+			return FullName;
+		}
+
 		protected Model(ImmutableSchema schema)
 		{
 			Schema = schema;

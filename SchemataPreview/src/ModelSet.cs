@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace SchemataPreview
 			Parent = parent;
 		}
 
-		public ModelSet(Model parent, Schema[] schemata)
+		public ModelSet(Model parent, params Schema[] schemata)
 			: this(parent)
 		{
 			foreach (Schema schema in schemata)

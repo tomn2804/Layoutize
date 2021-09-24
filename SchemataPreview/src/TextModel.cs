@@ -9,16 +9,9 @@ namespace SchemataPreview
 		{
 			PipeAssembly[PipeOption.Create].OnProcessing += (_, _) =>
 			{
-				schema.TryGetValue("Contents", out object? contents);
-				switch (contents)
+				if (schema.TryGetValue("Contents", out object? contents))
 				{
-					case string line:
-						Contents = new string[] { line };
-						break;
-
-					case string[] lines:
-						Contents = lines;
-						break;
+					Contents = contents.ToArray<string>();
 				}
 			};
 		}

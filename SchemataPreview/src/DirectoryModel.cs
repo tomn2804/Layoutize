@@ -16,9 +16,10 @@ namespace SchemataPreview
 			{
 				FileSystem.DeleteDirectory(FullName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
 			};
-			if (schema.TryGetValue("Children", out object? children))
+			schema.TryGetValue("Children", out object? children);
+			if (children != null)
 			{
-				Children = new(this, (Schema[])children);
+				Children = new(this, children.ToArray<Schema>());
 			}
 			else
 			{

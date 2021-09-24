@@ -23,6 +23,7 @@
     <Compile Include="src\Model.cs" />
     <Compile Include="src\ModelComparer.cs" />
     <Compile Include="src\ModelSet.cs" />
+    <Compile Include="src\ObjectExtension.cs" />
     <Compile Include="src\Pipe.cs" />
     <Compile Include="src\PipeAssembly.cs" />
     <Compile Include="src\PipeEventHandler.cs" />

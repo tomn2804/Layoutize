@@ -38,7 +38,7 @@ namespace SchemataPreview
 			PipeAssembly = new(this);
 
 			schema.TryGetValue("Name", out object? name);
-			Name = (string?)name ?? throw new NullReferenceException(nameof(name));
+			Name = name?.ToString() ?? throw new NullReferenceException(nameof(name));
 
 			schema.TryGetValue("Parent", out object? parent);
 			Parent = (Model?)parent;

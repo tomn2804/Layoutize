@@ -6,11 +6,11 @@ namespace SchemataPreview
 {
 	public static class TextEditor
 	{
-		public static string[] Format(IEnumerable<string> lines)
+		public static string[] Format(IEnumerable<string> contents)
 		{
 			List<string> results = new();
 			bool hasPreviousLine = false;
-			foreach (string line in lines)
+			foreach (string line in contents)
 			{
 				bool containsText = string.IsNullOrWhiteSpace(line);
 				if (!containsText || hasPreviousLine)

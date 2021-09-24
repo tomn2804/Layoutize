@@ -10,6 +10,8 @@ namespace SchemataPreview
 			Model = model;
 		}
 
+		public Model Model { get; }
+
 		public bool Extend(object key)
 		{
 			if (Model.PipeAssembly.TryGetValue(key, out PipeSegment? segment))
@@ -38,6 +40,5 @@ namespace SchemataPreview
 		}
 
 		protected Stack<PipeEventHandler> Callbacks { get; } = new();
-		protected Model Model { get; }
 	}
 }

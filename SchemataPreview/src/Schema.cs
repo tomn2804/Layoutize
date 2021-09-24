@@ -5,7 +5,7 @@ using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicDictionary<ImmutableDictionary<string, object>.Builder, object>
+	public abstract class Schema : DynamicHashtable<ImmutableDictionary<string, object>.Builder>
 	{
 		public abstract Model Build();
 
@@ -15,7 +15,7 @@ namespace SchemataPreview
 
 		public ImmutableSchema ToImmutable()
 		{
-			return new(Dictionary.ToImmutable());
+			return new(Hashtable.ToImmutable());
 		}
 
 		protected Schema()

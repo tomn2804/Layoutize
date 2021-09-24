@@ -14,7 +14,7 @@ namespace SchemataPreview
 
 		public void Invoke(object key)
 		{
-			Pipe pipe = new(Model);
+			using Pipe pipe = new(Model);
 			if (pipe.Extend(key))
 			{
 				Debug.Assert(Model.Children != null);
@@ -30,7 +30,6 @@ namespace SchemataPreview
 						break;
 				}
 			}
-			pipe.Flush();
 		}
 
 		public async Task InvokeAsync(object key)
@@ -42,13 +41,12 @@ namespace SchemataPreview
 		{
 			await Task.Run(() =>
 			{
-				Pipe pipe = new(Model);
+				using Pipe pipe = new(Model);
 				if (pipe.Extend(key))
 				{
 					Debug.Assert(Model.Children != null);
 					PipelineParallel.TraverseReversePreOrderParallel(key, Model.Children);
 				}
-				pipe.Flush();
 			});
 		}
 	}

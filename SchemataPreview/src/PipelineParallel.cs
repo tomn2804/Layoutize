@@ -13,13 +13,12 @@ namespace SchemataPreview
 			{
 				tasks.Add(Task.Run(() =>
 				{
-					Pipe pipe = new(child);
+					using Pipe pipe = new(child);
 					if (pipe.Extend(key))
 					{
 						Debug.Assert(child.Children != null);
 						TraverseReversePreOrderParallel(key, child.Children);
 					}
-					pipe.Flush();
 				}));
 			}
 			Task.WaitAll(tasks.ToArray());

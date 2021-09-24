@@ -18,7 +18,7 @@ namespace SchemataPreview
 				}
 				else
 				{
-					pipe.Flush();
+					pipe.Dispose();
 				}
 			}
 			while (registries.Count != 0)
@@ -26,7 +26,7 @@ namespace SchemataPreview
 				Tuple<Model, Pipe> registry = registries.Dequeue();
 				Debug.Assert(registry.Item1.Children != null);
 				TraverseReversePostOrder(key, registry.Item1.Children);
-				registry.Item2.Flush();
+				registry.Item2.Dispose();
 			}
 		}
 
@@ -34,13 +34,12 @@ namespace SchemataPreview
 		{
 			foreach (Model child in children)
 			{
-				Pipe pipe = new(child);
+				using Pipe pipe = new(child);
 				if (pipe.Extend(key))
 				{
 					Debug.Assert(child.Children != null);
 					TraverseReversePreOrder(key, child.Children);
 				}
-				pipe.Flush();
 			}
 		}
 	}

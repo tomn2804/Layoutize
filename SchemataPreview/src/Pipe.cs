@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SchemataPreview
 {
-	public class Pipe
+	public partial class Pipe
 	{
 		public Pipe(Model model)
 		{
@@ -31,14 +31,31 @@ namespace SchemataPreview
 			pipe.OnProcessing.Invoke(this, EventArgs.Empty);
 		}
 
-		public void Flush()
+		protected Stack<PipeEventHandler> Callbacks { get; } = new();
+	}
+
+	public partial class Pipe : IDisposable
+	{
+		public void Dispose()
 		{
-			while (Callbacks.Count != 0)
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool isDisposing)
+		{
+			if (isDisposing)
 			{
-				Callbacks.Pop().Invoke(this, EventArgs.Empty);
+				while (Callbacks.Count != 0)
+				{
+					Callbacks.Pop().Invoke(this, EventArgs.Empty);
+				}
 			}
 		}
 
-		protected Stack<PipeEventHandler> Callbacks { get; } = new();
+		~Pipe()
+		{
+			Dispose(false);
+		}
 	}
 }

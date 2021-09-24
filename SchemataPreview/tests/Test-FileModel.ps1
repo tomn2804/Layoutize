@@ -1,17 +1,21 @@
 ﻿#Requires -Module SchemataPreview
 using namespace SchemataPreview
 
+Set-Location -Path $PSScriptRoot
+
 $name = 'FileModel'
+$tempPath = "$PSScriptRoot\temp"
+$localPath = "$PSScriptRoot\temp\$name"
 
 $tests = @(
 	@{
 		Name = 'Basic'
 		Schema = [Schema[FileModel]]@{
 			Name = "$name.txt"
-			Path = 'D:\'
+			Path = $tempPath
 		}
 		ExpectError = $false
-		ExpectedPath = "D:\$name.txt"
+		ExpectedPath = "$localPath.txt"
 	}
 )
 

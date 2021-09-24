@@ -1,14 +1,18 @@
 ﻿#Requires -Module SchemataPreview
 using namespace SchemataPreview
 
+Set-Location -Path $PSScriptRoot
+
 $name = 'DirectoryModel'
+$tempPath = "$PSScriptRoot\temp"
+$localPath = "$PSScriptRoot\temp\$name"
 
 $tests = @(
 	@{
 		Name = 'Basic'
 		Schema = [Schema[DirectoryModel]]@{
 			Name = $name
-			Path = (Split-Path -Path "D:\$name" -Parent)
+			Path = $tempPath
 			Children = [Schema[DirectoryModel]]@{
 				Name = 1
 				Children = @(
@@ -23,11 +27,11 @@ $tests = @(
 		}
 		ExpectError = $false
 		ExpectedPaths = @(
-			"D:\$name\1",
-			"D:\$name\1\2",
-			"D:\$name\1\2\3",
-			"D:\$name\1\4",
-			"D:\$name\1\5"
+			"$localPath\1",
+			"$localPath\1\2",
+			"$localPath\1\2\3",
+			"$localPath\1\4",
+			"$localPath\1\5"
 		)
 	}
 )

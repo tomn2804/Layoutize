@@ -1,25 +1,29 @@
 ﻿#Requires -Module SchemataPreview
 using namespace SchemataPreview
 
+Set-Location -Path $PSScriptRoot
+
 $name = 'TextModel'
+$tempPath = "$PSScriptRoot\temp"
+$localPath = "$PSScriptRoot\temp\$name"
 
 $tests = @(
 	@{
 		Name = 'Single Line'
 		Schema = [Schema[TextModel]]@{
 			Name = "$($name)1.txt"
-			Path = 'D:\'
+			Path = $tempPath
 			Contents = 'single line test'
 		}
 		ExpectError = $false
-		ExpectedPath = "D:\$($name)1.txt"
+		ExpectedPath = "$($localPath)1.txt"
 		ExpectedContents = 'single line test'
 	},
 	@{
 		Name = 'Multiple Lines'
 		Schema = [Schema[TextModel]]@{
 			Name = "$($name)2.txt"
-			Path = 'D:\'
+			Path = $tempPath
 			Contents = @(
 				'Line 1',
 				'Line 2',
@@ -27,7 +31,7 @@ $tests = @(
 			)
 		}
 		ExpectError = $false
-		ExpectedPath = "D:\$($name)2.txt"
+		ExpectedPath = "$($localPath)2.txt"
 		ExpectedContents = @(
 			'Line 1',
 			'Line 2',

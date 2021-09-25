@@ -17,8 +17,6 @@
 
   <ItemGroup>
     <Compile Include="src\DirectoryModel.cs" />
-    <Compile Include="src\DynamicHashtable.cs" />
-    <Compile Include="src\DynamicImmutableDictionary.cs" />
     <Compile Include="src\ExcludeModel.cs" />
     <Compile Include="src\FileModel.cs" />
     <Compile Include="src\FileSystemModel.cs" />

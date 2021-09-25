@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using SchemataPreview;
 
 namespace SchemataPreview.Tests
 {
 	public class DirectoryModelTests
 	{
 		[Fact]
-		public void Build_BaseCase_ReturnsModel()
+		public void Build_ChildrenProperty_ReturnsModelSet()
 		{
+			Schema<DirectoryModel> schema = new();
+			schema["Name"]
 		}
 	}
 }

@@ -5,7 +5,7 @@ using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema : DynamicHashtable<ImmutableDictionary<string, object>.Builder>
+	public abstract partial class Schema
 	{
 		public abstract Model Build();
 
@@ -15,24 +15,71 @@ namespace SchemataPreview
 
 		public ImmutableSchema ToImmutable()
 		{
-			return new(Hashtable.ToImmutable());
+			return new(Dictionary.ToImmutable());
 		}
 
 		protected Schema()
-			: base(ImmutableDictionary.CreateBuilder<string, object>())
 		{
 		}
 
 		protected Schema(Hashtable hashtable)
-			: base(ImmutableDictionary.CreateBuilder<string, object>())
 		{
 			foreach (DictionaryEntry entry in hashtable)
 			{
 				if (entry.Value != null)
 				{
-					Add((string)entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
+					Add(entry.Key, entry.Value is PSObject obj ? obj.BaseObject : entry.Value);
 				}
 			}
+		}
+
+		protected ImmutableDictionary<object, object>.Builder Dictionary { get; } = ImmutableDictionary.CreateBuilder<object, object>();
+	}
+
+	public abstract partial class Schema : IDictionary
+	{
+		public int Count => ((ICollection)Dictionary).Count;
+		public bool IsFixedSize => ((IDictionary)Dictionary).IsFixedSize;
+		public bool IsReadOnly => ((IDictionary)Dictionary).IsReadOnly;
+		public bool IsSynchronized => ((ICollection)Dictionary).IsSynchronized;
+		public ICollection Keys => ((IDictionary)Dictionary).Keys;
+		public object SyncRoot => ((ICollection)Dictionary).SyncRoot;
+		public ICollection Values => ((IDictionary)Dictionary).Values;
+		public object? this[object key] { get => ((IDictionary)Dictionary)[key]; set => ((IDictionary)Dictionary)[key] = value; }
+
+		public void Add(object key, object? value)
+		{
+			((IDictionary)Dictionary).Add(key, value);
+		}
+
+		public void Clear()
+		{
+			((IDictionary)Dictionary).Clear();
+		}
+
+		public bool Contains(object key)
+		{
+			return ((IDictionary)Dictionary).Contains(key);
+		}
+
+		public void CopyTo(Array array, int index)
+		{
+			((ICollection)Dictionary).CopyTo(array, index);
+		}
+
+		public IDictionaryEnumerator GetEnumerator()
+		{
+			return ((IDictionary)Dictionary).GetEnumerator();
+		}
+
+		public void Remove(object key)
+		{
+			((IDictionary)Dictionary).Remove(key);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return ((IEnumerable)Dictionary).GetEnumerator();
 		}
 	}
 

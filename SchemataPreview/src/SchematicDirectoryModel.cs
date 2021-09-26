@@ -25,9 +25,9 @@ namespace SchemataPreview
 
 				using PowerShell instance = PowerShell.Create();
 				List<Schema> schemata = new();
-				foreach (PSObject obj in instance.AddScript(schematic).Invoke())
+				foreach (PSObject @object in instance.AddScript(schematic).Invoke())
 				{
-					if (obj.BaseObject is Schema s)
+					if (@object.BaseObject is Schema s)
 					{
 						schemata.Add(s);
 					}

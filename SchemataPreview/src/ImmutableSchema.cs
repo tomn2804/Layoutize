@@ -1,15 +1,25 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {
 	public partial class ImmutableSchema
 	{
-		public ImmutableSchema(ImmutableDictionary<object, object> dictionary)
+		public ImmutableSchema(Schema schema)
 		{
-			Dictionary = dictionary;
+			ImmutableDictionary<object, object>.Builder dictionary = ImmutableDictionary.CreateBuilder<object, object>();
+			foreach (DictionaryEntry entry in schema)
+			{
+				if (entry.Key is not null && entry.Value is not null)
+				{
+					dictionary.Add(entry.Key, entry.Value is PSObject @object ? @object.BaseObject : entry.Value);
+				}
+			}
+			Dictionary = dictionary.ToImmutable();
 		}
 
 		protected ImmutableDictionary<object, object> Dictionary { get; }
@@ -17,74 +27,106 @@ namespace SchemataPreview
 
 	public partial class ImmutableSchema : IImmutableDictionary<object, object>
 	{
-		public int Count => ((IReadOnlyCollection<KeyValuePair<object, object>>)Dictionary).Count;
-		public IEnumerable<object> Keys => ((IReadOnlyDictionary<object, object>)Dictionary).Keys;
-		public IEnumerable<object> Values => ((IReadOnlyDictionary<object, object>)Dictionary).Values;
-		public object this[object key] => ((IReadOnlyDictionary<object, object>)Dictionary)[key];
+		public int Count => Dictionary.Count;
+		public IEnumerable<object> Keys => Dictionary.Keys;
+		public IEnumerable<object> Values => Dictionary.Values;
+		public object this[object key] => Dictionary[key];
 
 		public IImmutableDictionary<object, object> Add(object key, object value)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).Add(key, value);
+			if (key is null)
+			{
+				throw new ArgumentNullException(nameof(key));
+			}
+			if (value is null)
+			{
+				throw new ArgumentNullException(nameof(value));
+			}
+			return Dictionary.Add(key, value is PSObject @object ? @object.BaseObject : value);
 		}
 
 		public IImmutableDictionary<object, object> AddRange(IEnumerable<KeyValuePair<object, object>> pairs)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).AddRange(pairs);
+			ImmutableDictionary<object, object>.Builder result = Dictionary.ToBuilder();
+			foreach (KeyValuePair<object, object> pair in pairs)
+			{
+				if (pair.Key is not null && pair.Value is not null)
+				{
+					result.Add(pair.Key, pair.Value is PSObject @object ? @object.BaseObject : pair);
+				}
+			}
+			return result.ToImmutable();
 		}
 
 		public IImmutableDictionary<object, object> Clear()
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).Clear();
+			return Dictionary.Clear();
 		}
 
 		public bool Contains(KeyValuePair<object, object> pair)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).Contains(pair);
+			return Dictionary.Contains(pair);
 		}
 
 		public bool ContainsKey(object key)
 		{
-			return ((IReadOnlyDictionary<object, object>)Dictionary).ContainsKey(key);
+			return Dictionary.ContainsKey(key);
 		}
 
 		public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
 		{
-			return ((IEnumerable<KeyValuePair<object, object>>)Dictionary).GetEnumerator();
+			return Dictionary.GetEnumerator();
 		}
 
 		public IImmutableDictionary<object, object> Remove(object key)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).Remove(key);
+			return Dictionary.Remove(key);
 		}
 
 		public IImmutableDictionary<object, object> RemoveRange(IEnumerable<object> keys)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).RemoveRange(keys);
+			return Dictionary.RemoveRange(keys);
 		}
 
 		public IImmutableDictionary<object, object> SetItem(object key, object value)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).SetItem(key, value);
+			if (key is null)
+			{
+				throw new ArgumentNullException(nameof(key));
+			}
+			if (value is null)
+			{
+				throw new ArgumentNullException(nameof(value));
+			}
+			return Dictionary.SetItem(key, value is PSObject @object ? @object.BaseObject : value);
 		}
 
 		public IImmutableDictionary<object, object> SetItems(IEnumerable<KeyValuePair<object, object>> items)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).SetItems(items);
+			ImmutableDictionary<object, object>.Builder result = Dictionary.ToBuilder();
+			foreach (KeyValuePair<object, object> item in items)
+			{
+				if (item.Key is not null && item.Value is not null)
+				{
+					result[item.Key] = item.Value is PSObject @object ? @object.BaseObject : item.Value;
+				}
+			}
+			return result.ToImmutable();
 		}
 
 		public bool TryGetKey(object equalKey, out object actualKey)
 		{
-			return ((IImmutableDictionary<object, object>)Dictionary).TryGetKey(equalKey, out actualKey);
+			return Dictionary.TryGetKey(equalKey, out actualKey);
 		}
 
 		public bool TryGetValue(object key, [MaybeNullWhen(false)] out object value)
 		{
-			return ((IReadOnlyDictionary<object, object>)Dictionary).TryGetValue(key, out value);
+			return Dictionary.TryGetValue(key, out value);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((IEnumerable)Dictionary).GetEnumerator();
+			return Dictionary.GetEnumerator();
 		}
 	}
 }

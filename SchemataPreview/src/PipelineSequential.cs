@@ -24,7 +24,7 @@ namespace SchemataPreview
 			while (registries.Count != 0)
 			{
 				Tuple<Model, Pipe> registry = registries.Dequeue();
-				Debug.Assert(registry.Item1.Children != null);
+				Debug.Assert(registry.Item1.Children is not null);
 				TraverseReversePostOrder(key, registry.Item1.Children);
 				registry.Item2.Dispose();
 			}
@@ -37,7 +37,7 @@ namespace SchemataPreview
 				using Pipe pipe = new(child);
 				if (pipe.Extend(key))
 				{
-					Debug.Assert(child.Children != null);
+					Debug.Assert(child.Children is not null);
 					TraverseReversePreOrder(key, child.Children);
 				}
 			}

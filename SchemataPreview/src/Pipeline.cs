@@ -17,7 +17,7 @@ namespace SchemataPreview
 			using Pipe pipe = new(Model);
 			if (pipe.Extend(key))
 			{
-				Debug.Assert(Model.Children != null);
+				Debug.Assert(Model.Children is not null);
 				switch (Model.Traversal)
 				{
 					case PipelineTraversalOption.PostOrder:
@@ -44,7 +44,7 @@ namespace SchemataPreview
 				using Pipe pipe = new(Model);
 				if (pipe.Extend(key))
 				{
-					Debug.Assert(Model.Children != null);
+					Debug.Assert(Model.Children is not null);
 					PipelineParallel.TraverseReversePreOrderParallel(key, Model.Children);
 				}
 			});

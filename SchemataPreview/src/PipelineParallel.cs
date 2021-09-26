@@ -16,7 +16,7 @@ namespace SchemataPreview
 					using Pipe pipe = new(child);
 					if (pipe.Extend(key))
 					{
-						Debug.Assert(child.Children != null);
+						Debug.Assert(child.Children is not null);
 						TraverseReversePreOrderParallel(key, child.Children);
 					}
 				}));

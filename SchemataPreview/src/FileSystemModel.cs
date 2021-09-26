@@ -9,11 +9,11 @@ namespace SchemataPreview
 		public FileSystemModel(ImmutableSchema schema)
 			: base(schema)
 		{
+			Validate();
 			PipeAssembly.Register(PipeOption.Create);
 			PipeAssembly.Register(PipeOption.Delete);
 			PipeAssembly.Register(PipeOption.Mount).OnProcessing += (pipe, _) =>
 			{
-				Validate();
 				if (Exists)
 				{
 					if (schema.TryGetValue("UseHardMount", out object? useHardMount) && (bool)useHardMount)
@@ -31,6 +31,7 @@ namespace SchemataPreview
 
 		protected virtual void Validate()
 		{
+			Debug.Assert(!string.IsNullOrWhiteSpace(Name));
 			Debug.Assert(!string.IsNullOrWhiteSpace(FullName));
 			if (Name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
 			{
@@ -38,7 +39,7 @@ namespace SchemataPreview
 			}
 			if (!Path.IsPathFullyQualified(FullName))
 			{
-				throw new InvalidOperationException($"Cannot resolve property 'FullName' to an absolute path. Recieved value: '{FullName}'");
+				throw new InvalidOperationException($"Unable to resolve property 'FullName' to an absolute path. Recieved value: '{FullName}'");
 			}
 			if (FullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
 			{

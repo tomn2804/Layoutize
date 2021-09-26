@@ -14,7 +14,7 @@ namespace SchemataPreview
 
 		public static PipeEventHandler operator +(PipeEventHandler lhs, ScriptBlock rhs)
 		{
-			return lhs += (pipe, args) => lhs.Model.CaptureContext(rhs, pipe, args).Invoke();
+			return lhs += (pipe, args) => lhs.Model.CopyClosureTo(rhs, pipe, args).Invoke();
 		}
 
 		public static PipeEventHandler operator +(PipeEventHandler lhs, Action<Pipe, EventArgs> rhs)

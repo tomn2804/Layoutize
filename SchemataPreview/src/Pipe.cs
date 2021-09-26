@@ -17,14 +17,14 @@ namespace SchemataPreview
 			if (Model.PipeAssembly.TryGetValue(key, out PipeSegment? segment))
 			{
 				Extend(segment);
-				return Model.Children != null;
+				return Model.Children is not null;
 			}
-			return Model.PassThru && (Model.Children != null);
+			return Model.PassThru && (Model.Children is not null);
 		}
 
 		public void Extend(PipeSegment pipe)
 		{
-			if (pipe.OnProcessed != null)
+			if (pipe.OnProcessed is not null)
 			{
 				Callbacks.Push(pipe.OnProcessed);
 			}

@@ -14,10 +14,11 @@ namespace SchemataPreview
 			ImmutableDictionary<object, object>.Builder dictionary = ImmutableDictionary.CreateBuilder<object, object>();
 			foreach (DictionaryEntry entry in schema)
 			{
-				if (entry.Key is not null && entry.Value is not null)
+				if (entry.Value is null)
 				{
-					dictionary.Add(entry.Key, entry.Value is PSObject @object ? @object.BaseObject : entry.Value);
+					throw new ArgumentNullException(entry.Key.ToString());
 				}
+				dictionary.Add(entry.Key, entry.Value is PSObject @object ? @object.BaseObject : entry.Value);
 			}
 			Dictionary = dictionary.ToImmutable();
 		}
@@ -34,10 +35,6 @@ namespace SchemataPreview
 
 		public IImmutableDictionary<object, object> Add(object key, object value)
 		{
-			if (key is null)
-			{
-				throw new ArgumentNullException(nameof(key));
-			}
 			if (value is null)
 			{
 				throw new ArgumentNullException(nameof(value));
@@ -50,10 +47,11 @@ namespace SchemataPreview
 			ImmutableDictionary<object, object>.Builder result = Dictionary.ToBuilder();
 			foreach (KeyValuePair<object, object> pair in pairs)
 			{
-				if (pair.Key is not null && pair.Value is not null)
+				if (pair.Value is null)
 				{
-					result.Add(pair.Key, pair.Value is PSObject @object ? @object.BaseObject : pair);
+					throw new ArgumentNullException(pair.Key.ToString());
 				}
+				result.Add(pair.Key, pair.Value is PSObject @object ? @object.BaseObject : pair.Value);
 			}
 			return result.ToImmutable();
 		}
@@ -90,10 +88,6 @@ namespace SchemataPreview
 
 		public IImmutableDictionary<object, object> SetItem(object key, object value)
 		{
-			if (key is null)
-			{
-				throw new ArgumentNullException(nameof(key));
-			}
 			if (value is null)
 			{
 				throw new ArgumentNullException(nameof(value));
@@ -106,10 +100,11 @@ namespace SchemataPreview
 			ImmutableDictionary<object, object>.Builder result = Dictionary.ToBuilder();
 			foreach (KeyValuePair<object, object> item in items)
 			{
-				if (item.Key is not null && item.Value is not null)
+				if (item.Value is null)
 				{
-					result[item.Key] = item.Value is PSObject @object ? @object.BaseObject : item.Value;
+					throw new ArgumentNullException(item.Key.ToString());
 				}
+				result[item.Key] = item.Value is PSObject @object ? @object.BaseObject : item.Value;
 			}
 			return result.ToImmutable();
 		}

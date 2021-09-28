@@ -20,5 +20,9 @@ namespace SchemataPreview
 
 		public override ModelSet? Children => null;
 		public override bool Exists => File.Exists(FullName);
+
+		public static Schema<T> Build(ImmutableSchema schema)
+		{
+		}
 	}
 }

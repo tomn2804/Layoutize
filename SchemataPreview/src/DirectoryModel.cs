@@ -23,7 +23,7 @@ namespace SchemataPreview
 
 		public override ModelSet Children => _children;
 		public override bool Exists => Directory.Exists(FullName);
-		private ChildrenProperty _children;
+		private readonly ChildrenProperty _children;
 	}
 
 	public partial class DirectoryModel
@@ -37,7 +37,7 @@ namespace SchemataPreview
 
 			protected override bool TryGetValue(out ModelSet? result)
 			{
-				if (Schema.TryGetValue(Key, out object? @object))
+				if (Schema.TryGetValue(Key, out object? value))
 				{
 					Debug.Assert(@object is not null and not PSObject);
 					result = new(Model, @object.ToArray<Schema>());

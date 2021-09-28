@@ -8,38 +8,16 @@
 
   <ItemGroup>
     <Compile Remove="src\**" />
-    <Compile Remove="tests\temp\**" />
     <EmbeddedResource Remove="src\**" />
-    <EmbeddedResource Remove="tests\temp\**" />
     <None Remove="src\**" />
-    <None Remove="tests\temp\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\DirectoryModel.cs" />
-    <Compile Include="src\ExcludeModel.cs" />
     <Compile Include="src\FileModel.cs" />
     <Compile Include="src\FileSystemModel.cs" />
     <Compile Include="src\ImmutableSchema.cs" />
     <Compile Include="src\Model.cs" />
-    <Compile Include="src\ModelComparer.cs" />
-    <Compile Include="src\ModelSet.cs" />
-    <Compile Include="src\ObjectExtension.cs" />
-    <Compile Include="src\Pipe.cs" />
-    <Compile Include="src\PipeAssembly.cs" />
-    <Compile Include="src\PipeEventHandler.cs" />
-    <Compile Include="src\Pipeline.cs" />
-    <Compile Include="src\PipelineSequential.cs" />
-    <Compile Include="src\PipeOption.cs" />
-    <Compile Include="src\PipelineParallel.cs" />
-    <Compile Include="src\PipelineTraversalOption.cs" />
-    <Compile Include="src\PipeSegment.cs" />
     <Compile Include="src\Schema.cs" />
-    <Compile Include="src\SchematicDirectoryModel.cs" />
-    <Compile Include="src\StrictDirectoryModel.cs" />
-    <Compile Include="src\StrictTextModel.cs" />
-    <Compile Include="src\TextEditor.cs" />
-    <Compile Include="src\TextModel.cs" />
   </ItemGroup>
 
   <ItemGroup>

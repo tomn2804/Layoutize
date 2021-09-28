@@ -39,9 +39,9 @@ namespace SchemataPreview
 
 		public override T Build()
 		{
-			T model = GetNewModel();
-			new Pipeline(model).Invoke(PipeOption.Mount);
-			return model;
+			T result = GetNewModel();
+			new Pipeline(result).Invoke(PipeOption.Mount);
+			return result;
 		}
 
 		public override T Build(string path)
@@ -52,7 +52,7 @@ namespace SchemataPreview
 
 		public override T GetNewModel()
 		{
-			return (T)(Activator.CreateInstance(typeof(T), ToImmutable()) ?? throw new MissingMethodException());
+			return (T)Activator.CreateInstance(typeof(T), ToImmutable()).AssertNotNull();
 		}
 	}
 }

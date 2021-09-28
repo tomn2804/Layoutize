@@ -1,16 +1,35 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SchemataPreview
 {
 	public static class ObjectExtension
 	{
-		public static T[] ToArray<T>(this object? @object)
+		public static T AssertNotNull<T>(this T? @this)
 		{
-			if (@object is not null)
+			Debug.Assert(@this is not null);
+			return @this;
+		}
+
+		public static T[] ToArray<T>(this object? @this)
+		{
+			if (@this is null)
 			{
-				return @object is object[] array ? Array.ConvertAll(array, (t) => (T)t) : new T[] { (T)@object };
+				return Array.Empty<T>();
 			}
-			return Array.Empty<T>();
+			return @this is object[] array ? Array.ConvertAll(array, (t) => (T)t) : new T[] { (T)@this };
+		}
+
+		public static bool TryCast<T>(this object? @this, out T? result)
+		{
+			if (@this is T t)
+			{
+				result = t;
+				return true;
+			}
+			result = default;
+			return false;
 		}
 	}
 }

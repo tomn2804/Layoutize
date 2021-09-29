@@ -3,21 +3,44 @@ using System.Collections;
 
 namespace SchemataPreview
 {
-	public abstract partial class Schema : Hashtable
+	public class FileSchema : Schema<FileModel>
 	{
-		public abstract Model Build();
+		public FileSchema(Hashtable hashtable)
+			: base(hashtable)
+		{
+		}
 
-		public abstract Model Build(string path);
+		protected override Schema Build()
+		{
+			return this;
+		}
+	}
 
-		public abstract Model GetNewModel();
+	public abstract class Schema : Hashtable
+	{
+		public abstract Model Mount();
 
 		public ImmutableSchema ToImmutable()
 		{
-			return new(this);
+			return new(State);
 		}
 
-		protected Schema()
+		protected Schema(Hashtable hashtable)
+			: base(hashtable)
 		{
+			State = Build();
+		}
+
+		protected abstract Schema Build();
+
+		private Schema State { get; }
+	}
+
+	public abstract class Schema<T> : Schema where T : Model
+	{
+		public override T Mount()
+		{
+			return (T)Activator.CreateInstance(typeof(T), ToImmutable()).AssertNotNull();
 		}
 
 		protected Schema(Hashtable hashtable)
@@ -26,33 +49,17 @@ namespace SchemataPreview
 		}
 	}
 
-	public class Schema<T> : Schema where T : Model
+	public class TextSchema : Schema<TextModel>
 	{
-		public Schema()
-		{
-		}
-
-		public Schema(Hashtable hashtable)
+		public TextSchema(Hashtable hashtable)
 			: base(hashtable)
 		{
 		}
 
-		public override T Build()
+		protected override Schema Build()
 		{
-			T result = GetNewModel();
-			new Pipeline(result).Invoke(PipeOption.Mount);
-			return result;
-		}
-
-		public override T Build(string path)
-		{
-			this["Path"] = path;
-			return Build();
-		}
-
-		public override T GetNewModel()
-		{
-			return (T)Activator.CreateInstance(typeof(T), ToImmutable()).AssertNotNull();
+			Action<TextModel> handleOnCreated = (model) => { model.Contents = new string[] { "test" }; };
+			return new FileSchema(new Hashtable() { { "Name", "test" }, { "OnCreated", handleOnCreated } });
 		}
 	}
 }

@@ -1,58 +1,36 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace SchemataPreview
 {
 	public abstract class DefaultProperty<T> : Property<T> where T : notnull
 	{
-		[AllowNull]
-		[DisallowNull]
-		[MemberNotNull(nameof(_value))]
-		public override T Value
+		public override T Value { get; }
+
+		protected DefaultProperty(ImmutableSchema schema)
+			: base(schema)
 		{
-			get => _value.AssertNotNull();
-			init => _value = value ?? _getDefaultValue();
+			Value = TryGetValue(out T? value) ? value.AssertNotNull() : DefaultValue;
 		}
 
-		protected DefaultProperty(ImmutableSchema schema, Func<T> getDefaultValue) : base(schema)
-		{
-			Value = TryGetValue(out T? value) ? value.AssertNotNull() : getDefaultValue();
-			_getDefaultValue = getDefaultValue;
-		}
-
-		protected DefaultProperty(DefaultProperty<T> other)
-			: base(other)
-		{
-			Value = other.Value;
-			_getDefaultValue = other._getDefaultValue;
-		}
-
-		private Func<T> _getDefaultValue;
-		private T _value;
+		protected abstract T DefaultValue { get; }
 	}
 
 	public abstract class NullableProperty<T> : Property<T?>
 	{
-		public override T? Value { get; init; }
+		public override T? Value { get; }
 
-		protected NullableProperty(ImmutableSchema schema) : base(schema)
+		protected NullableProperty(ImmutableSchema schema)
+			: base(schema)
 		{
 			Value = TryGetValue(out T? result) ? result.AssertNotNull() : default;
-		}
-
-		protected NullableProperty(NullableProperty<T> other)
-			: base(other)
-		{
-			Value = other.Value;
 		}
 	}
 
 	public abstract class Property<T>
 	{
 		public abstract string Key { get; }
-		public abstract T Value { get; init; }
+		public abstract T Value { get; }
 
 		public static implicit operator T(Property<T> @this)
 		{
@@ -62,11 +40,6 @@ namespace SchemataPreview
 		protected Property(ImmutableSchema schema)
 		{
 			Schema = schema;
-		}
-
-		protected Property(Property<T> other)
-		{
-			Schema = other.Schema;
 		}
 
 		protected ImmutableSchema Schema { get; }
@@ -85,28 +58,14 @@ namespace SchemataPreview
 
 	public abstract class RequiredProperty<T> : Property<T> where T : notnull
 	{
-		[AllowNull]
-		[MemberNotNull(nameof(_value))]
-		public override T Value
-		{
-			get => _value;
-			init => _value = value ?? throw new ArgumentNullException(Key);
-		}
+		public override T Value { get; }
 
 		protected RequiredProperty(ImmutableSchema schema)
 			: base(schema)
 		{
 			TryGetValue(out T? result);
-			Value = result;
+			Value = result ?? throw new ArgumentNullException(Key);
 		}
-
-		protected RequiredProperty(RequiredProperty<T> other)
-			: base(other)
-		{
-			Value = other.Value;
-		}
-
-		private T _value;
 	}
 }
 
@@ -117,21 +76,16 @@ namespace SchemataPreview
 		public FileNameProperty(ImmutableSchema schema)
 			: base(schema)
 		{
-			Validate();
 		}
 
-		public FileNameProperty(FileNameProperty other)
-			: base(other)
+		protected override bool TryGetValue(out string? value)
 		{
-			Validate();
-		}
-
-		protected void Validate()
-		{
-			if (Value.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+			bool hasResult = base.TryGetValue(out value);
+			if (value?.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
 			{
 				throw new ArgumentException($"Schema '{Key}' property value cannot contains invalid characters. Recieved value: '{Value}'", Key);
 			}
+			return hasResult;
 		}
 	}
 
@@ -139,11 +93,6 @@ namespace SchemataPreview
 	{
 		public NameProperty(ImmutableSchema schema)
 			: base(schema)
-		{
-		}
-
-		public NameProperty(NameProperty other)
-			: base(other)
 		{
 		}
 
@@ -168,38 +117,24 @@ namespace SchemataPreview
 		{
 		}
 
-		public ParentProperty(ParentProperty other)
-			: base(other)
-		{
-		}
-
 		public override string Key => "Parent";
 	}
 
 	public class PassThruProperty : DefaultProperty<bool>
 	{
 		public PassThruProperty(ImmutableSchema schema)
-			: base(schema, () => false)
-		{
-		}
-
-		public PassThruProperty(PassThruProperty other)
-			: base(other)
+			: base(schema)
 		{
 		}
 
 		public override string Key => "PassThru";
+		protected override bool DefaultValue => false;
 	}
 
 	public class PathProperty : NullableProperty<string>
 	{
 		public PathProperty(ImmutableSchema schema)
 			: base(schema)
-		{
-		}
-
-		public PathProperty(PathProperty other)
-			: base(other)
 		{
 		}
 
@@ -213,26 +148,17 @@ namespace SchemataPreview
 		{
 		}
 
-		public PriorityProperty(PriorityProperty other)
-			: base(other)
-		{
-		}
-
 		public override string Key => "Priority";
 	}
 
 	public class TraversalProperty : DefaultProperty<PipelineTraversalOption>
 	{
 		public TraversalProperty(ImmutableSchema schema)
-			: base(schema, () => PipelineTraversalOption.PreOrder)
-		{
-		}
-
-		public TraversalProperty(TraversalProperty other)
-			: base(other)
+			: base(schema)
 		{
 		}
 
 		public override string Key => "Traversal";
+		protected override PipelineTraversalOption DefaultValue => PipelineTraversalOption.PreOrder;
 	}
 }

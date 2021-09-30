@@ -28,8 +28,10 @@ namespace SchemataPreview
 		protected Model(ImmutableSchema schema)
 		{
 			Schema = schema;
+			PipeAssembly.Register("Create", schema["OnCreating"], schema["OnCreated"]);
 		}
 
+		protected PipeAssembly PipeAssembly { get; }
 		protected ImmutableSchema Schema { get; }
 	}
 }

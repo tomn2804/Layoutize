@@ -3,6 +3,10 @@ using System.IO;
 
 namespace SchemataPreview
 {
+	public interface IDirectory
+	{
+	}
+
 	public class DirectoryModel : Model
 	{
 		public DirectoryModel(ImmutableSchema schema)

@@ -3,33 +3,28 @@ using System.Collections;
 
 namespace SchemataPreview
 {
-	public class FileSchema : Schema<FileModel>
-	{
-		public FileSchema(Hashtable hashtable)
-			: base(hashtable)
-		{
-		}
-
-		protected override Schema Build()
-		{
-			return this;
-		}
-	}
-
-	public abstract class Schema : Hashtable
+	public abstract class Schema
 	{
 		public abstract Model Mount();
 
 		public ImmutableSchema ToImmutable()
 		{
-			return new(State);
+			return new(Props);
 		}
 
-		protected Schema(Hashtable hashtable)
-			: base(hashtable)
+		protected Schema(Hashtable props)
 		{
+			Props = props;
 			State = Build();
 		}
+
+		protected Schema(Hashtable props, Schema state)
+		{
+			Props = props;
+			State = state;
+		}
+
+		protected Hashtable Props { get; }
 
 		protected abstract Schema Build();
 
@@ -40,26 +35,19 @@ namespace SchemataPreview
 	{
 		public override T Mount()
 		{
-			return (T)Activator.CreateInstance(typeof(T), ToImmutable()).AssertNotNull();
+			T result = (T)Activator.CreateInstance(typeof(T), ToImmutable()).AssertNotNull();
+			new Pipeline(result).Invoke(PipeOption.Mount);
+			return result;
 		}
 
-		protected Schema(Hashtable hashtable)
-			: base(hashtable)
-		{
-		}
-	}
-
-	public class TextSchema : Schema<TextModel>
-	{
-		public TextSchema(Hashtable hashtable)
-			: base(hashtable)
+		protected Schema(Hashtable props)
+			: base(props)
 		{
 		}
 
-		protected override Schema Build()
+		protected Schema(Hashtable props, Schema state)
+			: base(props, state)
 		{
-			Action<TextModel> handleOnCreated = (model) => { model.Contents = new string[] { "test" }; };
-			return new FileSchema(new Hashtable() { { "Name", "test" }, { "OnCreated", handleOnCreated } });
 		}
 	}
 }

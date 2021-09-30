@@ -9,10 +9,10 @@ namespace SchemataPreview
 {
 	public partial class ImmutableSchema
 	{
-		public ImmutableSchema(Schema schema)
+		public ImmutableSchema(Hashtable props)
 		{
 			ImmutableDictionary<object, object>.Builder dictionary = ImmutableDictionary.CreateBuilder<object, object>();
-			foreach (DictionaryEntry entry in schema)
+			foreach (DictionaryEntry entry in props)
 			{
 				if (entry.Value is null)
 				{

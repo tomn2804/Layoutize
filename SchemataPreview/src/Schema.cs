@@ -1,53 +1,45 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Immutable;
+using System.Management.Automation;
 
 namespace SchemataPreview
 {
-	public abstract class Schema
-	{
-		public abstract Model Mount();
+    public abstract class Schema
+    {
+        public ImmutableDefinition Definition { get; }
 
-		public ImmutableSchema ToImmutable()
-		{
-			return new(Props);
-		}
+        public abstract Model Mount();
 
-		protected Schema(Hashtable props)
-		{
-			Props = props;
-			State = Build();
-		}
+        protected Schema(Definition definition)
+        {
+            Definition = definition.ToImmutable();
+        }
 
-		protected Schema(Hashtable props, Schema state)
-		{
-			Props = props;
-			State = state;
-		}
+        protected abstract Schema Build();
 
-		protected Hashtable Props { get; }
+        protected abstract Type ModelType { get; }
+    }
 
-		protected abstract Schema Build();
+    public abstract class Schema<T> : Schema where T : Model
+    {
+        public override T Mount()
+        {
+            Schema schema = Build();
+            if (!ModelType.IsAssignableTo(schema.ModelType))
+            {
+                throw new InvalidOperationException();
+            }
+            T result = (T)Activator.CreateInstance(ModelType, schema).AssertNotNull();
+            //new Pipeline(result).Invoke(PipeOption.Mount);
+            return result;
+        }
 
-		private Schema State { get; }
-	}
+        protected Schema(Definition definition)
+            : base(definition)
+        {
+        }
 
-	public abstract class Schema<T> : Schema where T : Model
-	{
-		public override T Mount()
-		{
-			T result = (T)Activator.CreateInstance(typeof(T), ToImmutable()).AssertNotNull();
-			new Pipeline(result).Invoke(PipeOption.Mount);
-			return result;
-		}
-
-		protected Schema(Hashtable props)
-			: base(props)
-		{
-		}
-
-		protected Schema(Hashtable props, Schema state)
-			: base(props, state)
-		{
-		}
-	}
+        protected override Type ModelType => typeof(T);
+    }
 }

@@ -8,10 +8,7 @@ using SchemataPreview;
 
 namespace SchemataPreview.Tests
 {
-	public class SchemaTests
-	{
-		public class BuildMethod
-		{
-		}
-	}
+    public class SchemaTests
+    {
+    }
 }

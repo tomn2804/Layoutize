@@ -13,30 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\DirectoryModel.cs" />
-    <Compile Include="src\FileModel.cs" />
-    <Compile Include="src\FileSchema.cs" />
-    <Compile Include="src\ImmutableSchema.cs" />
-    <Compile Include="src\Model.cs" />
-    <Compile Include="src\ObjectExtension.cs" />
-    <Compile Include="src\Schema.cs" />
-    <Compile Include="src\ModelSet.cs" />
-    <Compile Include="src\Property.cs" />
-    <Compile Include="src\TextEditor.cs" />
-    <Compile Include="src\TextModel.cs" />
-    <Compile Include="src\TextSchema.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.1.3" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\temp\" />
-  </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot;&#xD;&#xA;" />
-  </Target>
 
 </Project>

@@ -10,6 +10,7 @@
     <Compile Remove="FileNameProperty.cs" />
     <Compile Remove="NameProperty.cs" />
     <Compile Remove="SchemaTests.cs" />
+    <Compile Remove="SketchTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

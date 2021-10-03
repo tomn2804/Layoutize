@@ -3,32 +3,28 @@ using System.Collections;
 
 namespace SchemataPreview
 {
-	public class FileSchema : Schema<FileModel>
-	{
-		public FileSchema(Hashtable props)
-			: base(props)
-		{
-		}
+    public class FileSchema : Schema<FileModel>
+    {
+        public FileSchema(Definition definition)
+            : base(definition)
+        {
+        }
 
-		protected FileSchema(Hashtable props, Schema state)
-			: base(props, state)
-		{
-		}
-
-		protected override Schema Build()
-		{
-			Hashtable props = new();
-			props["OnCreating"] = (Action<FileModel>)((model) =>
-			{
-				model.Create();
-				((Action<Model>?)Props["OnCreating"])?.Invoke(model);
-			});
-			props["OnDeleting"] = (Action<FileModel>)((model) =>
-			{
-				model.Create();
-				((Action<Model>?)Props["OnDeleting"])?.Invoke(model);
-			});
-			return new FileSchema(props, this);
-		}
-	}
+        protected override Schema Build()
+        {
+            Definition definition = new();
+            definition["OnCreated"] = (Action<FileModel>)((model) =>
+            {
+                model.Create();
+                ((Action<Model>?)definition["OnCreated"])?.Invoke(model);
+            });
+            definition["OnCreated"] = (Action<FileModel>)((model) =>
+            {
+                model.Delete();
+                ((Action<Model>?)definition["OnCreated"])?.Invoke(model);
+            });
+            definition.Add(PropsOperator.Spread, definition);
+            return new FileSchema(definition);
+        }
+    }
 }

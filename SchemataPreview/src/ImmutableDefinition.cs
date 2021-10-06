@@ -7,9 +7,9 @@ namespace SchemataPreview
 {
     public partial class ImmutableDefinition
     {
-        private ImmutableDefinition(ImmutableDictionary<object, object> dictionary)
+        public static implicit operator ImmutableDefinition(Builder builder)
         {
-            Dictionary = dictionary;
+            return builder.ToImmutable();
         }
 
         public Builder ToBuilder()
@@ -18,6 +18,12 @@ namespace SchemataPreview
         }
 
         protected ImmutableDictionary<object, object> Dictionary { get; }
+
+        private ImmutableDefinition(ImmutableDictionary<object, object> dictionary)
+        {
+            Dictionary = dictionary;
+        }
+
         private IImmutableDictionary<object, object> IDictionary => Dictionary;
     }
 
@@ -65,6 +71,11 @@ namespace SchemataPreview
             return IDictionary.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return IDictionary.GetEnumerator();
+        }
+
         public IImmutableDictionary<object, object> Remove(object key)
         {
             return IDictionary.Remove(key);
@@ -100,11 +111,6 @@ namespace SchemataPreview
         public bool TryGetValue(object key, [MaybeNullWhen(false)] out object value)
         {
             return IDictionary.TryGetValue(key, out value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return IDictionary.GetEnumerator();
         }
     }
 }

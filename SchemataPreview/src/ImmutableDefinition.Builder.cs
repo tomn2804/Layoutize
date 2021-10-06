@@ -20,7 +20,7 @@ namespace SchemataPreview
                 Dictionary = ImmutableDictionary.CreateBuilder<object, object>();
                 foreach (DictionaryEntry entry in dictionary)
                 {
-                    Dictionary.Add(entry.Key, entry.Value ?? throw new ArgumentNullException(nameof(entry.Value)));
+                    Dictionary.Add(entry.Key, entry.Value ?? throw new ArgumentNullException(entry.Key.ToString()));
                 }
             }
 
@@ -40,10 +40,10 @@ namespace SchemataPreview
 
         public partial class Builder : IDictionary<object, object>
         {
-            public ICollection<object> Keys => IDictionary.Keys;
-            public ICollection<object> Values => IDictionary.Values;
             public int Count => IDictionary.Count;
             public bool IsReadOnly => IDictionary.IsReadOnly;
+            public ICollection<object> Keys => IDictionary.Keys;
+            public ICollection<object> Values => IDictionary.Values;
 
             public object this[object key]
             {
@@ -52,12 +52,12 @@ namespace SchemataPreview
                 {
                     if (value is null)
                     {
-                        throw new ArgumentNullException(null, nameof(value));
+                        throw new ArgumentNullException(key.ToString());
                     }
                     switch (key)
                     {
                         case DefinitionOperator.Spread:
-                            DefinitionOperation.Spread(IDictionary, value is IDictionary dictionary ? dictionary : throw new ArgumentException(null, nameof(value)));
+                            Dictionary.Merge(value is IDictionary dictionary ? dictionary : throw new ArgumentException(key.ToString()));
                             break;
 
                         default:
@@ -71,12 +71,12 @@ namespace SchemataPreview
             {
                 if (value is null)
                 {
-                    throw new ArgumentNullException(nameof(value));
+                    throw new ArgumentNullException(key.ToString());
                 }
                 switch (key)
                 {
                     case DefinitionOperator.Spread:
-                        DefinitionOperation.Spread(IDictionary, value is IDictionary dictionary ? dictionary : throw new ArgumentException(null, nameof(value)));
+                        Dictionary.Merge(value is IDictionary dictionary ? dictionary : throw new ArgumentException(key.ToString()));
                         break;
 
                     default:
@@ -89,12 +89,12 @@ namespace SchemataPreview
             {
                 if (item.Value is null)
                 {
-                    throw new ArgumentNullException(nameof(item.Value));
+                    throw new ArgumentNullException(item.Key.ToString());
                 }
                 switch (item.Key)
                 {
                     case DefinitionOperator.Spread:
-                        DefinitionOperation.Spread(IDictionary, item.Value is IDictionary dictionary ? dictionary : throw new ArgumentException(null, nameof(item.Value)));
+                        Dictionary.Merge(item.Value is IDictionary dictionary ? dictionary : throw new ArgumentException(item.Key.ToString()));
                         break;
 
                     default:
@@ -128,6 +128,11 @@ namespace SchemataPreview
                 return IDictionary.GetEnumerator();
             }
 
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return ((IEnumerable)IDictionary).GetEnumerator();
+            }
+
             public bool Remove(object key)
             {
                 return IDictionary.Remove(key);
@@ -141,11 +146,6 @@ namespace SchemataPreview
             public bool TryGetValue(object key, [MaybeNullWhen(false)] out object value)
             {
                 return IDictionary.TryGetValue(key, out value);
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable)IDictionary).GetEnumerator();
             }
         }
     }

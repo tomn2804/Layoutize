@@ -3,9 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SchemataPreview
 {
-    public abstract class Property<T>
+    public abstract class Property<T> : Model.Component
     {
         public abstract string Key { get; }
+
         public abstract T Value { get; }
 
         public static implicit operator T(Property<T> @this)
@@ -13,22 +14,18 @@ namespace SchemataPreview
             return @this.Value;
         }
 
-        protected Property(ImmutableDefinition definition)
+        protected Property(Model model)
+            : base(model)
         {
-            definition = definition;
         }
 
-        protected ImmutableDefinition definition { get; }
-
-        protected virtual bool TryGetValue([MaybeNullWhen(false)] out T value)
+        protected virtual T? GetValue()
         {
-            if (definition.TryGetValue(Key, out object? @object))
+            if (Schema.Props.TryGetValue(Key, out object? @object))
             {
-                value = @object is T result ? result : throw new ArgumentException($"Definition property value at key {Key} must be of type '{typeof(T)}'. Recieved type: '{@object.GetType()}'.", Key);
-                return true;
+                return @object is T result ? result : throw new ArgumentException($"Props property value at key '{Key}' must be of type '{typeof(T)}'. Recieved type: '{@object.GetType()}'.", Key);
             }
-            value = default;
-            return false;
+            return default;
         }
     }
 }

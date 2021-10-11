@@ -1,13 +1,24 @@
-﻿namespace SchemataPreview
+﻿using System;
+
+namespace SchemataPreview
 {
     public class TraversalProperty : DefaultProperty<PipelineTraversalOption>
     {
-        public TraversalProperty(ImmutableDefinition definition)
-            : base(definition)
+        public TraversalProperty(PipelineTraversalOption value)
+            : base(value)
+        {
+        }
+
+        public TraversalProperty(Schema props)
+            : base(props)
         {
         }
 
         public override string Key => "Traversal";
-        protected override PipelineTraversalOption DefaultValue => PipelineTraversalOption.Default;
+
+        protected override PipelineTraversalOption GetDefaultValue()
+        {
+            return PipelineTraversalOption.Default;
+        }
     }
 }

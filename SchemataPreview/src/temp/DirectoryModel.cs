@@ -7,8 +7,8 @@ namespace SchemataPreview
 {
 	public partial class DirectoryModel : FileSystemModel
 	{
-		public DirectoryModel(ImmutableSchema schema)
-			: base(schema)
+		public DirectoryModel(ImmutableDefinition Props)
+			: base(props)
 		{
 			PipeAssembly[PipeOption.Create].OnProcessing += (_, _) =>
 			{
@@ -37,10 +37,10 @@ namespace SchemataPreview
 
 			protected override bool TryGetValue(out ModelSet? result)
 			{
-				if (Schema.TryGetValue(Key, out object? value))
+				if (Props.TryGetValue(Key, out object? value))
 				{
 					Debug.Assert(@object is not null and not PSObject);
-					result = new(Model, @object.ToArray<Schema>());
+					result = new(Model, @object.ToArray<Props>());
 					return true;
 				}
 				result = default;

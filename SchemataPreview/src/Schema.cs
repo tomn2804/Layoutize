@@ -7,22 +7,30 @@ namespace SchemataPreview
 {
     public abstract class Schema
     {
-        public ImmutableDefinition Definition { get; }
+        public abstract Type ModelType { get; }
+        public ImmutableProps Props { get; }
+
+        public abstract Model CreateModel();
 
         public abstract Model Mount();
 
-        protected Schema(Definition definition)
+        protected Schema(ImmutableProps props)
         {
-            Definition = definition.ToImmutable();
+            Props = props;
         }
 
         protected abstract Schema Build();
-
-        protected abstract Type ModelType { get; }
     }
 
     public abstract class Schema<T> : Schema where T : Model
     {
+        public override Type ModelType => typeof(T);
+
+        public override T CreateModel()
+        {
+            return (T)Activator.CreateInstance(ModelType, this).AssertNotNull();
+        }
+
         public override T Mount()
         {
             Schema schema = Build();
@@ -35,11 +43,9 @@ namespace SchemataPreview
             return result;
         }
 
-        protected Schema(Definition definition)
-            : base(definition)
+        protected Schema(ImmutableProps props)
+            : base(props)
         {
         }
-
-        protected override Type ModelType => typeof(T);
     }
 }

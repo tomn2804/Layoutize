@@ -3,39 +3,39 @@ using System.Collections;
 
 namespace SchemataPreview
 {
-    public class TextSchema : Schema<TextModel>
+    public class TextDefinition : Schema<TextModel>
     {
-        public TextSchema(Definition definition)
-            : base(definition)
+        public TextDefinition(ImmutableProps props)
+            : base(props)
         {
         }
 
         protected override Schema Build()
         {
-            Definition definition = new();
-            if (Definition.TryGetValue("Contents", out object? @object))
+            ImmutableProps.Builder props = new();
+            if (Props.TryGetValue("Contents", out object? @object))
             {
                 switch (@object)
                 {
                     case string line:
-                        definition["OnCreated"] = (Action<TextModel>)((model) =>
+                        props["OnCreated"] = (Action<TextModel>)((model) =>
                         {
                             model.Contents = new string[] { line };
-                            ((Action<Model>?)Definition["OnCreated"])?.Invoke(model);
+                            ((Action<Model>?)Props["OnCreated"])?.Invoke(model);
                         });
                         break;
 
                     case string[] lines:
-                        definition["OnCreated"] = (Action<TextModel>)((model) =>
+                        props["OnCreated"] = (Action<TextModel>)((model) =>
                         {
                             model.Contents = lines;
-                            ((Action<Model>?)Definition["OnCreated"])?.Invoke(model);
+                            ((Action<Model>?)Props["OnCreated"])?.Invoke(model);
                         });
                         break;
                 }
             }
-            definition.Add(DefinitionOperator.Spread, definition);
-            return new FileSchema(definition);
+            props.Add(PropsOperator.Spread, props);
+            return new FileSchema(props);
         }
     }
 }

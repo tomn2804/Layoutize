@@ -5,22 +5,25 @@ namespace SchemataPreview
 {
     public class NameProperty : RequiredProperty<string>
     {
-        public NameProperty(ImmutableDefinition definition)
-            : base(definition)
+        public NameProperty(Model model)
+            : base(model)
+        {
+        }
+
+        public NameProperty(Model model, string value)
+            : base(model, value)
         {
         }
 
         public override string Key => "Name";
 
-        protected override bool TryGetValue([MaybeNullWhen(false)] out string value)
+        protected override string? GetValue()
         {
-            if (definition.TryGetValue(Key, out object? result) && !string.IsNullOrWhiteSpace(result.ToString()))
+            if (Schema.Props.TryGetValue(Key, out object? @object) && @object.ToString() is string result && !string.IsNullOrWhiteSpace(result))
             {
-                value = result.ToString().AssertNotNull();
-                return true;
+                return result;
             }
-            value = default;
-            return false;
+            return default;
         }
     }
 }

@@ -2,8 +2,13 @@
 {
     public class ParentProperty : NullableProperty<Model?>
     {
-        public ParentProperty(ImmutableDefinition definition)
-            : base(definition)
+        public ParentProperty(Model model)
+            : base(model)
+        {
+        }
+
+        public ParentProperty(Model model, Model? value)
+            : base(model, value)
         {
         }
 

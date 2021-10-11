@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SchemataPreview
 {
@@ -6,10 +7,16 @@ namespace SchemataPreview
     {
         public override T Value { get; }
 
-        protected RequiredProperty(ImmutableDefinition definition)
-            : base(definition)
+        protected RequiredProperty(Model model)
+            : base(model)
         {
-            Value = TryGetValue(out T? result) ? result.AssertNotNull() : throw new ArgumentNullException(Key);
+            Value = GetValue() ?? throw new ArgumentNullException(Key);
+        }
+
+        protected RequiredProperty(Model model, T value)
+            : base(model)
+        {
+            Value = value;
         }
     }
 }

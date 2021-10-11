@@ -5,9 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SchemataPreview
 {
-    public partial class ImmutableDefinition
+    public partial class ImmutableProps
     {
-        public static implicit operator ImmutableDefinition(Builder builder)
+        public static implicit operator ImmutableProps(Builder builder)
         {
             return builder.ToImmutable();
         }
@@ -19,7 +19,7 @@ namespace SchemataPreview
 
         protected ImmutableDictionary<object, object> Dictionary { get; }
 
-        private ImmutableDefinition(ImmutableDictionary<object, object> dictionary)
+        private ImmutableProps(ImmutableDictionary<object, object> dictionary)
         {
             Dictionary = dictionary;
         }
@@ -27,7 +27,7 @@ namespace SchemataPreview
         private IImmutableDictionary<object, object> IDictionary => Dictionary;
     }
 
-    public partial class ImmutableDefinition : IImmutableDictionary<object, object>
+    public partial class ImmutableProps : IImmutableDictionary<object, object>
     {
         public int Count => IDictionary.Count;
         public IEnumerable<object> Keys => IDictionary.Keys;

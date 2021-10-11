@@ -7,18 +7,18 @@ namespace SchemataPreview
 {
 	public class FileModel : Model
 	{
-		public FileModel(Model schema)
-			: base(schema)
+		public FileModel(Model Props)
+			: base(props)
 		{
 		}
 
 		public override bool Exists => File.Exists(FullName);
 
-		public static new Schema Build(ImmutableSchema schema)
+		public static new Props Build(ImmutableDefinition Props)
 		{
-			Schema<Model> result = new();
-			result["Name"] = schema["Name"];
-			result["Path"] = schema["Path"];
+			Props<Model> result = new();
+			result["Name"] = Props["Name"];
+			result["Path"] = Props["Path"];
 			result["OnCreated"] = (Action<Model>)((model) =>
 			{
 				Console.WriteLine("Create file");
@@ -41,17 +41,17 @@ namespace SchemataPreview
 
 		public override bool Exists => File.Exists(FullName);
 
-		public static new Schema Build(ImmutableSchema schema)
+		public static new Props Build(ImmutableDefinition Props)
 		{
-			Schema<FileModel> result = new();
-			foreach (KeyValuePair<object, object> entry in schema)
+			Props<FileModel> result = new();
+			foreach (KeyValuePair<object, object> entry in Props)
 			{
 				result[entry.Key] = entry.Value;
 			}
 			result["OnCreated"] = (Action<Model>)((model) =>
 			{
 				Console.WriteLine("Test");
-				schema.TryGetValue("OnCreated", out object? f);
+				Props.TryGetValue("OnCreated", out object? f);
 				if (f is Action<Model> z)
 				{
 					z(model);

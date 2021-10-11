@@ -2,8 +2,8 @@
 {
 	public class StrictTextModel : TextModel
 	{
-		public StrictTextModel(ImmutableSchema schema)
-			: base(schema)
+		public StrictTextModel(ImmutableDefinition Props)
+			: base(props)
 		{
 			PipeAssembly.Register(PipeOption.Format).OnProcessing += (_, _) =>
 			{

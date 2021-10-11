@@ -5,26 +5,26 @@ namespace SchemataPreview
 {
     public class FileSchema : Schema<FileModel>
     {
-        public FileSchema(Definition definition)
-            : base(definition)
+        public FileSchema(ImmutableProps props)
+            : base(props)
         {
         }
 
         protected override Schema Build()
         {
-            Definition definition = new();
-            definition["OnCreated"] = (Action<FileModel>)((model) =>
+            ImmutableProps.Builder props = new();
+            props["OnCreated"] = (Action<FileModel>)((model) =>
             {
                 model.Create();
-                ((Action<Model>?)definition["OnCreated"])?.Invoke(model);
+                ((Action<Model>?)props["OnCreated"])?.Invoke(model);
             });
-            definition["OnCreated"] = (Action<FileModel>)((model) =>
+            props["OnCreated"] = (Action<FileModel>)((model) =>
             {
                 model.Delete();
-                ((Action<Model>?)definition["OnCreated"])?.Invoke(model);
+                ((Action<Model>?)props["OnCreated"])?.Invoke(model);
             });
-            definition.Add(PropsOperator.Spread, definition);
-            return new FileSchema(definition);
+            props.Add(PropsOperator.Spread, props);
+            return new FileSchema(props);
         }
     }
 }

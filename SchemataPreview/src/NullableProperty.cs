@@ -6,10 +6,16 @@ namespace SchemataPreview
     {
         public override T? Value { get; }
 
-        protected NullableProperty(ImmutableDefinition definition)
-            : base(definition)
+        protected NullableProperty(Model model)
+            : base(model)
         {
-            Value = TryGetValue(out T? result) ? result.AssertNotNull() : default;
+            Value = GetValue();
+        }
+
+        protected NullableProperty(Model model, T value)
+            : base(model)
+        {
+            Value = value;
         }
     }
 }

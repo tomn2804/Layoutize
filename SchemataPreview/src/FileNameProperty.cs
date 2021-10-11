@@ -6,22 +6,24 @@ namespace SchemataPreview
 {
     public class FileNameProperty : NameProperty
     {
-        public FileNameProperty(ImmutableDefinition definition)
-            : base(definition)
+        public FileNameProperty(Model model)
+            : base(model)
         {
+            Validate();
         }
 
-        protected override bool TryGetValue([MaybeNullWhen(false)] out string value)
+        public FileNameProperty(Model model, string value)
+            : base(model, value)
         {
-            if (base.TryGetValue(out value))
+            Validate();
+        }
+
+        private void Validate()
+        {
+            if (Value.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
             {
-                if (value.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-                {
-                    throw new ArgumentException($"Definition '{Key}' property value cannot contains invalid characters. Recieved value: '{Value}'", Key);
-                }
-                return true;
+                throw new ArgumentException($"Props '{Key}' property value cannot contains invalid characters. Recieved value: '{Value}'", Key);
             }
-            return false;
         }
     }
 }

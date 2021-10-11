@@ -7,8 +7,8 @@ namespace SchemataPreview
 {
 	public class StrictDirectoryModel : DirectoryModel
 	{
-		public StrictDirectoryModel(ImmutableSchema schema)
-			: base(schema)
+		public StrictDirectoryModel(ImmutableDefinition Props)
+			: base(props)
 		{
 			PipeAssembly.Register(PipeOption.Format).OnProcessing += (_, _) =>
 			{

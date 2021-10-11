@@ -6,8 +6,8 @@ namespace SchemataPreview
 {
 	public abstract class FileSystemModel : Model
 	{
-		public FileSystemModel(ImmutableSchema schema)
-			: base(schema)
+		public FileSystemModel(ImmutableDefinition Props)
+			: base(props)
 		{
 			PipeAssembly.Register(PipeOption.Create);
 			PipeAssembly.Register(PipeOption.Delete);
@@ -16,7 +16,7 @@ namespace SchemataPreview
 				Validate();
 				if (Exists)
 				{
-					if (schema.TryGetValue("UseHardMount", out object? useHardMount) && (bool)useHardMount)
+					if (Props.TryGetValue("UseHardMount", out object? useHardMount) && (bool)useHardMount)
 					{
 						pipe.Extend(PipeAssembly[PipeOption.Delete]);
 						pipe.Extend(PipeAssembly[PipeOption.Create]);

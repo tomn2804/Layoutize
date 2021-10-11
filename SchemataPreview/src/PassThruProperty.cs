@@ -2,12 +2,21 @@
 {
     public class PassThruProperty : DefaultProperty<bool>
     {
-        public PassThruProperty(ImmutableDefinition definition)
-            : base(definition)
+        public PassThruProperty(Model model)
+            : base(model)
+        {
+        }
+
+        public PassThruProperty(Model model, bool value)
+            : base(model, value)
         {
         }
 
         public override string Key => "PassThru";
-        protected override bool DefaultValue => false;
+
+        protected override bool GetDefaultValue()
+        {
+            return false;
+        }
     }
 }

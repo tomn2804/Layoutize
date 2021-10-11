@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SchemataPreview
 {
-    public partial class ImmutableDefinition
+    public partial class ImmutableProps
     {
         public partial class Builder
         {
@@ -24,12 +24,12 @@ namespace SchemataPreview
                 }
             }
 
-            public Builder(ImmutableDefinition definition)
+            public Builder(ImmutableProps props)
             {
-                Dictionary = definition.Dictionary.ToBuilder();
+                Dictionary = props.Dictionary.ToBuilder();
             }
 
-            public ImmutableDefinition ToImmutable()
+            public ImmutableProps ToImmutable()
             {
                 return new(Dictionary.ToImmutable());
             }
@@ -56,7 +56,7 @@ namespace SchemataPreview
                     }
                     switch (key)
                     {
-                        case DefinitionOperator.Spread:
+                        case PropsOperator.Spread:
                             Dictionary.Merge(value is IDictionary dictionary ? dictionary : throw new ArgumentException(key.ToString()));
                             break;
 
@@ -75,7 +75,7 @@ namespace SchemataPreview
                 }
                 switch (key)
                 {
-                    case DefinitionOperator.Spread:
+                    case PropsOperator.Spread:
                         Dictionary.Merge(value is IDictionary dictionary ? dictionary : throw new ArgumentException(key.ToString()));
                         break;
 
@@ -93,7 +93,7 @@ namespace SchemataPreview
                 }
                 switch (item.Key)
                 {
-                    case DefinitionOperator.Spread:
+                    case PropsOperator.Spread:
                         Dictionary.Merge(item.Value is IDictionary dictionary ? dictionary : throw new ArgumentException(item.Key.ToString()));
                         break;
 

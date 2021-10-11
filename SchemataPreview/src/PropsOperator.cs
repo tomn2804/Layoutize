@@ -1,6 +1,6 @@
 ﻿namespace SchemataPreview
 {
-    public enum DefinitionOperator
+    public enum PropsOperator
     {
         Spread
     }

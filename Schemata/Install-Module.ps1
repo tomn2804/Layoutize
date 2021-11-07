@@ -3,7 +3,11 @@ param (
 	[Parameter(Mandatory)]
 	[ValidateNotNullOrEmpty()]
 	[string]
-	$TargetPath
+	$TargetPath,
+
+	[string]
+	[ValidateNotNullOrEmpty()]
+	$PSModulePath = ($Env:PSModulePath -split ';' | Select-Object -First 1)
 )
 
-Copy-Item -Path $TargetPath -Destination ($Env:PSModulePath -split ';' | Select-Object -First 1 | New-Item -Name (Split-Path -Path $TargetPath -LeafBase) -ItemType 'Directory' -Force -PassThru)
+Copy-Item -Path $TargetPath -Destination (New-Item -Path $PSModulePath -Name (Split-Path -Path $TargetPath -LeafBase) -ItemType 'Directory' -Force)

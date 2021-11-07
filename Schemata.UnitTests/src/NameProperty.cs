@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SchemataPreview.Tests
+namespace Schemata.UnitTests
 {
     public class NameProperty
     {

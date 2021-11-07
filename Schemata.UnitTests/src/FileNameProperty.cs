@@ -3,7 +3,7 @@ using System.Linq;
 using System.Management.Automation;
 using Xunit;
 
-namespace SchemataPreview.Tests
+namespace Schemata.UnitTests
 {
     public class FileNameProperty
     {

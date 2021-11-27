@@ -4,18 +4,15 @@ using System.Linq;
 using System.Management.Automation;
 using Xunit;
 
-namespace Schemata.UnitTests
+namespace Schemata.Tests
 {
     public class WorkbenchTests : IDisposable
     {
-        public static string WorkingDirectory = $"{Path.GetTempPath()}Schemata.UnitTests";
+        public static string WorkingDirectory => $"{Path.GetTempPath()}Schemata.Tests";
 
         public WorkbenchTests()
         {
-            if (!Directory.Exists(WorkingDirectory))
-            {
-                Directory.CreateDirectory(WorkingDirectory);
-            }
+            Directory.CreateDirectory(WorkingDirectory);
         }
 
         [Fact]

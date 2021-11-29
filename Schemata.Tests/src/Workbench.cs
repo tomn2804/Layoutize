@@ -22,6 +22,7 @@ namespace Schemata.Tests
             Model model = (Model)instance.AddScript($@"
             	using module Schemata
             	using namespace Schemata
+                using namespace System.Collections
 
             	class TestDirectorySchema : Schema<DirectoryModel> {{
                     TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}
@@ -45,6 +46,7 @@ namespace Schemata.Tests
             Model model = (Model)instance.AddScript($@"
             	using module Schemata
             	using namespace Schemata
+                using namespace System.Collections
 
             	class TestFileSchema : Schema<FileModel> {{
                     TestFileSchema([IDictionary]$outline) : base($outline) {{}}
@@ -68,6 +70,7 @@ namespace Schemata.Tests
         //    Model model = (Model)instance.AddScript($@"
         //    	using module Schemata
         //    	using namespace Schemata
+        //      using namespace System.Collections
 
         //    	class TestDirectorySchema : Schema<DirectoryModel> {{
         //            TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}

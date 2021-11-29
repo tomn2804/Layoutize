@@ -24,10 +24,10 @@ namespace Schemata.Tests
             	using namespace Schemata
 
             	class TestDirectorySchema : Schema<DirectoryModel> {{
-                    TestDirectorySchema([ImmutableHashtable]$hashtable) : base($hashtable) {{}}
+                    TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}
 
                     [Schema]Build() {{
-                        return [DirectorySchema]$hashtable
+                        return [DirectorySchema]$this.Outline
                     }}
                 }}
 
@@ -47,15 +47,15 @@ namespace Schemata.Tests
             	using namespace Schemata
 
             	class TestFileSchema : Schema<FileModel> {{
-                    TestFileSchema([ImmutableHashtable]$hashtable) : base($hashtable) {{}}
+                    TestFileSchema([IDictionary]$outline) : base($outline) {{}}
 
                     [Schema]Build() {{
-                        return [FileSchema]$hashtable
+                        return [FileSchema]$this.Outline
                     }}
                 }}
 
                 [Workbench]::new('{WorkingDirectory}').Build(
-                    [TestFileSchema]@{{ Name = 'Test.txt' }}
+                    [TestFileSchema]@{{ Name = 'Test' }}
                 )
             ").Invoke().Last().BaseObject;
             Assert.True(model.Exists);
@@ -70,18 +70,18 @@ namespace Schemata.Tests
         //    	using namespace Schemata
 
         //    	class TestDirectorySchema : Schema<DirectoryModel> {{
-        //            TestDirectorySchema([ImmutableHashtable]$hashtable) : base($hashtable) {{}}
+        //            TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}
 
         //            [Schema]Build() {{
-        //                return [DirectorySchema]$hashtable
+        //                return [DirectorySchema]$this.Outline
         //            }}
         //        }}
 
         //    	class TestFileSchema : Schema<FileModel> {{
-        //            TestFileSchema([ImmutableHashtable]$hashtable) : base($hashtable) {{}}
+        //            TestFileSchema([IDictionary]$outline) : base($outline) {{}}
 
         //            [Schema]Build() {{
-        //                return [FileSchema]$hashtable
+        //                return [FileSchema]$this.Outline
         //            }}
         //        }}
 

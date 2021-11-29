@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\WorkbenchTests.cs" />
+    <Compile Include="src\Workbench.cs" />
   </ItemGroup>
 
   <ItemGroup>

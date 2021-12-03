@@ -8,11 +8,11 @@ namespace Schemata.Tests
 {
     public partial class WorkbenchTests
     {
-        public static string WorkingDirectory => $"{Path.GetTempPath()}Schemata.Tests";
+        public static string WorkingDirectoryPath => $"{Path.GetTempPath()}Schemata.Tests";
 
         public WorkbenchTests()
         {
-            Directory.CreateDirectory(WorkingDirectory);
+            Directory.CreateDirectory(WorkingDirectoryPath);
         }
 
         [Fact]
@@ -27,12 +27,12 @@ namespace Schemata.Tests
             	class TestDirectorySchema : Schema<DirectoryModel> {{
                     TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}
 
-                    [Schema]Build() {{
+                    [Blueprint]Build() {{
                         return [DirectorySchema]$this.Outline
                     }}
                 }}
 
-                [Workbench]::new('{WorkingDirectory}').Build(
+                [Workbench]::new('{WorkingDirectoryPath}').Build(
                     [TestDirectorySchema]@{{ Name = 'Test' }}
                 )
             ").Invoke().Last().BaseObject;
@@ -51,12 +51,12 @@ namespace Schemata.Tests
             	class TestFileSchema : Schema<FileModel> {{
                     TestFileSchema([IDictionary]$outline) : base($outline) {{}}
 
-                    [Schema]Build() {{
+                    [Blueprint]Build() {{
                         return [FileSchema]$this.Outline
                     }}
                 }}
 
-                [Workbench]::new('{WorkingDirectory}').Build(
+                [Workbench]::new('{WorkingDirectoryPath}').Build(
                     [TestFileSchema]@{{ Name = 'Test' }}
                 )
             ").Invoke().Last().BaseObject;
@@ -104,9 +104,9 @@ namespace Schemata.Tests
     {
         public void Dispose()
         {
-            if (Directory.Exists(WorkingDirectory))
+            if (Directory.Exists(WorkingDirectoryPath))
             {
-                Directory.Delete(WorkingDirectory, true);
+                Directory.Delete(WorkingDirectoryPath, true);
             }
             GC.SuppressFinalize(this);
         }

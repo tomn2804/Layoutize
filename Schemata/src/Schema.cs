@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace Schemata
 {
-    public class Model
+    public abstract class Model
     {
-        public Model(Assembly assembly)
+        protected Model(Assembly assembly)
         {
             Assembly = assembly;
         }
 
-        public Assembly Assembly { get; }
+        protected Assembly Assembly { get; }
     }
 
     public class FileModel : Model
@@ -40,7 +40,21 @@ namespace Schemata
         }
 
         public abstract Type ModelType { get; }
-        public ImmutableDictionary<object, object?> Outline { get; }
+
+        private ImmutableDictionary<object, object?> _outline;
+
+        public ImmutableDictionary<object, object?> Outline
+        {
+            get => _outline;
+            protected set
+            {
+                _outline = value;
+                if (_outline.TryGetKey("Workbench", out object @object) && @object is Workbench workBench)
+                {
+                    workBench.Build(this);
+                }
+            }
+        }
 
         public static implicit operator Blueprint(Schema schema)
         {
@@ -66,7 +80,7 @@ namespace Schemata
 
     public abstract class Schema<T> : Schema where T : Model
     {
-        public Schema(IDictionary outline)
+        protected Schema(IDictionary outline)
             : base(outline)
         {
         }
@@ -120,7 +134,7 @@ namespace Schemata
             Schema = schema;
         }
 
-        internal Schema Schema { get; }
+        protected internal Schema Schema { get; }
     }
 
     public class Assembly
@@ -156,7 +170,7 @@ namespace Schemata
                 blueprint.Schema.ModelType,
                 new Assembly(
                     blueprint,
-                    KeyValuePair.Create<object, object?>("Path", WorkingDirectoryPath)
+                    KeyValuePair.Create<object, object?>("Workbench", this)
                 )
             )!;
             //model.Mount();

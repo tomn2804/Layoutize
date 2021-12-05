@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Schemata
@@ -22,6 +23,7 @@ namespace Schemata
         protected virtual void HandleVariablesUpdateEvent(object? template, VariablesUpdateEventArgs args)
         {
             Blueprint = args.Template;
+            // Remount
         }
 
         protected Blueprint Blueprint { get; set; }
@@ -49,6 +51,7 @@ namespace Schemata
     {
         private Blueprint(Template template)
         {
+            Debug.Assert(template is BlankTemplate);
             Template = template;
         }
 

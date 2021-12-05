@@ -47,19 +47,26 @@ namespace Schemata
 
     public class Blueprint
     {
-        internal enum TemplateArgs
+        private Blueprint(Template template)
         {
-            IsFlatten
-        }
-
-        internal Blueprint(Template template)
-        {
-            Template = (template.Variables.TryGetValue(TemplateArgs.IsFlatten, out object? isFlatten) && (bool)isFlatten!)
-                ? template
-                : ((Blueprint)template).Template;
+            Template = template;
         }
 
         public Template Template { get; }
+
+        public class BlankTemplate : Template<Model>
+        {
+            public BlankTemplate(IEnumerable variables)
+                : base(variables)
+            {
+            }
+
+            protected override Blueprint Build()
+            {
+                Console.WriteLine(nameof(BlankTemplate));
+                return new Blueprint(this);
+            }
+        }
     }
 
     public abstract class Template
@@ -116,7 +123,7 @@ namespace Schemata
 
         private void RaiseVariablesUpdateEvent(IImmutableDictionary<object, object?> variables)
         {
-            VariablesUpdateEvent?.Invoke(this, new VariablesUpdateEventArgs((Template)(Activator.CreateInstance(GetType(), variables.Remove(Blueprint.TemplateArgs.IsFlatten))!)));
+            VariablesUpdateEvent?.Invoke(this, new VariablesUpdateEventArgs((Template)Activator.CreateInstance(GetType(), variables)!));
         }
 
         public static implicit operator Blueprint(Template template)
@@ -137,20 +144,6 @@ namespace Schemata
         public override Type ModelType => typeof(T);
     }
 
-    public class BlankTemplate : Template<Model>
-    {
-        public BlankTemplate(IEnumerable variables)
-            : base(variables)
-        {
-        }
-
-        protected override Blueprint Build()
-        {
-            Console.WriteLine(nameof(BlankTemplate));
-            return new Blueprint(new BlankTemplate(Variables.SetItem(Blueprint.TemplateArgs.IsFlatten, true)));
-        }
-    }
-
     public class FileTemplate : Template<Model>
     {
         public FileTemplate(IEnumerable variables)
@@ -161,7 +154,7 @@ namespace Schemata
         protected override Blueprint Build()
         {
             Console.WriteLine(nameof(FileTemplate));
-            return new BlankTemplate(Variables);
+            return new Blueprint.BlankTemplate(Variables);
         }
     }
 

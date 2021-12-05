@@ -8,22 +8,23 @@ namespace Schemata
 {
     public abstract class Model
     {
+        internal enum TemplateArgs
+        {
+            OnMounting
+        }
+
         protected Model(Blueprint blueprint)
         {
-            _blueprint = blueprint;
+            Blueprint = blueprint;
+            Blueprint.Template.VariablesUpdateEvent += HandleVariablesUpdateEvent;
         }
 
-        private Blueprint _blueprint;
-
-        public Blueprint Blueprint
+        protected virtual void HandleVariablesUpdateEvent(object? template, VariablesUpdateEventArgs args)
         {
-            get => _blueprint;
-            set
-            {
-                _blueprint = value;
-                // Mount()
-            }
+            Blueprint = args.Template;
         }
+
+        protected Blueprint Blueprint { get; set; }
     }
 
     public class FileModel : Model
@@ -34,14 +35,31 @@ namespace Schemata
         }
     }
 
-    public class Blueprint
+    public class VariablesUpdateEventArgs : EventArgs
     {
-        public Blueprint(IImmutableDictionary<object, object?> variables)
+        public VariablesUpdateEventArgs(Template template)
         {
-            Variables = variables;
+            Template = template;
         }
 
-        public IImmutableDictionary<object, object?> Variables { get; }
+        public Template Template { get; }
+    }
+
+    public class Blueprint
+    {
+        internal enum TemplateArgs
+        {
+            IsFlatten
+        }
+
+        internal Blueprint(Template template)
+        {
+            Template = (template.Variables.TryGetValue(TemplateArgs.IsFlatten, out object? isFlatten) && (bool)isFlatten!)
+                ? template
+                : ((Blueprint)template).Template;
+        }
+
+        public Template Template { get; }
     }
 
     public abstract class Template
@@ -51,17 +69,17 @@ namespace Schemata
             switch (variables)
             {
                 case IImmutableDictionary<object, object?> dictionary:
-                    Variables = dictionary;
+                    _variables = dictionary;
                     break;
                 case IDictionary<object, object?> dictionary:
-                    Variables = dictionary.ToImmutableDictionary();
+                    _variables = dictionary.ToImmutableDictionary();
                     break;
                 case IDictionary dictionary:
-                    Variables = dictionary.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value);
+                    _variables = dictionary.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value);
                     break;
                 default:
                     int key = 0;
-                    Variables = variables.Cast<object?>().ToImmutableDictionary(_ => (object)key++, value => value);
+                    _variables = variables.Cast<object?>().ToImmutableDictionary(_ => (object)key++, value => value);
                     break;
             }
             Action<Model> handleOnMounting = (model) =>
@@ -70,16 +88,36 @@ namespace Schemata
                 {
                     throw new InvalidOperationException();
                 }
-                if (Variables.TryGetValue("OnMounting", out object? @object) && @object is Action<Model> onMounting)
+                if (Variables.TryGetValue(Model.TemplateArgs.OnMounting, out object? @object) && @object is Action<Model> onMounting)
                 {
                     onMounting(model);
                 }
             };
-            Variables = Variables.SetItem("OnMounting", handleOnMounting);
+            _variables = Variables.SetItem(Model.TemplateArgs.OnMounting, handleOnMounting);
         }
 
         public abstract Type ModelType { get; }
-        public IImmutableDictionary<object, object?> Variables { get; }
+
+        private readonly IImmutableDictionary<object, object?> _variables;
+
+        public IImmutableDictionary<object, object?> Variables
+        {
+            get => _variables;
+            set
+            {
+                if (value != _variables)
+                {
+                    RaiseVariablesUpdateEvent(value);
+                }
+            }
+        }
+
+        public event EventHandler<VariablesUpdateEventArgs>? VariablesUpdateEvent;
+
+        private void RaiseVariablesUpdateEvent(IImmutableDictionary<object, object?> variables)
+        {
+            VariablesUpdateEvent?.Invoke(this, new VariablesUpdateEventArgs((Template)(Activator.CreateInstance(GetType(), variables.Remove(Blueprint.TemplateArgs.IsFlatten))!)));
+        }
 
         public static implicit operator Blueprint(Template template)
         {
@@ -91,12 +129,26 @@ namespace Schemata
 
     public abstract class Template<T> : Template where T : Model
     {
-        protected Template(IEnumerable variables)
+        public Template(IEnumerable variables)
             : base(variables)
         {
         }
 
         public override Type ModelType => typeof(T);
+    }
+
+    public class BlankTemplate : Template<Model>
+    {
+        public BlankTemplate(IEnumerable variables)
+            : base(variables)
+        {
+        }
+
+        protected override Blueprint Build()
+        {
+            Console.WriteLine(nameof(BlankTemplate));
+            return new Blueprint(new BlankTemplate(Variables.SetItem(Blueprint.TemplateArgs.IsFlatten, true)));
+        }
     }
 
     public class FileTemplate : Template<Model>
@@ -109,7 +161,7 @@ namespace Schemata
         protected override Blueprint Build()
         {
             Console.WriteLine(nameof(FileTemplate));
-            return new Blueprint(Variables);
+            return new BlankTemplate(Variables);
         }
     }
 

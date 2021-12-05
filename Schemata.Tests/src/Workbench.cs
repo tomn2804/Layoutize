@@ -24,16 +24,16 @@ namespace Schemata.Tests
             	using namespace Schemata
                 using namespace System.Collections
 
-            	class TestDirectorySchema : Schema<DirectoryModel> {{
-                    TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}
+            	class TestDirectoryTemplate : Template<DirectoryModel> {{
+                    TestDirectoryTemplate([IDictionary]$outline) : base($outline) {{}}
 
                     [Blueprint]Build() {{
-                        return [DirectorySchema]$this.Outline
+                        return [DirectoryTemplate]$this.Outline
                     }}
                 }}
 
                 [Workbench]::new('{WorkingDirectoryPath}').Build(
-                    [TestDirectorySchema]@{{ Name = 'Test' }}
+                    [TestDirectoryTemplate]@{{ Name = 'Test' }}
                 )
             ").Invoke().Last().BaseObject;
             Assert.True(model.Exists);
@@ -48,16 +48,16 @@ namespace Schemata.Tests
             	using namespace Schemata
                 using namespace System.Collections
 
-            	class TestFileSchema : Schema<FileModel> {{
-                    TestFileSchema([IDictionary]$outline) : base($outline) {{}}
+            	class TestFileTemplate : Template<FileModel> {{
+                    TestFileTemplate([IDictionary]$outline) : base($outline) {{}}
 
                     [Blueprint]Build() {{
-                        return [FileSchema]$this.Outline
+                        return [FileTemplate]$this.Outline
                     }}
                 }}
 
                 [Workbench]::new('{WorkingDirectoryPath}').Build(
-                    [TestFileSchema]@{{ Name = 'Test' }}
+                    [TestFileTemplate]@{{ Name = 'Test' }}
                 )
             ").Invoke().Last().BaseObject;
             Assert.True(model.Exists);
@@ -72,26 +72,26 @@ namespace Schemata.Tests
         //    	using namespace Schemata
         //      using namespace System.Collections
 
-        //    	class TestDirectorySchema : Schema<DirectoryModel> {{
-        //            TestDirectorySchema([IDictionary]$outline) : base($outline) {{}}
+        //    	class TestDirectoryTemplate : Template<DirectoryModel> {{
+        //            TestDirectoryTemplate([IDictionary]$outline) : base($outline) {{}}
 
-        //            [Schema]Build() {{
-        //                return [DirectorySchema]$this.Outline
+        //            [Template]Build() {{
+        //                return [DirectoryTemplate]$this.Outline
         //            }}
         //        }}
 
-        //    	class TestFileSchema : Schema<FileModel> {{
-        //            TestFileSchema([IDictionary]$outline) : base($outline) {{}}
+        //    	class TestFileTemplate : Template<FileModel> {{
+        //            TestFileTemplate([IDictionary]$outline) : base($outline) {{}}
 
-        //            [Schema]Build() {{
-        //                return [FileSchema]$this.Outline
+        //            [Template]Build() {{
+        //                return [FileTemplate]$this.Outline
         //            }}
         //        }}
 
         //        [Workbench]::new('{WorkingDirectory}').Build(
-        //            [TestDirectorySchema]@{{
+        //            [TestDirectoryTemplate]@{{
         //                Name = 'Test'
-        //                Children = [TestFileSchema]@{{ Name = 'Test.txt' }}
+        //                Children = [TestFileTemplate]@{{ Name = 'Test.txt' }}
         //            }}
         //        )
         //    ").Invoke().Last().BaseObject;

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\Schema.cs" />
+    <Compile Include="src\Template.cs" />
   </ItemGroup>
 
   <ItemGroup>

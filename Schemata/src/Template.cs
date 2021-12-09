@@ -5,73 +5,83 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Schemata
+namespace Schemata;
+
+public abstract partial class Model
 {
-    public abstract class Model
+    public enum TemplateVariables
     {
-        internal enum TemplateArgs
-        {
-            OnMounting
-        }
+        OnInitializing
+    }
 
-        protected Model(Blueprint blueprint)
-        {
-            Blueprint = blueprint;
-            Blueprint.Template.VariablesUpdateEvent += HandleVariablesUpdateEvent;
-        }
+    protected Model(Blueprint blueprint)
+    {
+        _blueprint = blueprint;
+    }
 
-        protected virtual void HandleVariablesUpdateEvent(object? template, VariablesUpdateEventArgs args)
+    private Blueprint _blueprint;
+
+    protected Blueprint Blueprint
+    {
+        get => _blueprint;
+        private set
         {
-            Blueprint = args.Template;
+            _blueprint = value;
             // Remount
         }
-
-        protected Blueprint Blueprint { get; set; }
     }
+}
 
-    public class FileModel : Model
+public class FileModel : Model
+{
+    public FileModel(Blueprint blueprint)
+        : base(blueprint)
     {
-        public FileModel(Blueprint blueprint)
-            : base(blueprint)
-        {
-        }
     }
+}
 
-    public class VariablesUpdateEventArgs : EventArgs
+public sealed partial class Blueprint
+{
+    private Blueprint(BlankTemplate template)
     {
-        public VariablesUpdateEventArgs(Template template)
-        {
-            Template = template;
-        }
-
-        public Template Template { get; }
+        Template = template;
     }
 
-    public class Blueprint
+    private BlankTemplate Template { get; }
+
+    public IImmutableDictionary<object, object?> Variables => Template.Variables;
+    public Type ModelType => Template.ModelType;
+}
+
+public sealed partial class Blueprint
+{
+    public class BlankTemplate : Template<Model>
     {
-        private Blueprint(Template template)
+        public BlankTemplate(IEnumerable variables)
+            : base(variables)
         {
-            Debug.Assert(template is BlankTemplate);
-            Template = template;
         }
 
-        public Template Template { get; }
-
-        public class BlankTemplate : Template<Model>
+        protected override Blueprint Build()
         {
-            public BlankTemplate(IEnumerable variables)
-                : base(variables)
-            {
-            }
-
-            protected override Blueprint Build()
-            {
-                Console.WriteLine(nameof(BlankTemplate));
-                return new Blueprint(this);
-            }
+            Debug.WriteLine(nameof(BlankTemplate));
+            return new(this);
         }
     }
+}
 
+public class VariablesUpdatingEventArgs : EventArgs
+{
+    public VariablesUpdatingEventArgs(IImmutableDictionary<object, object?> variables)
+    {
+        Variables = variables;
+    }
+
+    public IImmutableDictionary<object, object?> Variables { get; }
+}
+
+public abstract partial class Model
+{
     public abstract class Template
     {
         protected Template(IEnumerable variables)
@@ -92,18 +102,21 @@ namespace Schemata
                     _variables = variables.Cast<object?>().ToImmutableDictionary(_ => (object)key++, value => value);
                     break;
             }
-            Action<Model> handleOnMounting = (model) =>
+            Func<Model, bool> handleOnInitializing = (model) =>
             {
                 if (!model.GetType().IsAssignableTo(ModelType))
                 {
                     throw new InvalidOperationException();
                 }
-                if (Variables.TryGetValue(Model.TemplateArgs.OnMounting, out object? @object) && @object is Action<Model> onMounting)
+                void updateModel(object? sender, VariablesUpdatingEventArgs e)
                 {
-                    onMounting(model);
+                    model.Blueprint = (Blueprint)Activator.CreateInstance(sender!.GetType(), e.Variables)!;
+                    VariablesUpdating -= updateModel;
                 }
+                VariablesUpdating += updateModel;
+                return ((Func<Model, bool>)Variables[TemplateVariables.OnInitializing]!)(model);
             };
-            _variables = Variables.SetItem(Model.TemplateArgs.OnMounting, handleOnMounting);
+            _variables = Variables.SetItem(TemplateVariables.OnInitializing, handleOnInitializing);
         }
 
         public abstract Type ModelType { get; }
@@ -113,20 +126,20 @@ namespace Schemata
         public IImmutableDictionary<object, object?> Variables
         {
             get => _variables;
-            set
+            protected set
             {
                 if (value != _variables)
                 {
-                    RaiseVariablesUpdateEvent(value);
+                    OnVariablesUpdating(new VariablesUpdatingEventArgs(value));
                 }
             }
         }
 
-        public event EventHandler<VariablesUpdateEventArgs>? VariablesUpdateEvent;
+        public event EventHandler<VariablesUpdatingEventArgs>? VariablesUpdating;
 
-        private void RaiseVariablesUpdateEvent(IImmutableDictionary<object, object?> variables)
+        protected virtual void OnVariablesUpdating(VariablesUpdatingEventArgs e)
         {
-            VariablesUpdateEvent?.Invoke(this, new VariablesUpdateEventArgs((Template)Activator.CreateInstance(GetType(), variables)!));
+            VariablesUpdating?.Invoke(this, e);
         }
 
         public static implicit operator Blueprint(Template template)
@@ -136,73 +149,82 @@ namespace Schemata
 
         protected abstract Blueprint Build();
     }
+}
 
-    public abstract class Template<T> : Template where T : Model
+public abstract class Template<T> : Model.Template where T : Model
+{
+    protected Template(IEnumerable variables)
+        : base(variables)
     {
-        public Template(IEnumerable variables)
-            : base(variables)
-        {
-        }
-
-        public override Type ModelType => typeof(T);
     }
 
-    public class FileTemplate : Template<Model>
-    {
-        public FileTemplate(IEnumerable variables)
-            : base(variables)
-        {
-        }
+    public override Type ModelType => typeof(T);
+}
 
-        protected override Blueprint Build()
-        {
-            Console.WriteLine(nameof(FileTemplate));
-            return new Blueprint.BlankTemplate(Variables);
-        }
+public class FileTemplate : Template<FileModel>
+{
+    public FileTemplate(IEnumerable variables)
+        : base(variables)
+    {
     }
 
-    public class TextFileTemplate : Template<Model>
+    protected override Blueprint Build()
     {
-        public TextFileTemplate(IEnumerable variables)
-            : base(variables)
-        {
-        }
+        Debug.WriteLine(nameof(FileTemplate));
+        return new Blueprint.BlankTemplate(Variables);
+    }
+}
 
-        protected override Blueprint Build()
-        {
-            Console.WriteLine(nameof(TextFileTemplate));
-            return new FileTemplate(Variables);
-        }
+public class TextFileTemplate : Template<FileModel>
+{
+    public TextFileTemplate(IEnumerable variables)
+        : base(variables)
+    {
     }
 
-    public class StrictTextFileTemplate : Template<FileModel>
+    protected override Blueprint Build()
     {
-        public StrictTextFileTemplate(IEnumerable variables)
-            : base(variables)
-        {
-        }
+        Debug.WriteLine(nameof(TextFileTemplate));
+        return new FileTemplate(Variables);
+    }
+}
 
-        protected override Blueprint Build()
-        {
-            Console.WriteLine(nameof(StrictTextFileTemplate));
-            return new TextFileTemplate(Variables);
-        }
+public class StrictTextFileTemplate : Template<FileModel>
+{
+    public StrictTextFileTemplate(IEnumerable variables)
+        : base(variables)
+    {
     }
 
-    public class Workbench
+    protected override Blueprint Build()
     {
-        public Workbench(string path)
-        {
-            WorkingDirectoryPath = path;
-        }
+        Debug.WriteLine(nameof(StrictTextFileTemplate));
+        return new TextFileTemplate(Variables);
+    }
+}
 
-        public string WorkingDirectoryPath { get; }
+public class Workbench
+{
+    public Workbench(string path)
+    {
+        WorkingDirectoryPath = path;
+    }
 
-        public Model Build(Template template)
+    public string WorkingDirectoryPath { get; }
+
+    public Model Build(Model.Template template, params KeyValuePair<object, object?>[] variables)
+    {
+        if (variables.Any())
         {
-            Model model = (Model)Activator.CreateInstance(template.ModelType, (Blueprint)template)!;
-            //model.Mount();
-            return model;
+            template = (Model.Template)Activator.CreateInstance(template.GetType(), template.Variables.SetItems(variables))!;
         }
+        return Build(template);
+    }
+
+    public Model Build(Blueprint blueprint)
+    {
+        Model model = (Model)Activator.CreateInstance(blueprint.ModelType, blueprint)!;
+        //model.Mount();
+        return model;
     }
 }

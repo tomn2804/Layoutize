@@ -15,6 +15,7 @@ public abstract partial class Model
 
     protected Model(Blueprint blueprint)
     {
+        Debug.Assert(blueprint.ModelType == GetType());
         _blueprint = blueprint;
     }
 

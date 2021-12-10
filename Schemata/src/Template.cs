@@ -11,7 +11,6 @@ public abstract partial class Model
 {
     public enum TemplateVariables
     {
-        OnInitializing
     }
 
     protected Model(Blueprint blueprint)
@@ -40,74 +39,62 @@ public class FileModel : Model
     }
 }
 
-public abstract class Template
+public partial class Blueprint
 {
-    protected Template(IEnumerable variables)
-    {
-        switch (variables)
-        {
-            case IImmutableDictionary<object, object?> dictionary:
-                Variables = dictionary;
-                break;
-            case IDictionary<object, object?> dictionary:
-                Variables = dictionary.ToImmutableDictionary();
-                break;
-            case IDictionary dictionary:
-                Variables = dictionary.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value);
-                break;
-            default:
-                int key = 0;
-                Variables = variables.Cast<object?>().ToImmutableDictionary(_ => (object)key++, value => value);
-                break;
-        }
-    }
-
-    public abstract Type ModelType { get; }
-
-    public IImmutableDictionary<object, object?> Variables { get; }
-
-    protected abstract Blueprint Inflate();
-
-    protected Blueprint InflateTo(Template template)
-    {
-        if (!ModelType.IsAssignableTo(template.ModelType))
-        {
-            throw new InvalidOperationException();
-        }
-        return template.Inflate();
-    }
-}
-
-public sealed partial class Blueprint
-{
-    private Blueprint(BlankTemplate template)
+    internal Blueprint(BlankTemplate template)
     {
         Variables = template.Variables;
         ModelType = template.ModelType;
     }
 
     public IImmutableDictionary<object, object?> Variables { get; }
-    public Type ModelType { get; }
+    public Type ModelType { get; private set; }
 }
 
-public sealed partial class Blueprint
+public partial class Blueprint
 {
-    public class BlankTemplate : Template<Model>
+    public abstract class Template
     {
-        public BlankTemplate(IEnumerable variables)
-            : base(variables)
+        protected Template(IEnumerable variables)
         {
+            switch (variables)
+            {
+                case IImmutableDictionary<object, object?> dictionary:
+                    Variables = dictionary;
+                    break;
+                case IDictionary<object, object?> dictionary:
+                    Variables = dictionary.ToImmutableDictionary();
+                    break;
+                case IDictionary dictionary:
+                    Variables = dictionary.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value);
+                    break;
+                default:
+                    int key = 0;
+                    Variables = variables.Cast<object?>().ToImmutableDictionary(_ => (object)key++, value => value);
+                    break;
+            }
         }
 
-        protected override Blueprint Inflate()
+        public static implicit operator Blueprint(Template template)
         {
-            Console.WriteLine(nameof(BlankTemplate));
-            return new(this);
+            Blueprint blueprint = template.Build();
+            if (!template.ModelType.IsAssignableTo(blueprint.ModelType))
+            {
+                throw new InvalidOperationException();
+            }
+            blueprint.ModelType = template.ModelType;
+            return blueprint;
         }
+
+        public IImmutableDictionary<object, object?> Variables { get; }
+
+        public abstract Type ModelType { get; }
+
+        protected abstract Blueprint Build();
     }
 }
 
-public abstract class Template<T> : Template where T : Model
+public abstract class Template<T> : Blueprint.Template where T : Model
 {
     protected Template(IEnumerable variables)
         : base(variables)
@@ -117,6 +104,20 @@ public abstract class Template<T> : Template where T : Model
     public override Type ModelType => typeof(T);
 }
 
+public class BlankTemplate : Template<Model>
+{
+    public BlankTemplate(IEnumerable variables)
+        : base(variables)
+    {
+    }
+
+    protected override Blueprint Build()
+    {
+        Console.WriteLine(nameof(BlankTemplate));
+        return new(this);
+    }
+}
+
 public class FileTemplate : Template<FileModel>
 {
     public FileTemplate(IEnumerable variables)
@@ -124,10 +125,10 @@ public class FileTemplate : Template<FileModel>
     {
     }
 
-    protected override Blueprint Inflate()
+    protected override Blueprint Build()
     {
         Console.WriteLine(nameof(FileTemplate));
-        return InflateTo(new Blueprint.BlankTemplate(Variables));
+        return new BlankTemplate(Variables);
     }
 }
 
@@ -138,10 +139,10 @@ public class TextFileTemplate : Template<FileModel>
     {
     }
 
-    protected override Blueprint Inflate()
+    protected override Blueprint Build()
     {
         Console.WriteLine(nameof(TextFileTemplate));
-        return InflateTo(new FileTemplate(Variables));
+        return new FileTemplate(Variables);
     }
 }
 
@@ -152,10 +153,10 @@ public class StrictTextFileTemplate : Template<FileModel>
     {
     }
 
-    protected override Blueprint Inflate()
+    protected override Blueprint Build()
     {
         Console.WriteLine(nameof(StrictTextFileTemplate));
-        return InflateTo(new TextFileTemplate(Variables));
+        return new TextFileTemplate(Variables);
     }
 }
 
@@ -168,11 +169,11 @@ public class StrictTextFileTemplate : Template<FileModel>
 
 //    public string WorkingDirectoryPath { get; }
 
-//    public Model Build(Template template, params KeyValuePair<object, object?>[] variables)
+//    public Model Build(Blueprint.Template template, params KeyValuePair<object, object?>[] variables)
 //    {
 //        if (variables.Any())
 //        {
-//            template = (Template)Activator.CreateInstance(template.GetType(), template.Variables.SetItems(variables))!;
+//            template = (Blueprint.Template)Activator.CreateInstance(template.GetType(), template.Variables.SetItems(variables))!;
 //        }
 //        return Build(template);
 //    }

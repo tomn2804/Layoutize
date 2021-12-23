@@ -14,6 +14,11 @@
 
   <ItemGroup>
     <Compile Include="src\Blueprint.cs" />
+    <Compile Include="src\Blueprint.Owner.cs" />
+    <Compile Include="src\Blueprint.Template.cs" />
+    <Compile Include="src\DetailsUpdatingEventArgs.cs" />
+    <Compile Include="src\Model.cs" />
+    <Compile Include="src\Template.cs" />
   </ItemGroup>
 
   <ItemGroup>

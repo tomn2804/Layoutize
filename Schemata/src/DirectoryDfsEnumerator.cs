@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,16 +12,16 @@ public class DirectoryDfsEnumerator : IEnumerator<Connection.Segment>
     public IEnumerator<Connection.Segment>? CurrentPosition { get; set; }
 
     [AllowNull]
-    public Connection.Segment Current { get; set; }
+    public Connection.Segment Current { get; private set; }
 
-    object? IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
-    private DirectoryNetwork Network { get; }
+    private Connection.Segment Entry { get; }
 
     public DirectoryDfsEnumerator(DirectoryNetwork network)
     {
-        Network = network;
-        BasePosition = Network.Model.Children.Select(child => new Connection.Segment(child)).GetEnumerator();
+        Entry = new(network.Model);
+        BasePosition = network.Model.Children.Select(child => new Connection.Segment(child)).GetEnumerator();
     }
 
     public bool MoveNext()
@@ -29,7 +30,7 @@ public class DirectoryDfsEnumerator : IEnumerator<Connection.Segment>
         {
             if (Current is null)
             {
-                Current = new(Network.Model);
+                Current = Entry;
                 if (BasePosition.MoveNext())
                 {
                     CurrentPosition = BasePosition.Current.Model.Network.GetEnumerator();
@@ -44,11 +45,13 @@ public class DirectoryDfsEnumerator : IEnumerator<Connection.Segment>
             Current = CurrentPosition.Current;
             return true;
         }
+        CurrentPosition.Dispose();
         if (BasePosition.MoveNext())
         {
             CurrentPosition = BasePosition.Current.Model.Network.GetEnumerator();
             return MoveNext();
         }
+        Entry.Dispose();
         Current = null;
         return false;
     }
@@ -59,7 +62,10 @@ public class DirectoryDfsEnumerator : IEnumerator<Connection.Segment>
         CurrentPosition = null;
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
+        BasePosition.Dispose();
+        Entry.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

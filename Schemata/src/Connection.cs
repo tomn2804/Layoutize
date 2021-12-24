@@ -8,13 +8,13 @@ public partial class Connection
 
     public event EventHandler? Processed;
 
-    protected virtual void OnProcessing()
+    protected virtual void OnProcessing(EventArgs args)
     {
-        Processing?.Invoke(this, EventArgs.Empty);
+        Processing?.Invoke(this, args);
     }
 
-    protected virtual void OnProcessed()
+    protected virtual void OnProcessed(EventArgs args)
     {
-        Processed?.Invoke(this, EventArgs.Empty);
+        Processed?.Invoke(this, args);
     }
 }

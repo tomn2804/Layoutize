@@ -22,7 +22,6 @@ public class BlankTemplate : Template<Model>
 
     protected override Blueprint ToBlueprint()
     {
-        Console.WriteLine(nameof(BlankTemplate));
         return base.ToBlueprint();
     }
 }
@@ -36,7 +35,6 @@ public class FileTemplate : Template<FileModel>
 
     protected override Blueprint ToBlueprint()
     {
-        Console.WriteLine(nameof(FileTemplate));
         return new BlankTemplate(Details);
     }
 }
@@ -50,7 +48,6 @@ public class TextFileTemplate : Template<FileModel>
 
     protected override Blueprint ToBlueprint()
     {
-        Console.WriteLine(nameof(TextFileTemplate));
         return new FileTemplate(Details);
     }
 }
@@ -64,7 +61,6 @@ public class StrictTextFileTemplate : Template<FileModel>
 
     protected override Blueprint ToBlueprint()
     {
-        Console.WriteLine(nameof(StrictTextFileTemplate));
         return new TextFileTemplate(Details);
     }
 }

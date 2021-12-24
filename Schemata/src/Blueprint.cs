@@ -11,7 +11,7 @@ public partial class Blueprint
 
     public Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
 
-    public IImmutableDictionary<object, object?> Details => Templates.Last().Details;
+    public IImmutableDictionary<object, object?> Details => Templates.First().Details;
 
     private Blueprint()
     {

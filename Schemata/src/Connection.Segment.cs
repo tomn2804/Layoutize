@@ -8,7 +8,7 @@ public partial class Connection
 {
     public partial class Segment
     {
-        private Stack<Action> Callbacks { get; } = new();
+        private Stack<Action<EventArgs>> Callbacks { get; } = new();
 
         public Model Model { get; }
 
@@ -19,19 +19,20 @@ public partial class Connection
 
         public void Push(Connection connection)
         {
-            connection.OnProcessing();
+            connection.OnProcessing(EventArgs.Empty);
             Callbacks.Push(connection.OnProcessed);
         }
     }
 
     public partial class Segment : IDisposable
     {
-        public void Dispose()
+        public virtual void Dispose()
         {
             while (Callbacks.Any())
             {
-                Callbacks.Pop().Invoke();
+                Callbacks.Pop().Invoke(EventArgs.Empty);
             }
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,24 +12,27 @@ public class DirectoryBfsEnumerator : IEnumerator<Connection.Segment>
     public IEnumerator<Connection.Segment>? CurrentPosition { get; set; }
 
     [AllowNull]
-    public Connection.Segment Current { get; set; }
+    public Connection.Segment Current { get; private set; }
 
-    object? IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
-    private DirectoryNetwork Network { get; }
+    private Connection.Segment Entry { get; }
 
     public DirectoryBfsEnumerator(DirectoryNetwork network)
     {
-        Network = network;
-        BasePosition = Network.Model.Children.Select(child => new Connection.Segment(child)).GetEnumerator();
+        Entry = new(network.Model);
+        Children = network.Model.Children.Select(child => new Connection.Segment(child)).ToList();
+        BasePosition = Children.GetEnumerator();
     }
+
+    private List<Connection.Segment> Children { get; }
 
     public bool MoveNext()
     {
         if (CurrentPosition is null)
         {
-            Current = new(Network.Model);
-            CurrentPosition = Network.Model.Children.Select(child => new Connection.Segment(child)).GetEnumerator();
+            Current = Entry;
+            CurrentPosition = Children.GetEnumerator();
             return true;
         }
         if (CurrentPosition.MoveNext())
@@ -36,12 +40,14 @@ public class DirectoryBfsEnumerator : IEnumerator<Connection.Segment>
             Current = CurrentPosition.Current;
             return true;
         }
+        BasePosition.Current?.Dispose();
         if (BasePosition.MoveNext())
         {
             CurrentPosition = BasePosition.Current.Model.Network.GetEnumerator();
             CurrentPosition.MoveNext();
             return MoveNext();
         }
+        Entry.Dispose();
         Current = null;
         return false;
     }
@@ -52,7 +58,10 @@ public class DirectoryBfsEnumerator : IEnumerator<Connection.Segment>
         CurrentPosition = null;
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
+        BasePosition.Dispose();
+        Entry.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

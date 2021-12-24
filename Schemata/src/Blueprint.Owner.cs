@@ -20,12 +20,11 @@ public partial class Blueprint
 
         protected virtual void UpdateBlueprint(object? sender, DetailsUpdatingEventArgs args)
         {
-            Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.NewDetails)!;
+            Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
 
-            int senderIndex = Blueprint.Templates.IndexOf((Template)sender);
-            Debug.Assert(newBlueprint.Templates.Count - 1 == senderIndex);
+            Debug.Assert(newBlueprint.Templates.Count - 1 == Blueprint.Templates.IndexOf((Template)sender));
 
-            for (int i = 0; i <= senderIndex; ++i)
+            for (int i = 0; i < newBlueprint.Templates.Count; ++i)
             {
                 Template oldTemplate = Blueprint.Templates[i];
                 Template newTemplate = newBlueprint.Templates[i];
@@ -36,7 +35,7 @@ public partial class Blueprint
                 newTemplate.DetailsUpdating += UpdateBlueprint;
             }
 
-            for (int i = senderIndex + 1; i < Blueprint.Templates.Count; ++i)
+            for (int i = newBlueprint.Templates.Count; i < Blueprint.Templates.Count; ++i)
             {
                 newBlueprint.Templates.Add(Blueprint.Templates[i]);
             }
@@ -47,12 +46,13 @@ public partial class Blueprint
 
     public abstract partial class Owner : IDisposable
     {
-        public void Dispose()
+        public virtual void Dispose()
         {
             foreach (Template template in Blueprint.Templates)
             {
                 template.DetailsUpdating -= UpdateBlueprint;
             }
+            GC.SuppressFinalize(this);
         }
     }
 }

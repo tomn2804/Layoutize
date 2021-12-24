@@ -5,10 +5,10 @@ namespace Schemata;
 
 public class DetailsUpdatingEventArgs : EventArgs
 {
-    public IImmutableDictionary<object, object?> NewDetails { get; }
+    public IImmutableDictionary<object, object?> Details { get; }
 
-    public DetailsUpdatingEventArgs(IImmutableDictionary<object, object?> newDetails)
+    public DetailsUpdatingEventArgs(IImmutableDictionary<object, object?> details)
     {
-        NewDetails = newDetails;
+        Details = details;
     }
 }

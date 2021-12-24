@@ -1,31 +1,33 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Schemata;
 
 public class FileEnumerator : IEnumerator<Connection.Segment>
 {
     [AllowNull]
-    public Connection.Segment Current { get; set; }
+    public Connection.Segment Current { get; private set; }
 
-    object? IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
-    private FileNetwork Network { get; }
+    private bool IsEnumerated { get; set; }
 
-    private bool HasEnumerated { get; set; }
+    private Connection.Segment Entry { get; }
 
     public FileEnumerator(FileNetwork network)
     {
-        Network = network;
+        Entry = new(network.Model);
     }
 
     public bool MoveNext()
     {
-        if (!HasEnumerated)
+        if (!IsEnumerated)
         {
-            Current = new(Network.Model);
-            HasEnumerated = true;
+            Current = Entry;
+            IsEnumerated = true;
             return true;
         }
         Current = null;
@@ -34,10 +36,12 @@ public class FileEnumerator : IEnumerator<Connection.Segment>
 
     public void Reset()
     {
-        HasEnumerated = false;
+        IsEnumerated = false;
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
+        Entry.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

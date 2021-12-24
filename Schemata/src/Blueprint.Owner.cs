@@ -5,7 +5,7 @@ namespace Schemata;
 
 public partial class Blueprint
 {
-    public abstract class Owner : IDisposable
+    public abstract partial class Owner
     {
         protected Blueprint Blueprint { get; private set; }
 
@@ -43,7 +43,10 @@ public partial class Blueprint
 
             Blueprint = newBlueprint;
         }
+    }
 
+    public abstract partial class Owner : IDisposable
+    {
         public void Dispose()
         {
             foreach (Template template in Blueprint.Templates)

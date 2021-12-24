@@ -8,7 +8,7 @@ namespace Schemata;
 
 public partial class Blueprint
 {
-    public abstract class Template
+    public abstract partial class Template
     {
         protected Template(IEnumerable details)
         {

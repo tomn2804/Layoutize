@@ -6,9 +6,29 @@ namespace Schemata;
 
 public partial class Connection
 {
+    public class ProcessingEventArgs : EventArgs
+    {
+        public Model Model { get; }
+
+        public ProcessingEventArgs(Model model)
+        {
+            Model = model;
+        }
+    }
+
+    public class ProcessedEventArgs : EventArgs
+    {
+        public Model Model { get; }
+
+        public ProcessedEventArgs(Model model)
+        {
+            Model = model;
+        }
+    }
+
     public partial class Segment
     {
-        private Stack<Action<EventArgs>> Callbacks { get; } = new();
+        private Stack<EventHandler<ProcessedEventArgs>?> Callbacks { get; } = new();
 
         public Model Model { get; }
 
@@ -19,8 +39,8 @@ public partial class Connection
 
         public void Push(Connection connection)
         {
-            connection.OnProcessing(EventArgs.Empty);
-            Callbacks.Push(connection.OnProcessed);
+            connection.Processing?.Invoke(this, new(Model));
+            Callbacks.Push(connection.Processed);
         }
     }
 
@@ -30,7 +50,7 @@ public partial class Connection
         {
             while (Callbacks.Any())
             {
-                Callbacks.Pop().Invoke(EventArgs.Empty);
+                Callbacks.Pop()?.Invoke(this, new(Model));
             }
             GC.SuppressFinalize(this);
         }

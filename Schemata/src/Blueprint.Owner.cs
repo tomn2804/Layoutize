@@ -18,7 +18,7 @@ public partial class Blueprint
             }
         }
 
-        protected virtual void UpdateBlueprint(object? sender, DetailsUpdatingEventArgs args)
+        protected virtual void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {
             Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
 

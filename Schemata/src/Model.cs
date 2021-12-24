@@ -37,8 +37,8 @@ public class FileModel : Model
     {
         Connections = Connections.SetItem(DefaultConnection.Mount, new Connection());
 
-        Connections[DefaultConnection.Mount].Processing += (object? sender, EventArgs args) => Console.WriteLine("Processing File " + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, EventArgs args) => Console.WriteLine("Processed File" + Name);
+        Connections[DefaultConnection.Mount].Processing += (object? sender, Connection.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name);
+        Connections[DefaultConnection.Mount].Processed += (object? sender, Connection.ProcessedEventArgs args) => Console.WriteLine("Processed File" + Name);
 
         Network = new(this);
     }
@@ -53,29 +53,13 @@ public class DirectoryModel : Model
     {
         Connections = Connections.SetItem(DefaultConnection.Mount, new Connection());
 
-        Connections[DefaultConnection.Mount].Processing += (object? sender, EventArgs args) => Console.WriteLine("Processing Directory" + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, EventArgs args) => Console.WriteLine("Processed Directory" + Name);
+        Connections[DefaultConnection.Mount].Processing += (object? sender, Connection.ProcessingEventArgs args) => Console.WriteLine("Processing Directory" + Name);
+        Connections[DefaultConnection.Mount].Processed += (object? sender, Connection.ProcessedEventArgs args) => Console.WriteLine("Processed Directory" + Name);
 
         Network = new(this);
     }
 
     public List<Model> Children { get; set; } = new();
-
-    public override DirectoryNetwork Network { get; }
-}
-
-public class DirectoryModel2 : DirectoryModel
-{
-    public DirectoryModel2(Blueprint blueprint)
-        : base(blueprint)
-    {
-        Connections = Connections.SetItem(DefaultConnection.Mount, new Connection());
-
-        Connections[DefaultConnection.Mount].Processing += (object? sender, EventArgs args) => Console.WriteLine("Processing Directory" + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, EventArgs args) => Console.WriteLine("Processed Directory" + Name);
-
-        Network = new(this, typeof(DirectoryLevelOrderEnumerator));
-    }
 
     public override DirectoryNetwork Network { get; }
 }

@@ -15,18 +15,21 @@ public class FileEnumerator : IEnumerator<Connection.Segment>
 
     private bool IsEnumerated { get; set; }
 
-    private Connection.Segment Entry { get; }
+    private FileNetwork Network { get; }
+
+    private Connection.Segment Parent { get; set; }
 
     public FileEnumerator(FileNetwork network)
     {
-        Entry = new(network.Model);
+        Network = network;
+        Reset();
     }
 
     public bool MoveNext()
     {
         if (!IsEnumerated)
         {
-            Current = Entry;
+            Current = Parent;
             IsEnumerated = true;
             return true;
         }
@@ -34,14 +37,16 @@ public class FileEnumerator : IEnumerator<Connection.Segment>
         return false;
     }
 
+    [MemberNotNull(nameof(Parent))]
     public void Reset()
     {
         IsEnumerated = false;
+        Parent = new(Network.Model);
     }
 
     public virtual void Dispose()
     {
-        Entry.Dispose();
+        Parent.Dispose();
         GC.SuppressFinalize(this);
     }
 }

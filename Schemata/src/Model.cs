@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -59,6 +60,22 @@ public class DirectoryModel : Model
     }
 
     public List<Model> Children { get; set; } = new();
+
+    public override DirectoryNetwork Network { get; }
+}
+
+public class DirectoryModel2 : DirectoryModel
+{
+    public DirectoryModel2(Blueprint blueprint)
+        : base(blueprint)
+    {
+        Connections = Connections.SetItem(DefaultConnection.Mount, new Connection());
+
+        Connections[DefaultConnection.Mount].Processing += (object? sender, EventArgs args) => Console.WriteLine("Processing Directory" + Name);
+        Connections[DefaultConnection.Mount].Processed += (object? sender, EventArgs args) => Console.WriteLine("Processed Directory" + Name);
+
+        Network = new(this, typeof(DirectoryLevelOrderEnumerator));
+    }
 
     public override DirectoryNetwork Network { get; }
 }

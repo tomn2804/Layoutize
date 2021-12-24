@@ -19,8 +19,8 @@
     <Compile Include="src\Connection.cs" />
     <Compile Include="src\Connection.Segment.cs" />
     <Compile Include="src\DetailsUpdatingEventArgs.cs" />
-    <Compile Include="src\DirectoryBfsEnumerator.cs" />
-    <Compile Include="src\DirectoryDfsEnumerator.cs" />
+    <Compile Include="src\DirectoryLevelOrderEnumerator.cs" />
+    <Compile Include="src\DirectoryPreorderEnumerator.cs" />
     <Compile Include="src\FileEnumerator.cs" />
     <Compile Include="src\Model.cs" />
     <Compile Include="src\Model.Workbench.cs" />

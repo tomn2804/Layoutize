@@ -35,11 +35,17 @@ public class DirectoryNetwork : Network
 {
     public override DirectoryModel Model { get; }
 
-    public static Type EnumeratorType => typeof(DirectoryDfsEnumerator);
+    public Type EnumeratorType { get; }
 
     public DirectoryNetwork(DirectoryModel model)
+        : this(model, typeof(DirectoryPreorderEnumerator))
+    {
+    }
+
+    public DirectoryNetwork(DirectoryModel model, Type enumeratorType)
     {
         Model = model;
+        EnumeratorType = enumeratorType;
     }
 
     public override IEnumerator<Connection.Segment> GetEnumerator()

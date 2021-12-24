@@ -35,7 +35,7 @@ public class DirectoryNetwork : Network
 {
     public override DirectoryModel Model { get; }
 
-    public static Type EnumeratorType => typeof(DirectoryBfsEnumerator);
+    public static Type EnumeratorType => typeof(DirectoryDfsEnumerator);
 
     public DirectoryNetwork(DirectoryModel model)
     {

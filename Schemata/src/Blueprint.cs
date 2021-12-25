@@ -7,13 +7,16 @@ namespace Schemata;
 
 public partial class Blueprint
 {
-    public IImmutableDictionary<object, object?> Details => Templates.First().Details;
+    public IImmutableDictionary<object, object> Details { get; }
 
-    public Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
+    public Type ModelType { get; }
 
-    private Blueprint()
+    private Blueprint(ImmutableList<Template> templates)
     {
+        Templates = templates;
+        Details = Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
+        ModelType = Templates.LastOrDefault()?.ModelType ?? typeof(Model);
     }
 
-    private List<Template> Templates { get; } = new();
+    private ImmutableList<Template> Templates { get; }
 }

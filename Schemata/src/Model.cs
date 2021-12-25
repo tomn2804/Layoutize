@@ -37,8 +37,8 @@ public class FileModel : Model
     {
         Connections = Connections.SetItem(DefaultConnection.Mount, new Connector());
 
-        Connections[DefaultConnection.Mount].Processing += (object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed File" + Name);
+        Connections[DefaultConnection.Mount].Processing.Push((object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name));
+        Connections[DefaultConnection.Mount].Processed.Enqueue((object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed File" + Name));
 
         Network = new(this);
     }
@@ -53,8 +53,8 @@ public class DirectoryModel : Model
     {
         Connections = Connections.SetItem(DefaultConnection.Mount, new Connector());
 
-        Connections[DefaultConnection.Mount].Processing += (object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing Directory" + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed Directory" + Name);
+        Connections[DefaultConnection.Mount].Processing.Push((object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing Directory " + Name));
+        Connections[DefaultConnection.Mount].Processed.Enqueue((object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed Directory " + Name));
 
         Network = new(this);
     }

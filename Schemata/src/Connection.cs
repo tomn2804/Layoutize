@@ -4,32 +4,9 @@ using System.Linq;
 
 namespace Schemata;
 
-public partial class Connector
+public partial class Connection : Connector.Owner
 {
-    public class ProcessingEventArgs : EventArgs
-    {
-        public Model Model { get; }
-
-        public ProcessingEventArgs(Model model)
-        {
-            Model = model;
-        }
-    }
-
-    public class ProcessedEventArgs : EventArgs
-    {
-        public Model Model { get; }
-
-        public ProcessedEventArgs(Model model)
-        {
-            Model = model;
-        }
-    }
-}
-
-public partial class Connection
-{
-    private Stack<EventHandler<Connector.ProcessedEventArgs>?> Callbacks { get; } = new();
+    private Stack<Connector> Callbacks { get; } = new();
 
     public Model Model { get; }
 
@@ -38,10 +15,10 @@ public partial class Connection
         Model = model;
     }
 
-    public void Push(Connector connection)
+    public void Push(Connector connector)
     {
-        connection.OnProcessing(this, new(Model));
-        Callbacks.Push(connection.OnProcessed);
+        OnProcessing(connector, new(Model));
+        Callbacks.Push(connector);
     }
 }
 
@@ -51,7 +28,7 @@ public partial class Connection : IDisposable
     {
         while (Callbacks.Any())
         {
-            Callbacks.Pop()?.Invoke(this, new(Model));
+            OnProcessed(Callbacks.Pop(), new(Model));
         }
         GC.SuppressFinalize(this);
     }

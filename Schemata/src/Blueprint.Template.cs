@@ -10,6 +10,33 @@ public partial class Blueprint
 {
     public abstract partial class Template
     {
+        public event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
+
+        public IImmutableDictionary<object, object?> Details
+        {
+            get => _details;
+            set
+            {
+                if (value != _details)
+                {
+                    OnDetailsUpdating(new(value));
+                }
+            }
+        }
+
+        public abstract Type ModelType { get; }
+
+        public static implicit operator Blueprint(Template template)
+        {
+            Blueprint blueprint = template.ToBlueprint();
+            if (!template.ModelType.IsAssignableTo(blueprint.ModelType))
+            {
+                throw new InvalidOperationException();
+            }
+            blueprint.Templates.Add(template);
+            return blueprint;
+        }
+
         protected Template(IEnumerable details)
         {
             switch (details)
@@ -33,43 +60,16 @@ public partial class Blueprint
             }
         }
 
-        public static implicit operator Blueprint(Template template)
-        {
-            Blueprint blueprint = template.ToBlueprint();
-            if (!template.ModelType.IsAssignableTo(blueprint.ModelType))
-            {
-                throw new InvalidOperationException();
-            }
-            blueprint.Templates.Add(template);
-            return blueprint;
-        }
-
-        public event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
-
-        private readonly IImmutableDictionary<object, object?> _details;
-
-        public IImmutableDictionary<object, object?> Details
-        {
-            get => _details;
-            set
-            {
-                if (value != _details)
-                {
-                    OnDetailsUpdating(new(value));
-                }
-            }
-        }
-
         protected virtual void OnDetailsUpdating(DetailsUpdatingEventArgs args)
         {
             DetailsUpdating?.Invoke(this, args);
         }
 
-        public abstract Type ModelType { get; }
-
         protected virtual Blueprint ToBlueprint()
         {
             return new();
         }
+
+        private readonly IImmutableDictionary<object, object?> _details;
     }
 }

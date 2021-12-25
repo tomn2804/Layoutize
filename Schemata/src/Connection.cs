@@ -6,20 +6,20 @@ namespace Schemata;
 
 public partial class Connection : Connector.Owner
 {
-    private Stack<Connector> Callbacks { get; } = new();
-
-    public Model Model { get; }
-
     public Connection(Model model)
     {
         Model = model;
     }
+
+    public Model Model { get; }
 
     public void Push(Connector connector)
     {
         OnProcessing(connector, new(Model));
         Callbacks.Push(connector);
     }
+
+    private Stack<Connector> Callbacks { get; } = new();
 }
 
 public partial class Connection : IDisposable

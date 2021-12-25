@@ -7,8 +7,6 @@ public partial class Blueprint
 {
     public abstract partial class Owner
     {
-        protected Blueprint Blueprint { get; private set; }
-
         protected Owner(Blueprint blueprint)
         {
             Blueprint = blueprint;
@@ -17,6 +15,8 @@ public partial class Blueprint
                 template.DetailsUpdating += UpdateBlueprint;
             }
         }
+
+        protected Blueprint Blueprint { get; private set; }
 
         protected virtual void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {

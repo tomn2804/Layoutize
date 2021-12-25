@@ -3,16 +3,6 @@ using System.Collections;
 
 namespace Schemata;
 
-public abstract class Template<T> : Blueprint.Template where T : Model
-{
-    protected Template(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    public override Type ModelType => typeof(T);
-}
-
 public class BlankTemplate : Template<Model>
 {
     public BlankTemplate(IEnumerable details)
@@ -36,6 +26,16 @@ public class FileTemplate : Template<FileModel>
     protected override Blueprint ToBlueprint()
     {
         return new BlankTemplate(Details);
+    }
+}
+
+public abstract class Template<T> : Blueprint.Template where T : Model
+{
+    public override Type ModelType => typeof(T);
+
+    protected Template(IEnumerable details)
+            : base(details)
+    {
     }
 }
 

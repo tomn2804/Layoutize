@@ -8,26 +8,24 @@ namespace Schemata;
 
 public class DirectoryPreorderEnumerator : IEnumerator<Connection>
 {
-    [AllowNull]
-    public Connection Current { get; private set; }
-
-    object IEnumerator.Current => Current;
-
-    private DirectoryNetwork Network { get; }
-
-    private Connection Parent { get; set; }
-
     public DirectoryPreorderEnumerator(DirectoryNetwork network)
     {
         Network = network;
         Reset();
     }
 
-    private IEnumerator<IEnumerator<Connection>> ParentEnumerator { get; set; }
+    [AllowNull]
+    public Connection Current { get; private set; }
 
-    private IEnumerator<Connection>? ChildEnumerator => ParentEnumerator.Current;
+    object IEnumerator.Current => Current;
 
-    private bool IsEnumerating { get; set; }
+    public virtual void Dispose()
+    {
+        ChildEnumerator?.Dispose();
+        Parent.Dispose();
+        ParentEnumerator.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     public bool MoveNext()
     {
@@ -60,11 +58,13 @@ public class DirectoryPreorderEnumerator : IEnumerator<Connection>
         ParentEnumerator = Network.Model.Children.Select(child => child.Network.GetEnumerator()).GetEnumerator();
     }
 
-    public virtual void Dispose()
-    {
-        ParentEnumerator.Dispose();
-        ChildEnumerator?.Dispose();
-        Parent.Dispose();
-        GC.SuppressFinalize(this);
-    }
+    private IEnumerator<Connection>? ChildEnumerator => ParentEnumerator.Current;
+
+    private bool IsEnumerating { get; set; }
+
+    private DirectoryNetwork Network { get; }
+
+    private Connection Parent { get; set; }
+
+    private IEnumerator<IEnumerator<Connection>> ParentEnumerator { get; set; }
 }

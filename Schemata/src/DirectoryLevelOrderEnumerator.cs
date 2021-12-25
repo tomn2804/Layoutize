@@ -6,28 +6,29 @@ using System.Linq;
 
 namespace Schemata;
 
-public class DirectoryLevelOrderEnumerator : IEnumerator<Connection.Segment>
+public class DirectoryLevelOrderEnumerator : IEnumerator<Connection>
 {
     [AllowNull]
-    public Connection.Segment Current { get; private set; }
+    public Connection Current { get; private set; }
 
     object IEnumerator.Current => Current;
 
     private DirectoryNetwork Network { get; }
 
-    private Connection.Segment Parent { get; set; }
+    private Connection Parent { get; set; }
 
     public DirectoryLevelOrderEnumerator(DirectoryNetwork network)
     {
         Network = network;
+        Children.EnsureCapacity(Network.Model.Children.Count);
         Reset();
     }
 
-    private Queue<IEnumerator<Connection.Segment>> Children { get; } = new();
+    private Queue<IEnumerator<Connection>> Children { get; } = new();
 
-    private IEnumerator<IEnumerator<Connection.Segment>> ParentEnumerator { get; set; }
+    private IEnumerator<IEnumerator<Connection>> ParentEnumerator { get; set; }
 
-    private IEnumerator<Connection.Segment>? ChildEnumerator => ParentEnumerator.Current;
+    private IEnumerator<Connection>? ChildEnumerator => ParentEnumerator.Current;
 
     private bool IsEnumerating { get; set; }
 
@@ -39,7 +40,7 @@ public class DirectoryLevelOrderEnumerator : IEnumerator<Connection.Segment>
             IsEnumerating = true;
             return true;
         }
-        if (ParentEnumerator.MoveNext() && ChildEnumerator is not null && ChildEnumerator.MoveNext())
+        if (ParentEnumerator.MoveNext() && ChildEnumerator!.MoveNext())
         {
             Children.Enqueue(ChildEnumerator);
             Current = ChildEnumerator.Current;
@@ -52,7 +53,7 @@ public class DirectoryLevelOrderEnumerator : IEnumerator<Connection.Segment>
                 Current = Children.Peek().Current;
                 return true;
             }
-            Children.Dequeue();
+            Children.Dequeue().Dispose();
             return MoveNext();
         }
         Parent.Dispose();

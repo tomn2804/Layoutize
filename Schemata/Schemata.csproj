@@ -16,8 +16,8 @@
     <Compile Include="src\Blueprint.cs" />
     <Compile Include="src\Blueprint.Owner.cs" />
     <Compile Include="src\Blueprint.Template.cs" />
+    <Compile Include="src\Connector.cs" />
     <Compile Include="src\Connection.cs" />
-    <Compile Include="src\Connection.Segment.cs" />
     <Compile Include="src\DetailsUpdatingEventArgs.cs" />
     <Compile Include="src\DirectoryLevelOrderEnumerator.cs" />
     <Compile Include="src\DirectoryPreorderEnumerator.cs" />

@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace Schemata;
 
-public class FileEnumerator : IEnumerator<Connection.Segment>
+public class FileEnumerator : IEnumerator<Connection>
 {
     [AllowNull]
-    public Connection.Segment Current { get; private set; }
+    public Connection Current { get; private set; }
 
     object IEnumerator.Current => Current;
 
@@ -17,7 +17,7 @@ public class FileEnumerator : IEnumerator<Connection.Segment>
 
     private FileNetwork Network { get; }
 
-    private Connection.Segment Parent { get; set; }
+    private Connection Parent { get; set; }
 
     public FileEnumerator(FileNetwork network)
     {

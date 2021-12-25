@@ -6,16 +6,16 @@ using System.Linq;
 
 namespace Schemata;
 
-public class DirectoryPreorderEnumerator : IEnumerator<Connection.Segment>
+public class DirectoryPreorderEnumerator : IEnumerator<Connection>
 {
     [AllowNull]
-    public Connection.Segment Current { get; private set; }
+    public Connection Current { get; private set; }
 
     object IEnumerator.Current => Current;
 
     private DirectoryNetwork Network { get; }
 
-    private Connection.Segment Parent { get; set; }
+    private Connection Parent { get; set; }
 
     public DirectoryPreorderEnumerator(DirectoryNetwork network)
     {
@@ -23,9 +23,9 @@ public class DirectoryPreorderEnumerator : IEnumerator<Connection.Segment>
         Reset();
     }
 
-    private IEnumerator<IEnumerator<Connection.Segment>> ParentEnumerator { get; set; }
+    private IEnumerator<IEnumerator<Connection>> ParentEnumerator { get; set; }
 
-    private IEnumerator<Connection.Segment>? ChildEnumerator => ParentEnumerator.Current;
+    private IEnumerator<Connection>? ChildEnumerator => ParentEnumerator.Current;
 
     private bool IsEnumerating { get; set; }
 
@@ -42,6 +42,7 @@ public class DirectoryPreorderEnumerator : IEnumerator<Connection.Segment>
             Current = ChildEnumerator.Current;
             return true;
         }
+        ChildEnumerator?.Dispose();
         if (ParentEnumerator.MoveNext())
         {
             return MoveNext();

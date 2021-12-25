@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace Schemata;
 
-public abstract class Network : IEnumerable<Connection.Segment>
+public abstract class Network : IEnumerable<Connection>
 {
     public abstract Model Model { get; }
 
-    public abstract IEnumerator<Connection.Segment> GetEnumerator();
+    public abstract IEnumerator<Connection> GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {
@@ -25,7 +25,7 @@ public class FileNetwork : Network
         Model = model;
     }
 
-    public override IEnumerator<Connection.Segment> GetEnumerator()
+    public override IEnumerator<Connection> GetEnumerator()
     {
         return new FileEnumerator(this);
     }
@@ -48,8 +48,8 @@ public class DirectoryNetwork : Network
         EnumeratorType = enumeratorType;
     }
 
-    public override IEnumerator<Connection.Segment> GetEnumerator()
+    public override IEnumerator<Connection> GetEnumerator()
     {
-        return (IEnumerator<Connection.Segment>)Activator.CreateInstance(EnumeratorType, this)!;
+        return (IEnumerator<Connection>)Activator.CreateInstance(EnumeratorType, this)!;
     }
 }

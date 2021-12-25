@@ -17,7 +17,7 @@ public abstract partial class Model : Blueprint.Owner
         Name = (string)Blueprint.Details["Name"]!;
     }
 
-    public ImmutableDictionary<object, Connection> Connections { get; protected set; } = ImmutableDictionary.Create<object, Connection>();
+    public ImmutableDictionary<object, Connector> Connections { get; protected set; } = ImmutableDictionary.Create<object, Connector>();
 
     public abstract Network Network { get; }
 }
@@ -35,10 +35,10 @@ public class FileModel : Model
     public FileModel(Blueprint blueprint)
         : base(blueprint)
     {
-        Connections = Connections.SetItem(DefaultConnection.Mount, new Connection());
+        Connections = Connections.SetItem(DefaultConnection.Mount, new Connector());
 
-        Connections[DefaultConnection.Mount].Processing += (object? sender, Connection.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, Connection.ProcessedEventArgs args) => Console.WriteLine("Processed File" + Name);
+        Connections[DefaultConnection.Mount].Processing += (object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name);
+        Connections[DefaultConnection.Mount].Processed += (object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed File" + Name);
 
         Network = new(this);
     }
@@ -51,10 +51,10 @@ public class DirectoryModel : Model
     public DirectoryModel(Blueprint blueprint)
         : base(blueprint)
     {
-        Connections = Connections.SetItem(DefaultConnection.Mount, new Connection());
+        Connections = Connections.SetItem(DefaultConnection.Mount, new Connector());
 
-        Connections[DefaultConnection.Mount].Processing += (object? sender, Connection.ProcessingEventArgs args) => Console.WriteLine("Processing Directory" + Name);
-        Connections[DefaultConnection.Mount].Processed += (object? sender, Connection.ProcessedEventArgs args) => Console.WriteLine("Processed Directory" + Name);
+        Connections[DefaultConnection.Mount].Processing += (object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing Directory" + Name);
+        Connections[DefaultConnection.Mount].Processed += (object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed Directory" + Name);
 
         Network = new(this);
     }

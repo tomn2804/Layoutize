@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Schemata;
 
-public partial class Blueprint
+public sealed partial class Blueprint
 {
     public IReadOnlyDictionary<object, object> Details { get; }
 
-    public Type ModelType { get; }
+    internal Type ModelType { get; }
+
+    internal Builder ToBuilder()
+    {
+        return new(this);
+    }
 
     private Blueprint(IReadOnlyDictionary<object, object> details, Type modelType, IReadOnlyList<Template> templates)
     {

@@ -65,7 +65,7 @@ public abstract partial class Template
 
     protected virtual Blueprint ToBlueprint()
     {
-        return Blueprint.Empty;
+        return new Blueprint.Builder().ToBlueprint();
     }
 
     private readonly IImmutableDictionary<object, object> _details;
@@ -81,7 +81,7 @@ public abstract class Template<T> : Template where T : Model
     }
 }
 
-public class BlankTemplate : Template<Model>
+public sealed class BlankTemplate : Template<Model>
 {
     public BlankTemplate(IEnumerable details)
         : base(details)
@@ -94,7 +94,7 @@ public class BlankTemplate : Template<Model>
     }
 }
 
-public class FileTemplate : Template<FileModel>
+public sealed class FileTemplate : Template<FileModel>
 {
     public FileTemplate(IEnumerable details)
         : base(details)
@@ -107,7 +107,7 @@ public class FileTemplate : Template<FileModel>
     }
 }
 
-public class TextFileTemplate : Template<FileModel>
+public sealed class TextFileTemplate : Template<FileModel>
 {
     public TextFileTemplate(IEnumerable details)
         : base(details)
@@ -120,7 +120,7 @@ public class TextFileTemplate : Template<FileModel>
     }
 }
 
-public class StrictTextFileTemplate : Template<FileModel>
+public sealed class StrictTextFileTemplate : Template<FileModel>
 {
     public StrictTextFileTemplate(IEnumerable details)
         : base(details)

@@ -5,23 +5,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Schemata;
 
-public class FileEnumerator : IEnumerator<Connection>
+public sealed class FileEnumerator : IEnumerator<Connection>
 {
-    public FileEnumerator(FileNetwork network)
-    {
-        Network = network;
-        Reset();
-    }
-
     [AllowNull]
     public Connection Current { get; private set; }
 
     object IEnumerator.Current => Current;
 
-    public virtual void Dispose()
+    public void Dispose()
     {
         Parent.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     public bool MoveNext()
@@ -41,6 +34,12 @@ public class FileEnumerator : IEnumerator<Connection>
     {
         IsEnumerated = false;
         Parent = new(Network.Model);
+    }
+
+    internal FileEnumerator(FileNetwork network)
+    {
+        Network = network;
+        Reset();
     }
 
     private bool IsEnumerated { get; set; }

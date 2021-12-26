@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Schemata;
 
-public partial class Blueprint
+public sealed partial class Blueprint
 {
     public abstract partial class Owner
     {
@@ -19,9 +18,10 @@ public partial class Blueprint
 
         protected Blueprint Blueprint { get; private set; }
 
-        protected virtual void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
+        private void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {
-            Builder builder = new((Template)Activator.CreateInstance(sender!.GetType(), args.Details)!);
+            Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
+            Builder builder = newBlueprint.ToBuilder();
 
             Debug.Assert(Blueprint.Templates[builder.Templates.Count - 1] == sender);
 
@@ -47,13 +47,18 @@ public partial class Blueprint
 
     public abstract partial class Owner : IDisposable
     {
-        public virtual void Dispose()
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool _)
         {
             foreach (Template template in Blueprint.Templates)
             {
                 template.DetailsUpdating -= UpdateBlueprint;
             }
-            GC.SuppressFinalize(this);
         }
     }
 }

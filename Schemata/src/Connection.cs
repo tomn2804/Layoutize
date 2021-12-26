@@ -4,13 +4,8 @@ using System.Linq;
 
 namespace Schemata;
 
-public partial class Connection : Connector.Owner
+public sealed partial class Connection : Connector.Owner
 {
-    public Connection(Model model)
-    {
-        Model = model;
-    }
-
     public Model Model { get; }
 
     public void Push(Connector connector)
@@ -19,17 +14,21 @@ public partial class Connection : Connector.Owner
         Callbacks.Push(connector);
     }
 
+    internal Connection(Model model)
+    {
+        Model = model;
+    }
+
     private Stack<Connector> Callbacks { get; } = new();
 }
 
-public partial class Connection : IDisposable
+public sealed partial class Connection : IDisposable
 {
-    public virtual void Dispose()
+    public void Dispose()
     {
         while (Callbacks.Any())
         {
             OnProcessed(Callbacks.Pop(), new(Model));
         }
-        GC.SuppressFinalize(this);
     }
 }

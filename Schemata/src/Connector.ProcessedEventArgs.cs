@@ -2,15 +2,15 @@
 
 namespace Schemata;
 
-public partial class Connector
+public sealed partial class Connector
 {
-    public class ProcessedEventArgs : EventArgs
+    public sealed class ProcessedEventArgs : EventArgs
     {
-        public ProcessedEventArgs(Model model)
+        public Model Model { get; }
+
+        internal ProcessedEventArgs(Model model)
         {
             Model = model;
         }
-
-        public Model Model { get; }
     }
 }

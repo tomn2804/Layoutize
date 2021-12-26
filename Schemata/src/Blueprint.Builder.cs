@@ -6,36 +6,29 @@ using System.Linq;
 
 namespace Schemata;
 
-public partial class Blueprint
+public sealed partial class Blueprint
 {
-    public static readonly Blueprint Empty = new(ImmutableDictionary.Create<object, object>(), typeof(Model), ImmutableList.Create<Template>());
-
-    public Builder ToBuilder()
+    internal sealed class Builder
     {
-        return new(this);
-    }
-
-    public class Builder
-    {
-        public IImmutableDictionary<object, object> Details => Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
-
-        public Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
-
-        public List<Template> Templates { get; }
-
-        public Builder()
+        internal Builder()
         {
             Templates = new();
         }
 
-        public Builder(Blueprint blueprint)
+        internal Builder(Blueprint blueprint)
         {
             Templates = blueprint.Templates.ToList();
             Debug.Assert(blueprint.Details == Details);
             Debug.Assert(blueprint.ModelType == ModelType);
         }
 
-        public Blueprint ToBlueprint()
+        internal IImmutableDictionary<object, object> Details => Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
+
+        internal Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
+
+        internal List<Template> Templates { get; }
+
+        internal Blueprint ToBlueprint()
         {
             return new(Details, ModelType, Templates.ToImmutableList());
         }

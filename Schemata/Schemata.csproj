@@ -16,6 +16,7 @@
     <Compile Include="src\Blueprint.Builder.cs" />
     <Compile Include="src\Blueprint.cs" />
     <Compile Include="src\Blueprint.Owner.cs" />
+    <Compile Include="src\Connector.Builder.cs" />
     <Compile Include="src\Template.DetailsUpdatingEventArgs.cs" />
     <Compile Include="src\Connector.cs" />
     <Compile Include="src\Connection.cs" />

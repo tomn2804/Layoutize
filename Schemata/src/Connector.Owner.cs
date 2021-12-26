@@ -2,14 +2,10 @@
 
 namespace Schemata;
 
-public partial class Connector
+public sealed partial class Connector
 {
-    public class Owner
+    public abstract class Owner
     {
-        protected Owner()
-        {
-        }
-
         protected void OnProcessed(Connector connector, ProcessedEventArgs args)
         {
             foreach (EventHandler<ProcessedEventArgs> handler in connector.Processed)

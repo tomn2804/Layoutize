@@ -6,26 +6,18 @@ using System.Linq;
 
 namespace Schemata;
 
-public class DirectoryLevelOrderEnumerator : IEnumerator<Connection>
+public sealed class DirectoryLevelOrderEnumerator : IEnumerator<Connection>
 {
-    public DirectoryLevelOrderEnumerator(DirectoryNetwork network)
-    {
-        Network = network;
-        Children.EnsureCapacity(Network.Model.Children.Count);
-        Reset();
-    }
-
     [AllowNull]
     public Connection Current { get; private set; }
 
     object IEnumerator.Current => Current;
 
-    public virtual void Dispose()
+    public void Dispose()
     {
         ChildEnumerator?.Dispose();
         Parent.Dispose();
         ParentEnumerator.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     public bool MoveNext()
@@ -64,6 +56,13 @@ public class DirectoryLevelOrderEnumerator : IEnumerator<Connection>
         IsEnumerating = false;
         Parent = new(Network.Model);
         ParentEnumerator = Network.Model.Children.Select(child => child.Network.GetEnumerator()).GetEnumerator();
+    }
+
+    internal DirectoryLevelOrderEnumerator(DirectoryNetwork network)
+    {
+        Network = network;
+        Children.EnsureCapacity(Network.Model.Children.Count);
+        Reset();
     }
 
     private IEnumerator<Connection>? ChildEnumerator => ParentEnumerator.Current;

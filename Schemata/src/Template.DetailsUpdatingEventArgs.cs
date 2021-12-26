@@ -5,13 +5,13 @@ namespace Schemata;
 
 public abstract partial class Template
 {
-    public class DetailsUpdatingEventArgs : EventArgs
+    public sealed class DetailsUpdatingEventArgs : EventArgs
     {
-        public DetailsUpdatingEventArgs(IImmutableDictionary<object, object> details)
+        public IImmutableDictionary<object, object> Details { get; }
+
+        internal DetailsUpdatingEventArgs(IImmutableDictionary<object, object> details)
         {
             Details = details;
         }
-
-        public IImmutableDictionary<object, object> Details { get; }
     }
 }

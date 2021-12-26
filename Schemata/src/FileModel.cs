@@ -4,7 +4,7 @@ namespace Schemata;
 
 public class FileModel : Model
 {
-    public FileModel(Blueprint blueprint)
+    protected FileModel(Blueprint blueprint)
         : base(blueprint)
     {
         Connector.Builder builder = new();

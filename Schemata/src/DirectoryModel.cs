@@ -5,7 +5,7 @@ namespace Schemata;
 
 public class DirectoryModel : Model
 {
-    public DirectoryModel(Blueprint blueprint)
+    protected DirectoryModel(Blueprint blueprint)
         : base(blueprint)
     {
         Connector.Builder builder = new();

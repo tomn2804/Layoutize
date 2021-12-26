@@ -6,45 +6,6 @@ using System.Linq;
 
 namespace Schemata;
 
-public sealed class BlankTemplate : Template<Model>
-{
-    public BlankTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return base.ToBlueprint();
-    }
-}
-
-public sealed class FileTemplate : Template<FileModel>
-{
-    public FileTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return new BlankTemplate(Details);
-    }
-}
-
-public sealed class DirectoryTemplate : Template<DirectoryModel>
-{
-    public DirectoryTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return new BlankTemplate(Details);
-    }
-}
-
 public abstract partial class Template
 {
     public static class RequiredDetails
@@ -125,31 +86,5 @@ public abstract class Template<T> : Template where T : Model
     protected Template(IEnumerable details)
         : base(details)
     {
-    }
-}
-
-public sealed class TextFileTemplate : Template<FileModel>
-{
-    public TextFileTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return new FileTemplate(Details);
-    }
-}
-
-public sealed class StrictTextFileTemplate : Template<FileModel>
-{
-    public StrictTextFileTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return new TextFileTemplate(Details);
     }
 }

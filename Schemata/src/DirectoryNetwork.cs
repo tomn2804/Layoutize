@@ -11,7 +11,7 @@ public sealed class DirectoryNetwork : Network
     }
 
     internal DirectoryNetwork(DirectoryModel model)
-            : this(model, typeof(DirectoryPreorderEnumerator))
+        : this(model, typeof(DirectoryPreorderEnumerator))
     {
     }
 

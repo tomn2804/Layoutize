@@ -6,9 +6,56 @@ using System.Linq;
 
 namespace Schemata;
 
+public sealed class BlankTemplate : Template<Model>
+{
+    public BlankTemplate(IEnumerable details)
+        : base(details)
+    {
+    }
+
+    protected override Blueprint ToBlueprint()
+    {
+        return base.ToBlueprint();
+    }
+}
+
+public sealed class FileTemplate : Template<FileModel>
+{
+    public FileTemplate(IEnumerable details)
+        : base(details)
+    {
+    }
+
+    protected override Blueprint ToBlueprint()
+    {
+        return new BlankTemplate(Details);
+    }
+}
+
+public sealed class DirectoryTemplate : Template<DirectoryModel>
+{
+    public DirectoryTemplate(IEnumerable details)
+        : base(details)
+    {
+    }
+
+    protected override Blueprint ToBlueprint()
+    {
+        return new BlankTemplate(Details);
+    }
+}
+
 public abstract partial class Template
 {
-    public event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
+    public static class RequiredDetails
+    {
+        public static readonly string Name = "Name";
+    }
+}
+
+public abstract partial class Template
+{
+    internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
 
     public IImmutableDictionary<object, object> Details
     {
@@ -22,7 +69,7 @@ public abstract partial class Template
         }
     }
 
-    public abstract Type ModelType { get; }
+    internal abstract Type ModelType { get; }
 
     public static implicit operator Blueprint(Template template)
     {
@@ -48,13 +95,13 @@ public abstract partial class Template
                 break;
 
             case IDictionary dictionary:
-                _details = dictionary.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value)!;
-                break;
-
             default:
-                int key = 0;
-                _details = details.Cast<object>().ToImmutableDictionary(_ => (object)key++, value => value);
+                _details = details.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value)!;
                 break;
+        }
+        if (!Details.TryGetValue(RequiredDetails.Name, out object? name))
+        {
+            throw new ArgumentNullException(RequiredDetails.Name);
         }
     }
 
@@ -73,37 +120,11 @@ public abstract partial class Template
 
 public abstract class Template<T> : Template where T : Model
 {
-    public override Type ModelType => typeof(T);
+    internal override Type ModelType => typeof(T);
 
     protected Template(IEnumerable details)
         : base(details)
     {
-    }
-}
-
-public sealed class BlankTemplate : Template<Model>
-{
-    public BlankTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return base.ToBlueprint();
-    }
-}
-
-public sealed class FileTemplate : Template<FileModel>
-{
-    public FileTemplate(IEnumerable details)
-        : base(details)
-    {
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return new BlankTemplate(Details);
     }
 }
 

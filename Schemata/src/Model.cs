@@ -11,7 +11,7 @@ public abstract partial class Model : Blueprint.Owner
     public abstract Network Network { get; }
 
     protected Model(Blueprint blueprint)
-            : base(blueprint)
+        : base(blueprint)
     {
         //Debug.Assert(Blueprint.ModelType == GetType());
         Name = (string)Blueprint.Details["Name"]!;

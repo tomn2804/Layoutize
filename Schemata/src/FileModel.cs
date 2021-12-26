@@ -4,6 +4,8 @@ namespace Schemata;
 
 public class FileModel : Model
 {
+    public override FileNetwork Network { get; }
+
     protected FileModel(Blueprint blueprint)
         : base(blueprint)
     {
@@ -15,6 +17,4 @@ public class FileModel : Model
 
         Network = new(this);
     }
-
-    public override FileNetwork Network { get; }
 }

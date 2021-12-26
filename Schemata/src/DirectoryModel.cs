@@ -5,6 +5,10 @@ namespace Schemata;
 
 public class DirectoryModel : Model
 {
+    public List<Model> Children { get; } = new();
+
+    public override DirectoryNetwork Network { get; }
+
     protected DirectoryModel(Blueprint blueprint)
         : base(blueprint)
     {
@@ -16,8 +20,4 @@ public class DirectoryModel : Model
 
         Network = new(this);
     }
-
-    public List<Model> Children { get; } = new();
-
-    public override DirectoryNetwork Network { get; }
 }

@@ -14,12 +14,6 @@ public sealed partial class Connector
             Processing = new();
         }
 
-        internal Builder(Connector connector)
-        {
-            Processed = new(connector.Processed);
-            Processing = new(connector.Processing);
-        }
-
         public Queue<EventHandler<ProcessedEventArgs>> Processed { get; }
 
         public Stack<EventHandler<ProcessingEventArgs>> Processing { get; }
@@ -27,6 +21,12 @@ public sealed partial class Connector
         public Connector ToConnector()
         {
             return new(ImmutableList.CreateRange(Processed), ImmutableList.CreateRange(Processing));
+        }
+
+        internal Builder(Connector connector)
+        {
+            Processed = new(connector.Processed);
+            Processing = new(connector.Processing);
         }
     }
 }

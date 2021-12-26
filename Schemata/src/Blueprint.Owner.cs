@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Schemata;
 
@@ -20,14 +21,14 @@ public partial class Blueprint
 
         protected virtual void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {
-            Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
+            Builder builder = new((Template)Activator.CreateInstance(sender!.GetType(), args.Details)!);
 
-            Debug.Assert(newBlueprint.Templates.Count - 1 == Blueprint.Templates.IndexOf((Template)sender));
+            Debug.Assert(Blueprint.Templates[builder.Templates.Count - 1] == sender);
 
-            for (int i = 0; i < newBlueprint.Templates.Count; ++i)
+            for (int i = 0; i < builder.Templates.Count; ++i)
             {
                 Template oldTemplate = Blueprint.Templates[i];
-                Template newTemplate = newBlueprint.Templates[i];
+                Template newTemplate = builder.Templates[i];
 
                 Debug.Assert(oldTemplate != newTemplate);
 
@@ -35,12 +36,12 @@ public partial class Blueprint
                 newTemplate.DetailsUpdating += UpdateBlueprint;
             }
 
-            for (int i = newBlueprint.Templates.Count; i < Blueprint.Templates.Count; ++i)
+            for (int i = builder.Templates.Count; i < Blueprint.Templates.Count; ++i)
             {
-                newBlueprint.Templates.Add(Blueprint.Templates[i]);
+                builder.Templates.Add(Blueprint.Templates[i]);
             }
 
-            Blueprint = newBlueprint;
+            Blueprint = builder.ToBlueprint();
         }
     }
 

@@ -65,7 +65,7 @@ public abstract partial class Template
 
     protected virtual Blueprint ToBlueprint()
     {
-        return Blueprint.Create();
+        return Blueprint.Empty;
     }
 
     private readonly IImmutableDictionary<object, object> _details;

@@ -4,9 +4,9 @@ namespace Schemata;
 
 public sealed class FileNetwork : Network
 {
-    public override IEnumerator<Connection> GetEnumerator()
+    public override IEnumerator<Node> GetEnumerator()
     {
-        yield return new Connection(Model);
+        yield return new Node(Model);
     }
 
     internal FileNetwork(FileModel model)

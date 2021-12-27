@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 
 namespace Schemata;
 
-public sealed partial class Connector
+public sealed partial class Activity
 {
     public sealed class Builder
     {
@@ -18,15 +18,15 @@ public sealed partial class Connector
 
         public Stack<EventHandler<ProcessingEventArgs>> Processing { get; }
 
-        public Connector ToConnector()
+        public Activity ToConnector()
         {
             return new(ImmutableList.CreateRange(Processed), ImmutableList.CreateRange(Processing));
         }
 
-        internal Builder(Connector connector)
+        internal Builder(Activity activity)
         {
-            Processed = new(connector.Processed);
-            Processing = new(connector.Processing);
+            Processed = new(activity.Processed);
+            Processing = new(activity.Processing);
         }
     }
 }

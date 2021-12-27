@@ -2,7 +2,7 @@
 
 namespace Schemata;
 
-public sealed partial class Connector
+public sealed partial class Activity
 {
     public sealed class ProcessedEventArgs : EventArgs
     {

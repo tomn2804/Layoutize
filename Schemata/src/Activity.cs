@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Schemata;
 
-public sealed partial class Connector
+public sealed partial class Activity
 {
     public Builder ToBuilder()
     {
@@ -14,7 +14,7 @@ public sealed partial class Connector
 
     internal IReadOnlyCollection<EventHandler<ProcessingEventArgs>> Processing { get; }
 
-    private Connector(IReadOnlyCollection<EventHandler<ProcessedEventArgs>> processed, IReadOnlyCollection<EventHandler<ProcessingEventArgs>> processing)
+    private Activity(IReadOnlyCollection<EventHandler<ProcessedEventArgs>> processed, IReadOnlyCollection<EventHandler<ProcessingEventArgs>> processing)
     {
         Processed = processed;
         Processing = processing;

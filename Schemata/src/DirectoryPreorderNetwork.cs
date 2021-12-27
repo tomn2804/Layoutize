@@ -4,13 +4,13 @@ namespace Schemata;
 
 public sealed class DirectoryPreorderNetwork : Network
 {
-    public override IEnumerator<Connection> GetEnumerator()
+    public override IEnumerator<Node> GetEnumerator()
     {
-        Connection parentConnection = new(Model);
+        Node parentConnection = new(Model);
         yield return parentConnection;
         foreach (Model child in Model.Children)
         {
-            foreach (Connection childConnection in child.Network)
+            foreach (Node childConnection in child.Tree)
             {
                 yield return childConnection;
             }

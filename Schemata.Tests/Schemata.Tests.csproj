@@ -18,9 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\BlueprintTests.cs" />
-    <Compile Include="src\TemplateFixture.cs" />
-    <Compile Include="src\TemplateTests.cs" />
+    <Compile Include="src\WorkbenchTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

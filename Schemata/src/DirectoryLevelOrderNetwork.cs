@@ -6,14 +6,14 @@ namespace Schemata;
 
 public sealed class DirectoryLevelOrderNetwork : Network
 {
-    public override IEnumerator<Connection> GetEnumerator()
+    public override IEnumerator<Node> GetEnumerator()
     {
-        Connection parentConnection = new(Model);
+        Node parentConnection = new(Model);
         yield return parentConnection;
-        Queue<IEnumerator<Connection>> childrenConnections = new(Model.Children.Count);
+        Queue<IEnumerator<Node>> childrenConnections = new(Model.Children.Count);
         foreach (Model child in Model.Children)
         {
-            IEnumerator<Connection> enumerator = child.Network.GetEnumerator();
+            IEnumerator<Node> enumerator = child.Tree.GetEnumerator();
             if (enumerator.MoveNext())
             {
                 childrenConnections.Enqueue(enumerator);
@@ -22,7 +22,7 @@ public sealed class DirectoryLevelOrderNetwork : Network
         }
         while (childrenConnections.Any())
         {
-            IEnumerator<Connection> enumerator = childrenConnections.Dequeue();
+            IEnumerator<Node> enumerator = childrenConnections.Dequeue();
             while (enumerator.MoveNext())
             {
                 yield return enumerator.Current;

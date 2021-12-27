@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Schemata;
 
-public abstract class Network : IEnumerable<Connection>
+public abstract class Network : IEnumerable<Node>
 {
-    public abstract IEnumerator<Connection> GetEnumerator();
+    public abstract IEnumerator<Node> GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {

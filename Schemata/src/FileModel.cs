@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Schemata;
 
 public class FileModel : Model
 {
-    public override FileNetwork Network { get; }
+    public override FileNetwork Tree { get; }
 
-    protected FileModel(Blueprint blueprint)
-        : base(blueprint)
+    protected FileModel(string path, Blueprint blueprint)
+        : base(path, blueprint)
     {
-        Connector.Builder builder = new();
-        builder.Processing.Push((object? sender, Connector.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name));
-        builder.Processed.Enqueue((object? sender, Connector.ProcessedEventArgs args) => Console.WriteLine("Processed File " + Name));
+        Schemata.Activity.Builder builder = new();
+        builder.Processing.Push((object? sender, Schemata.Activity.ProcessingEventArgs args) => Console.WriteLine("Processing File " + Name));
+        builder.Processing.Push((object? sender, Schemata.Activity.ProcessingEventArgs args) => Create());
 
-        Connections = Connections.SetItem(DefaultConnector.Mount, builder.ToConnector());
+        builder.Processed.Enqueue((object? sender, Schemata.Activity.ProcessedEventArgs args) => Console.WriteLine("Processed File " + Name));
 
-        Network = new(this);
+        Activities = Activities.SetItem(Activity.Mount, builder.ToConnector());
+
+        Tree = new(this);
+    }
+
+    protected virtual void Create()
+    {
+        File.Create($"{Path}\\{Name}").Dispose();
     }
 }

@@ -32,7 +32,6 @@ public class TemplateTests
     public void Constructor_InputValidDetails_ReturnsValidTemplate(string inputDetails, Dictionary<object, object> expectedDetails)
     {
         using PowerShell instance = PowerShell.Create();
-
         Template template = (Template)instance.AddScript($@"
             using module Schemata
             using namespace Schemata

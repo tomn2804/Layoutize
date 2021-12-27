@@ -10,8 +10,15 @@ using Xunit;
 
 namespace Schemata.Tests;
 
-public class BlueprintTests
+public class BlueprintTests : IClassFixture<TemplateFixture>
 {
+    private TemplateFixture Fixture { get; }
+
+    public BlueprintTests(TemplateFixture fixture)
+    {
+        Fixture = fixture;
+    }
+
     public static Template CreateValidDirectoryTemplate()
     {
         PowerShell instance = PowerShell.Create();

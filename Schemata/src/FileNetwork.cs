@@ -6,7 +6,7 @@ public sealed class FileNetwork : Network
 {
     public override IEnumerator<Connection> GetEnumerator()
     {
-        return new FileEnumerator(this);
+        yield return new Connection(Model);
     }
 
     internal FileNetwork(FileModel model)
@@ -14,5 +14,5 @@ public sealed class FileNetwork : Network
         Model = model;
     }
 
-    internal override FileModel Model { get; }
+    protected override FileModel Model { get; }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Schemata;
@@ -7,9 +8,9 @@ public class DirectoryModel : Model
 {
     public List<Model> Children { get; } = new();
 
-    public override DirectoryNetwork Network { get; }
+    public override DirectoryLevelOrderNetwork Network { get; }
 
-    protected DirectoryModel(Blueprint blueprint)
+    public DirectoryModel(Blueprint blueprint)
         : base(blueprint)
     {
         Connector.Builder builder = new();

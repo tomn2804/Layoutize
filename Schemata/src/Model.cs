@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Schemata;
 
@@ -8,7 +9,7 @@ public abstract partial class Model : Blueprint.Owner
 
     public string Name { get; }
 
-    public abstract Network Network { get; }
+    public abstract IEnumerable<Connection> Network { get; }
 
     protected Model(Blueprint blueprint)
         : base(blueprint)

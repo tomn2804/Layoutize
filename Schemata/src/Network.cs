@@ -12,5 +12,5 @@ public abstract class Network : IEnumerable<Connection>
         return GetEnumerator();
     }
 
-    internal abstract Model Model { get; }
+    protected abstract Model Model { get; }
 }

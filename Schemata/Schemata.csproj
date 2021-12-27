@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -18,6 +18,7 @@
     <Compile Include="src\Blueprint.cs" />
     <Compile Include="src\Blueprint.Owner.cs" />
     <Compile Include="src\Connector.Builder.cs" />
+    <Compile Include="src\DirectoryPreorderNetwork.cs" />
     <Compile Include="src\DirectoryTemplate.cs" />
     <Compile Include="src\FileTemplate.cs" />
     <Compile Include="src\StrictTextFileTemplate.cs" />
@@ -27,11 +28,8 @@
     <Compile Include="src\Connector.Owner.cs" />
     <Compile Include="src\Connector.ProcessedEventArgs.cs" />
     <Compile Include="src\Connector.ProcessingEventArgs.cs" />
-    <Compile Include="src\DirectoryLevelOrderEnumerator.cs" />
     <Compile Include="src\DirectoryModel.cs" />
-    <Compile Include="src\DirectoryNetwork.cs" />
-    <Compile Include="src\DirectoryPreorderEnumerator.cs" />
-    <Compile Include="src\FileEnumerator.cs" />
+    <Compile Include="src\DirectoryLevelOrderNetwork.cs" />
     <Compile Include="src\FileModel.cs" />
     <Compile Include="src\FileNetwork.cs" />
     <Compile Include="src\Model.cs" />

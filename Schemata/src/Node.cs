@@ -8,7 +8,7 @@ public sealed partial class Node : Activity.Owner
 {
     public Model Model { get; }
 
-    public void Push(Activity activity)
+    public void Invoke(Activity activity)
     {
         OnProcessing(activity, new(Model));
         Callbacks.Push(activity);

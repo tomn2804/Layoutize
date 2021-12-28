@@ -6,7 +6,7 @@ namespace Schemata;
 
 public class FileModel : Model
 {
-    public override FileNetwork Tree { get; }
+    public override FileTree Tree { get; }
 
     protected FileModel(string path, Blueprint blueprint)
         : base(path, blueprint)

@@ -37,7 +37,7 @@ public abstract partial class Template
         Blueprint.Builder builder = template.ToBlueprint().ToBuilder();
         if (!template.ModelType.IsAssignableTo(builder.ModelType))
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException($"Template '{builder.Templates.Last().GetType().FullName}' requires a model that derives from '{builder.ModelType.FullName}'.");
         }
         builder.Templates.Add(template);
         return builder.ToBlueprint();
@@ -60,9 +60,9 @@ public abstract partial class Template
                 _details = details.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value)!;
                 break;
         }
-        if (!Details.TryGetValue(RequiredDetails.Name, out object? name))
+        if (!Details.TryGetValue(RequiredDetails.Name, out object? name) || string.IsNullOrWhiteSpace((string?)name))
         {
-            throw new ArgumentNullException(RequiredDetails.Name);
+            throw new ArgumentNullException(nameof(details), "Property 'Name' cannot be null, missing, or containing only white spaces.");
         }
     }
 

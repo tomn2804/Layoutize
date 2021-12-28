@@ -9,7 +9,7 @@ public class DirectoryModel : Model
 {
     public List<Model> Children { get; } = new();
 
-    public override DirectoryLevelOrderNetwork Tree { get; }
+    public override DirectoryLevelOrderTree Tree { get; }
 
     public DirectoryModel(string path, Blueprint blueprint)
         : base(path, blueprint)

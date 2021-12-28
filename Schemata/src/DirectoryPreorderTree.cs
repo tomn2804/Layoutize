@@ -2,7 +2,7 @@
 
 namespace Schemata;
 
-public sealed class DirectoryPreorderNetwork : Network
+public sealed class DirectoryPreorderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
@@ -18,7 +18,7 @@ public sealed class DirectoryPreorderNetwork : Network
         parentConnection.Dispose();
     }
 
-    internal DirectoryPreorderNetwork(DirectoryModel model)
+    internal DirectoryPreorderTree(DirectoryModel model)
     {
         Model = model;
     }

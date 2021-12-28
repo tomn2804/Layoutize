@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Schemata;
 
-public sealed class DirectoryLevelOrderNetwork : Network
+public sealed class DirectoryLevelOrderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
@@ -31,7 +31,7 @@ public sealed class DirectoryLevelOrderNetwork : Network
         parentConnection.Dispose();
     }
 
-    internal DirectoryLevelOrderNetwork(DirectoryModel model)
+    internal DirectoryLevelOrderTree(DirectoryModel model)
     {
         Model = model;
     }

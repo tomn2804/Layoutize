@@ -2,14 +2,14 @@
 
 namespace Schemata;
 
-public sealed class FileNetwork : Network
+public sealed class FileTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
         yield return new Node(Model);
     }
 
-    internal FileNetwork(FileModel model)
+    internal FileTree(FileModel model)
     {
         Model = model;
     }

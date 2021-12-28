@@ -17,7 +17,7 @@ public sealed class Workbench
         Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { path, Blueprint }, null)!;
         foreach (Node node in model.Tree)
         {
-            node.Push(node.Model.Activities[Model.Activity.Mount]);
+            node.Invoke(node.Model.Activities[Model.Activity.Mount]);
         }
         return model;
     }

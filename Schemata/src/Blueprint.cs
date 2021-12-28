@@ -7,7 +7,7 @@ public sealed partial class Blueprint
 {
     public IReadOnlyDictionary<object, object> Details { get; }
 
-    internal Type ModelType { get; }
+    public Type ModelType { get; }
 
     internal Builder ToBuilder()
     {

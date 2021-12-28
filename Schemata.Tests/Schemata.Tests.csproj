@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\WorkbenchTests.cs" />
+    <Compile Include="src\BlankTemplateTests.cs" />
+    <Compile Include="src\FileTemplateTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

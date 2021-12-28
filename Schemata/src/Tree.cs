@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Schemata;
 
-public abstract class Network : IEnumerable<Node>
+public abstract class Tree : IEnumerable<Node>
 {
     public abstract IEnumerator<Node> GetEnumerator();
 

@@ -8,17 +8,9 @@ namespace Schemata;
 
 public abstract partial class Template
 {
-    public static class RequiredDetails
-    {
-        public static readonly string Name = "Name";
-    }
-}
-
-public abstract partial class Template
-{
     internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
 
-    public IImmutableDictionary<object, object> Details
+    protected IImmutableDictionary<object, object> Details
     {
         get => _details;
         set
@@ -30,7 +22,7 @@ public abstract partial class Template
         }
     }
 
-    internal abstract Type ModelType { get; }
+    protected abstract Type ModelType { get; }
 
     public static implicit operator Blueprint(Template template)
     {
@@ -41,6 +33,12 @@ public abstract partial class Template
         }
         builder.Templates.Add(template);
         return builder.ToBlueprint();
+    }
+
+    public virtual Model GetNewModel()
+    {
+        Model model = (Model)Activator.CreateInstance(ModelType)!;
+        return model;
     }
 
     protected Template(IEnumerable details)
@@ -60,28 +58,36 @@ public abstract partial class Template
                 _details = details.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value)!;
                 break;
         }
-        if (!Details.TryGetValue(RequiredDetails.Name, out object? name) || string.IsNullOrWhiteSpace((string?)name))
-        {
-            throw new ArgumentNullException(nameof(details), "Property 'Name' cannot be null, missing, or containing only white spaces.");
-        }
     }
 
-    protected virtual void OnDetailsUpdating(DetailsUpdatingEventArgs args)
+    private protected virtual void OnDetailsUpdating(DetailsUpdatingEventArgs args)
     {
         DetailsUpdating?.Invoke(this, args);
     }
 
     protected virtual Blueprint ToBlueprint()
     {
+        if (!Details.TryGetValue(RequiredDetails.Name, out object? name) || string.IsNullOrWhiteSpace((string?)name))
+        {
+            throw new ArgumentNullException("details", "Details property 'Name' cannot be null, missing, or containing only white spaces.");
+        }
         return new Blueprint.Builder().ToBlueprint();
     }
 
     private readonly IImmutableDictionary<object, object> _details;
 }
 
+public abstract partial class Template
+{
+    public static class RequiredDetails
+    {
+        public static readonly string Name = "Name";
+    }
+}
+
 public abstract class Template<T> : Template where T : Model
 {
-    internal override Type ModelType => typeof(T);
+    public override Type ModelType => typeof(T);
 
     protected Template(IEnumerable details)
         : base(details)

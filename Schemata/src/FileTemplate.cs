@@ -10,14 +10,15 @@ public sealed class FileTemplate : Template<FileModel>
     public FileTemplate(IEnumerable details)
         : base(details)
     {
-        if (((string)Details[RequiredDetails.Name]).IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-        {
-            throw new ArgumentException("Property 'Name' cannot contain invalid characters.", nameof(details));
-        }
     }
 
     protected override Blueprint ToBlueprint()
     {
-        return new BlankTemplate(Details);
+        Blueprint blueprint = new BlankTemplate(Details);
+        if (((string)blueprint.Details[RequiredDetails.Name]).IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+        {
+            throw new ArgumentException("Details property 'Name' cannot contain invalid characters.", "details");
+        }
+        return blueprint;
     }
 }

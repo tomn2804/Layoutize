@@ -50,11 +50,20 @@ public sealed partial class FileTemplateTests
         Assert.Throws<InvalidOperationException>(() => (Blueprint)template);
     }
 
-    [Theory, MemberData(nameof(InvalidData.NonNullNames), MemberType=typeof(InvalidData))]
+    [Theory, MemberData(nameof(InvalidData.NullNames), MemberType = typeof(InvalidData))]
+    public void Constructor_WithNullInvalidName_ThrowsException(string name)
+    {
+        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
+        FileTemplate template = new(details);
+        Assert.Throws<ArgumentNullException>("details", () => (Blueprint)template);
+    }
+
+    [Theory, MemberData(nameof(InvalidData.NonNullNames), MemberType = typeof(InvalidData))]
     public void Constructor_WithNonNullInvalidName_ThrowsException(string name)
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
-        Assert.Throws<ArgumentException>("details", () => new FileTemplate(details));
+        FileTemplate template = new(details);
+        Assert.Throws<ArgumentException>("details", () => (Blueprint)template);
     }
 }
 
@@ -62,6 +71,8 @@ public sealed partial class FileTemplateTests
 {
     public sealed class InvalidData
     {
+        public static IEnumerable<object[]> NullNames => Path.GetInvalidFileNameChars().Where(name => string.IsNullOrWhiteSpace(name.ToString())).Select(name => new object[] { name.ToString() });
+
         public static IEnumerable<object[]> NonNullNames => Path.GetInvalidFileNameChars().Where(name => !string.IsNullOrWhiteSpace(name.ToString())).Select(name => new object[] { name.ToString() });
 
         public class NonDerivedModelTypeTemplate : Template<DirectoryModel>

@@ -23,7 +23,7 @@ public sealed class FileTemplate : Template<FileModel>
         }
 
         Activity.Builder mountActivity = new();
-        mountActivity.Processing.Push((object? sender, Activity.ProcessingEventArgs args) => ((FileModel)sender!).Create());
+        mountActivity.Processing.Push((object? sender, Activity.ProcessingEventArgs args) => ((FileModel)args.Model!).Create());
         if (Details.TryGetValue(OptionalDetails.OnMounting, out object? onMountingValue) && onMountingValue is EventHandler<Activity.ProcessingEventArgs> onMounting)
         {
             mountActivity.Processing.Push(onMounting);

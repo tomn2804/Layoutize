@@ -16,7 +16,7 @@ public sealed class Workbench
     public Model BuildTo(string path)
     {
         Blueprint.Builder builder = Blueprint.ToBuilder();
-        builder.Path = Path.Combine(path, builder.Name);
+        builder.Path = path;
         Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { builder.ToBlueprint() }, null)!;
         foreach (Node node in model.Tree)
         {

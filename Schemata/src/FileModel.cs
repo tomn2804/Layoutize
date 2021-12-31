@@ -16,6 +16,6 @@ public class FileModel : Model
 
     public virtual void Create()
     {
-        File.Create($"{Path}\\{Name}").Dispose();
+        File.Create(FullName).Dispose();
     }
 }

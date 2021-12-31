@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 
 namespace Schemata;
@@ -10,7 +11,7 @@ public abstract partial class Template
 {
     internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
 
-    protected IImmutableDictionary<object, object> Details
+    public IImmutableDictionary<object, object> Details
     {
         get => _details;
         set
@@ -22,7 +23,7 @@ public abstract partial class Template
         }
     }
 
-    protected abstract Type ModelType { get; }
+    public abstract Type ModelType { get; }
 
     public static implicit operator Blueprint(Template template)
     {
@@ -35,13 +36,7 @@ public abstract partial class Template
         return builder.ToBlueprint();
     }
 
-    public virtual Model GetNewModel()
-    {
-        Model model = (Model)Activator.CreateInstance(ModelType)!;
-        return model;
-    }
-
-    protected Template(IEnumerable details)
+    protected Template(IDictionary details)
     {
         switch (details)
         {
@@ -53,7 +48,6 @@ public abstract partial class Template
                 _details = dictionary.ToImmutableDictionary();
                 break;
 
-            case IDictionary dictionary:
             default:
                 _details = details.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value)!;
                 break;
@@ -67,11 +61,12 @@ public abstract partial class Template
 
     protected virtual Blueprint ToBlueprint()
     {
-        if (!Details.TryGetValue(RequiredDetails.Name, out object? name) || string.IsNullOrWhiteSpace((string?)name))
+        string? name = Details[RequiredDetails.Name]?.ToString();
+        if (string.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentNullException("details", "Details property 'Name' cannot be null, missing, or containing only white spaces.");
+            throw new ArgumentNullException("details", $"Details value property '{RequiredDetails.Name}' cannot be null or containing only white spaces.");
         }
-        return new Blueprint.Builder().ToBlueprint();
+        return new Blueprint.Builder(name).ToBlueprint();
     }
 
     private readonly IImmutableDictionary<object, object> _details;
@@ -83,13 +78,19 @@ public abstract partial class Template
     {
         public static readonly string Name = "Name";
     }
+
+    public static class OptionalDetails
+    {
+        public static readonly string OnMounting = "OnMounting";
+        public static readonly string OnMounted = "OnMounted";
+    }
 }
 
 public abstract class Template<T> : Template where T : Model
 {
     public override Type ModelType => typeof(T);
 
-    protected Template(IEnumerable details)
+    protected Template(IDictionary details)
         : base(details)
     {
     }

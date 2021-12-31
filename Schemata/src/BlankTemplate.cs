@@ -5,7 +5,7 @@ namespace Schemata;
 
 public sealed class BlankTemplate : Template<Model>
 {
-    public BlankTemplate(IEnumerable details)
+    public BlankTemplate(IDictionary details)
         : base(details)
     {
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
 
 namespace Schemata;
@@ -14,10 +15,12 @@ public sealed class Workbench
 
     public Model BuildTo(string path)
     {
-        Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { path, Blueprint }, null)!;
+        Blueprint.Builder builder = Blueprint.ToBuilder();
+        builder.Path = Path.Combine(path, builder.Name);
+        Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { builder.ToBlueprint() }, null)!;
         foreach (Node node in model.Tree)
         {
-            node.Invoke(node.Model.Activities[Model.Activity.Mount]);
+            node.Invoke(node.Model.Activities[Model.DefaultActivity.Mount]);
         }
         return model;
     }

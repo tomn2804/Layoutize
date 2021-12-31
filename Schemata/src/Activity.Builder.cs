@@ -18,7 +18,7 @@ public sealed partial class Activity
 
         public Stack<EventHandler<ProcessingEventArgs>> Processing { get; }
 
-        public Activity ToConnector()
+        public Activity ToActivity()
         {
             return new(ImmutableList.CreateRange(Processed), ImmutableList.CreateRange(Processing));
         }

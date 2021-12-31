@@ -33,7 +33,7 @@
     <Compile Include="src\FileModel.cs" />
     <Compile Include="src\FileTree.cs" />
     <Compile Include="src\Model.cs" />
-    <Compile Include="src\Model.Activity.cs" />
+    <Compile Include="src\Model.DefaultActivity.cs" />
     <Compile Include="src\Workbench.cs" />
     <Compile Include="src\Tree.cs" />
     <Compile Include="src\Template.cs" />

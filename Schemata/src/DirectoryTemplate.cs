@@ -4,13 +4,13 @@ namespace Schemata;
 
 public sealed class DirectoryTemplate : Template<DirectoryModel>
 {
-    public DirectoryTemplate(IEnumerable details)
+    public DirectoryTemplate(IDictionary details)
         : base(details)
     {
     }
 
     protected override Blueprint ToBlueprint()
     {
-        return new BlankTemplate(Details);
+        return new BlankTemplate((IDictionary)Details);
     }
 }

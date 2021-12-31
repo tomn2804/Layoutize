@@ -11,6 +11,22 @@ namespace Schemata.Tests;
 
 public sealed partial class FileTemplateTests
 {
+    [Theory]
+    [InlineData("Test")]
+    public void ToBlueprint_Basic_ReturnsBlueprint(string name)
+    {
+        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
+        FileTemplate template = new(details);
+
+        Blueprint result = template;
+
+        PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
+
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(typeof(FileModel), result.ModelType);
+    }
+
     [Fact]
     public void ToBlueprint_FromDynamicComposition_ReturnsBlueprint()
     {
@@ -24,7 +40,7 @@ public sealed partial class FileTemplateTests
             using namespace System.Collections
 
             class {templateName} : Template[FileModel] {{
-                {templateName}([IEnumerable]$details) : base($details) {{}}
+                {templateName}([IDictionary]$details) : base($details) {{}}
 
                 [Blueprint]ToBlueprint() {{
                     return [FileTemplate]$this.Details
@@ -38,20 +54,28 @@ public sealed partial class FileTemplateTests
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(templateName, result.Details[Template.RequiredDetails.Name]);
+        Assert.Equal(templateName, result.Name);
         Assert.Equal(typeof(FileModel), result.ModelType);
     }
 
     [Fact]
-    public void ToBlueprint_WithNonDerivedModelType_ThrowsException()
+    public void ToBlueprint_FromNonDerivedModelType_ThrowsException()
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, "_" } };
         InvalidData.NonDerivedModelTypeTemplate template = new(details);
         Assert.Throws<InvalidOperationException>(() => (Blueprint)template);
     }
 
+    [Fact]
+    public void ToBlueprint_WithMissingNameDetail_ThrowsException()
+    {
+        Dictionary<object, object> details = new();
+        FileTemplate template = new(details);
+        Assert.Throws<KeyNotFoundException>(() => (Blueprint)template);
+    }
+
     [Theory, MemberData(nameof(InvalidData.NullNames), MemberType = typeof(InvalidData))]
-    public void Constructor_WithNullInvalidName_ThrowsException(string name)
+    public void ToBlueprint_WithNullInvalidName_ThrowsException(string name)
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
         FileTemplate template = new(details);
@@ -59,7 +83,7 @@ public sealed partial class FileTemplateTests
     }
 
     [Theory, MemberData(nameof(InvalidData.NonNullNames), MemberType = typeof(InvalidData))]
-    public void Constructor_WithNonNullInvalidName_ThrowsException(string name)
+    public void ToBlueprint_WithNonNullInvalidName_ThrowsException(string name)
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
         FileTemplate template = new(details);
@@ -77,14 +101,14 @@ public sealed partial class FileTemplateTests
 
         public class NonDerivedModelTypeTemplate : Template<DirectoryModel>
         {
-            public NonDerivedModelTypeTemplate(IEnumerable details)
+            public NonDerivedModelTypeTemplate(IDictionary details)
                 : base(details)
             {
             }
 
             protected override Blueprint ToBlueprint()
             {
-                return new FileTemplate(Details);
+                return new FileTemplate((IDictionary)Details);
             }
         }
     }

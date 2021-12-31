@@ -4,13 +4,13 @@ namespace Schemata;
 
 public sealed class StrictTextFileTemplate : Template<FileModel>
 {
-    public StrictTextFileTemplate(IEnumerable details)
+    public StrictTextFileTemplate(IDictionary details)
         : base(details)
     {
     }
 
     protected override Blueprint ToBlueprint()
     {
-        return new TextFileTemplate(Details);
+        return new TextFileTemplate((IDictionary)Details);
     }
 }

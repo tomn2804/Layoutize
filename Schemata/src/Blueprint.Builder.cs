@@ -2,35 +2,45 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace Schemata;
 
 public sealed partial class Blueprint
 {
-    internal sealed class Builder
+    public sealed class Builder
     {
-        internal Builder()
+        public Builder(string name)
         {
+            Activities = new();
+            Name = name;
+            Path = Directory.GetCurrentDirectory();
             Templates = new();
         }
 
-        internal Builder(Blueprint blueprint)
+        public Builder(Blueprint blueprint)
         {
+            Activities = blueprint.Activities.ToDictionary(entry => entry.Key, entry => entry.Value);
+            Name = blueprint.Name;
+            Path = blueprint.Path;
             Templates = blueprint.Templates.ToList();
-            Debug.Assert(blueprint.Details == Details);
             Debug.Assert(blueprint.ModelType == ModelType);
         }
 
-        internal IImmutableDictionary<object, object> Details => Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
+        public Dictionary<object, Activity> Activities { get; }
 
-        internal Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
+        public Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
 
-        internal List<Template> Templates { get; }
+        public string Name { get; set; }
 
-        internal Blueprint ToBlueprint()
+        public string Path { get; set; }
+
+        public List<Template> Templates { get; }
+
+        public Blueprint ToBlueprint()
         {
-            return new(Details, ModelType, Templates.ToImmutableList());
+            return new(Activities.ToImmutableDictionary(), ModelType, Name, Path, Templates.ToImmutableList());
         }
     }
 }

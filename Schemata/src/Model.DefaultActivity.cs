@@ -2,7 +2,7 @@
 
 public abstract partial class Model
 {
-    public enum Activity
+    public enum DefaultActivity
     {
         Mount
     }

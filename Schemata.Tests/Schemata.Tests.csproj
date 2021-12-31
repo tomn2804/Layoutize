@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include="src\BlankTemplateTests.cs" />
     <Compile Include="src\FileTemplateTests.cs" />
+    <Compile Include="src\FileTemplateTests.WorkbenchTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

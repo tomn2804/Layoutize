@@ -6,19 +6,22 @@ namespace Schemata;
 
 public abstract partial class Model : Blueprint.Owner
 {
-    public ImmutableDictionary<object, Schemata.Activity> Activities { get; protected set; } = ImmutableDictionary.Create<object, Schemata.Activity>();
+    public IReadOnlyDictionary<object, Activity> Activities { get; }
 
     public string Name { get; }
 
+    public string Path { get; }
+
+    public string FullName => System.IO.Path.Combine(Path, Name);
+
     public abstract IEnumerable<Node> Tree { get; }
 
-    protected Model(string path, Blueprint blueprint)
+    protected Model(Blueprint blueprint)
         : base(blueprint)
     {
         Debug.Assert(Blueprint.ModelType == GetType());
-        Name = (string)Blueprint.Details["Name"]!;
-        Path = path;
+        Activities = Blueprint.Activities;
+        Name = Blueprint.Name;
+        Path = Blueprint.Path;
     }
-
-    public string Path { get; }
 }

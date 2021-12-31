@@ -18,7 +18,7 @@ public sealed partial class Blueprint
 
         protected Blueprint Blueprint { get; private set; }
 
-        private void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
+        protected virtual void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {
             Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
             Builder builder = newBlueprint.ToBuilder();

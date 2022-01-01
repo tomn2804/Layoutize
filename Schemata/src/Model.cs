@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Schemata;
 
 public abstract partial class Model : Blueprint.Owner
 {
-    public IReadOnlyDictionary<object, Activity> Activities { get; }
+    public IReadOnlyDictionary<object, EventHandler<ProcessingEventArgs>> Activities { get; }
 
     public string Name { get; }
 

@@ -6,16 +6,16 @@ public sealed class DirectoryPreorderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
-        Node parentConnection = new(Model);
-        yield return parentConnection;
+        Node parentNode = new(Model);
+        yield return parentNode;
         foreach (Model child in Model.Children)
         {
-            foreach (Node childConnection in child.Tree)
+            foreach (Node childNode in child.Tree)
             {
-                yield return childConnection;
+                yield return childNode;
             }
         }
-        parentConnection.Dispose();
+        parentNode.Dispose();
     }
 
     internal DirectoryPreorderTree(DirectoryModel model)

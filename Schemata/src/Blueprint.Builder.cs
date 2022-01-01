@@ -28,7 +28,7 @@ public sealed partial class Blueprint
             Debug.Assert(blueprint.ModelType == ModelType);
         }
 
-        public Dictionary<object, Activity> Activities { get; }
+        public Dictionary<object, EventHandler<Model.ProcessingEventArgs>> Activities { get; }
 
         public Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
 

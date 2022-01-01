@@ -4,14 +4,18 @@ using System.Linq;
 
 namespace Schemata;
 
-public sealed partial class Node : Activity.Owner
+public sealed partial class Node
 {
     public Model Model { get; }
-
-    public void Invoke(Activity activity)
+    
+    public void Invoke(EventHandler<Model.ProcessingEventArgs> activity)
     {
-        OnProcessing(activity, new(Model));
-        Callbacks.Push(activity);
+        activity.Invoke(this, new(Model));
+    }
+
+    public void Push(EventHandler<Model.ProcessedEventArgs> callback)
+    {
+        Callbacks.Push(callback);
     }
 
     internal Node(Model model)
@@ -19,7 +23,7 @@ public sealed partial class Node : Activity.Owner
         Model = model;
     }
 
-    private Stack<Activity> Callbacks { get; } = new();
+    private Stack<EventHandler<Model.ProcessedEventArgs>> Callbacks { get; } = new();
 }
 
 public sealed partial class Node : IDisposable
@@ -28,7 +32,7 @@ public sealed partial class Node : IDisposable
     {
         while (Callbacks.Any())
         {
-            OnProcessed(Callbacks.Pop(), new(Model));
+            Callbacks.Pop().Invoke(this, new(Model));
         }
     }
 }

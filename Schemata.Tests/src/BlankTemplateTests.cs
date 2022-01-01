@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
@@ -7,11 +6,11 @@ using Xunit;
 
 namespace Schemata.Tests;
 
-public sealed class BlankTemplateTests
+public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
 {
     [Theory]
     [InlineData("Test")]
-    public void ToBlueprint_Basic_ReturnsBlueprint(string name)
+    public override void ToBlueprint_WithValidName_ReturnsBlueprint(string name)
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
         BlankTemplate template = new(details);
@@ -26,7 +25,7 @@ public sealed class BlankTemplateTests
     }
 
     [Fact]
-    public void ToBlueprint_FromDynamicComposition_ReturnsBlueprint()
+    public override void ToBlueprint_FromDynamicComposition_ReturnsBlueprint()
     {
         using PowerShell terminal = PowerShell.Create();
 
@@ -56,24 +55,14 @@ public sealed class BlankTemplateTests
         Assert.Equal(typeof(FileModel), result.ModelType);
     }
 
-    [Fact]
-    public void ToBlueprint_WithMissingNameDetail_ThrowsException()
-    {
-        Dictionary<object, object> details = new();
-        BlankTemplate template = new(details);
-        Assert.Throws<KeyNotFoundException>(() => (Blueprint)template);
-    }
-
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
     [InlineData(" \t ")]
     [InlineData(" \n\r ")]
-    public void ToBlueprint_WithNullInvalidName_ThrowsException(string name)
+    public override void ToBlueprint_WithInvalidNullName_ThrowsException(string name)
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
-        BlankTemplate template = new(details);
-        Assert.Throws<ArgumentNullException>("details", () => (Blueprint)template);
+        base.ToBlueprint_WithInvalidNullName_ThrowsException(name);
     }
 }

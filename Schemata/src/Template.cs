@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 
 namespace Schemata;
@@ -11,7 +10,7 @@ public abstract partial class Template
 {
     internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
 
-    public IImmutableDictionary<object, object> Details
+    public ImmutableDictionary<object, object> Details
     {
         get => _details;
         set
@@ -40,7 +39,7 @@ public abstract partial class Template
     {
         switch (details)
         {
-            case IImmutableDictionary<object, object> dictionary:
+            case ImmutableDictionary<object, object> dictionary:
                 _details = dictionary;
                 break;
 
@@ -69,7 +68,7 @@ public abstract partial class Template
         return new Blueprint.Builder(name).ToBlueprint();
     }
 
-    private readonly IImmutableDictionary<object, object> _details;
+    private readonly ImmutableDictionary<object, object> _details;
 }
 
 public abstract partial class Template
@@ -81,8 +80,11 @@ public abstract partial class Template
 
     public static class OptionalDetails
     {
-        public static readonly string OnMounting = "OnMounting";
+        public static readonly string OnCreated = "OnCreated";
+        public static readonly string OnCreating = "OnCreating";
+
         public static readonly string OnMounted = "OnMounted";
+        public static readonly string OnMounting = "OnMounting";
     }
 }
 

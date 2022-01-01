@@ -8,27 +8,27 @@ public sealed class DirectoryLevelOrderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
-        Node parentConnection = new(Model);
-        yield return parentConnection;
-        Queue<IEnumerator<Node>> childrenConnections = new(Model.Children.Count);
+        Node parentNode = new(Model);
+        yield return parentNode;
+        Queue<IEnumerator<Node>> childNodes = new(Model.Children.Count);
         foreach (Model child in Model.Children)
         {
-            IEnumerator<Node> enumerator = child.Tree.GetEnumerator();
-            if (enumerator.MoveNext())
+            IEnumerator<Node> childNode = child.Tree.GetEnumerator();
+            if (childNode.MoveNext())
             {
-                childrenConnections.Enqueue(enumerator);
-                yield return enumerator.Current;
+                childNodes.Enqueue(childNode);
+                yield return childNode.Current;
             }
         }
-        while (childrenConnections.Any())
+        while (childNodes.Any())
         {
-            IEnumerator<Node> enumerator = childrenConnections.Dequeue();
-            while (enumerator.MoveNext())
+            IEnumerator<Node> childNode = childNodes.Dequeue();
+            while (childNode.MoveNext())
             {
-                yield return enumerator.Current;
+                yield return childNode.Current;
             }
         }
-        parentConnection.Dispose();
+        parentNode.Dispose();
     }
 
     internal DirectoryLevelOrderTree(DirectoryModel model)

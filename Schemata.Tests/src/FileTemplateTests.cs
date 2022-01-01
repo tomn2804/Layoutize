@@ -9,11 +9,11 @@ using Xunit;
 
 namespace Schemata.Tests;
 
-public sealed partial class FileTemplateTests
+public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
 {
     [Theory]
     [InlineData("Test")]
-    public void ToBlueprint_Basic_ReturnsBlueprint(string name)
+    public override void ToBlueprint_WithValidName_ReturnsBlueprint(string name)
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
         FileTemplate template = new(details);
@@ -28,7 +28,7 @@ public sealed partial class FileTemplateTests
     }
 
     [Fact]
-    public void ToBlueprint_FromDynamicComposition_ReturnsBlueprint()
+    public override void ToBlueprint_FromDynamicComposition_ReturnsBlueprint()
     {
         using PowerShell terminal = PowerShell.Create();
 
@@ -66,24 +66,14 @@ public sealed partial class FileTemplateTests
         Assert.Throws<InvalidOperationException>(() => (Blueprint)template);
     }
 
-    [Fact]
-    public void ToBlueprint_WithMissingNameDetail_ThrowsException()
-    {
-        Dictionary<object, object> details = new();
-        FileTemplate template = new(details);
-        Assert.Throws<KeyNotFoundException>(() => (Blueprint)template);
-    }
-
     [Theory, MemberData(nameof(InvalidData.NullNames), MemberType = typeof(InvalidData))]
-    public void ToBlueprint_WithNullInvalidName_ThrowsException(string name)
+    public override void ToBlueprint_WithInvalidNullName_ThrowsException(string name)
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
-        FileTemplate template = new(details);
-        Assert.Throws<ArgumentNullException>("details", () => (Blueprint)template);
+        base.ToBlueprint_WithInvalidNullName_ThrowsException(name);
     }
 
     [Theory, MemberData(nameof(InvalidData.NonNullNames), MemberType = typeof(InvalidData))]
-    public void ToBlueprint_WithNonNullInvalidName_ThrowsException(string name)
+    public void ToBlueprint_WithInvalidNonNullName_ThrowsException(string name)
     {
         Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
         FileTemplate template = new(details);

@@ -21,6 +21,7 @@
     <Compile Include="src\BlankTemplateTests.cs" />
     <Compile Include="src\FileTemplateTests.cs" />
     <Compile Include="src\FileTemplateTests.WorkbenchTests.cs" />
+    <Compile Include="src\TemplateTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

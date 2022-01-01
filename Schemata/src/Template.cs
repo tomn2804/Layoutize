@@ -80,6 +80,8 @@ public abstract partial class Template
 
     public static class OptionalDetails
     {
+        public static readonly string Priority = "Priority";
+
         public static readonly string OnCreated = "OnCreated";
         public static readonly string OnCreating = "OnCreating";
 

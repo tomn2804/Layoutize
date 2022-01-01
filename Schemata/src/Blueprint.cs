@@ -6,7 +6,9 @@ namespace Schemata;
 
 public sealed partial class Blueprint
 {
-    public IReadOnlyDictionary<object, EventHandler<Model.ProcessingEventArgs>> Activities { get; }
+    public IReadOnlyDictionary<object, Activity> Activities { get; }
+
+    public IReadOnlyDictionary<object, object> Details { get; }
 
     public Type ModelType { get; }
 
@@ -19,9 +21,10 @@ public sealed partial class Blueprint
         return new(this);
     }
 
-    private Blueprint(IReadOnlyDictionary<object, EventHandler<Model.ProcessingEventArgs>> activities, Type modelType, string name, string path, IReadOnlyList<Template> templates)
+    private Blueprint(IReadOnlyDictionary<object, Activity> activities, IReadOnlyDictionary<object, object> details, Type modelType, string name, string path, IReadOnlyList<Template> templates)
     {
         Activities = activities;
+        Details = details;
         ModelType = modelType;
         Name = name;
         Path = path;

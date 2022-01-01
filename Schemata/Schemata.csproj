@@ -13,6 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src\Activity.Builder.cs" />
+    <Compile Include="src\Activity.cs" />
+    <Compile Include="src\Activity.Owner.cs" />
     <Compile Include="src\DirectoryLevelOrderTree.cs" />
     <Compile Include="src\DirectoryModel.cs" />
     <Compile Include="src\DirectoryPreorderTree.cs" />
@@ -20,8 +23,8 @@
     <Compile Include="src\FileModel.cs" />
     <Compile Include="src\FileTree.cs" />
     <Compile Include="src\Model.DefaultActivity.cs" />
-    <Compile Include="src\Model.ProcessedEventArgs.cs" />
-    <Compile Include="src\Model.ProcessingEventArgs.cs" />
+    <Compile Include="src\Activity.ProcessedEventArgs.cs" />
+    <Compile Include="src\Activity.ProcessingEventArgs.cs" />
     <Compile Include="src\BlankTemplate.cs" />
     <Compile Include="src\Blueprint.Builder.cs" />
     <Compile Include="src\Blueprint.cs" />

@@ -98,7 +98,7 @@ public sealed partial class FileTemplateTests
 
             protected override Blueprint ToBlueprint()
             {
-                return new FileTemplate((IDictionary)Details);
+                return new FileTemplate(Details);
             }
         }
     }

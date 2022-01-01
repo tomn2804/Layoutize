@@ -2,7 +2,7 @@
 
 namespace Schemata;
 
-public abstract partial class Model
+public sealed partial class Activity
 {
     public sealed class ProcessedEventArgs : EventArgs
     {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 
 namespace Schemata;
@@ -8,14 +7,20 @@ public partial class Model
 {
     public sealed class Workbench
     {
-        public Workbench(Template template)
+        public Workbench(Blueprint blueprint)
         {
-            Template = template;
+            Blueprint = blueprint;
         }
 
         public Model Build()
         {
-            return BuildTo(Directory.GetCurrentDirectory());
+            Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { Blueprint }, null)!;
+            foreach (Node node in model.Tree)
+            {
+                node.Invoke(node.Model.Activities[ActivityOption.Mount]);
+            }
+            model.IsMounted = true;
+            return model;
         }
 
         public Model BuildTo(string path)
@@ -23,18 +28,25 @@ public partial class Model
             Model model = FillTo(path);
             foreach (Node node in model.Tree)
             {
-                if (node.Model.Activities.TryGetValue(FileSystemTemplate.ActivityOption.Mount, out Activity? activity))
-                {
-                    node.Invoke(activity!);
-                }
+                node.Invoke(node.Model.Activities[ActivityOption.Mount]);
             }
+            model.IsMounted = true;
             return model;
         }
 
         public Model FillTo(string path)
         {
-            Blueprint blueprint = (Template)Activator.CreateInstance(Template.GetType(), Template.Details.SetItem(Template.DetailOption.Path, path))!;
-            Model model = (Model)Activator.CreateInstance(blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { blueprint }, null)!;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentNullException(nameof(path), $"'{nameof(path)}' cannot be null or containing only white spaces.");
+            }
+            if (path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
+            {
+                throw new ArgumentException($"'{nameof(path)}' cannot contain invalid system characters.", nameof(path));
+            }
+            Blueprint.Builder builder = Blueprint.ToBuilder();
+            builder.Path = path;
+            Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { builder.ToBlueprint() }, null)!;
             return model;
         }
 
@@ -45,6 +57,6 @@ public partial class Model
             return child;
         }
 
-        private Template Template { get; }
+        private Blueprint Blueprint { get; }
     }
 }

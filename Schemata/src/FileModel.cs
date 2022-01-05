@@ -5,6 +5,8 @@ namespace Schemata;
 
 public partial class FileModel : Model
 {
+    public override bool Exists => File.Exists(FullName);
+
     public override FileTree Tree { get; }
 
     public virtual void Create()
@@ -13,7 +15,7 @@ public partial class FileModel : Model
     }
 
     protected FileModel(Blueprint blueprint)
-            : base(blueprint)
+        : base(blueprint)
     {
         if (Name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
         {

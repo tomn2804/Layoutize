@@ -1,52 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Management.Automation;
 
 namespace Schemata;
 
 public abstract partial class Model : Blueprint.Owner
 {
-    public IReadOnlyDictionary<object, Activity> Activities { get; } = ImmutableDictionary.Create<object, Activity>();
+    public virtual IReadOnlyDictionary<object, Activity> Activities { get; protected set; } = ImmutableDictionary.Create<object, Activity>();
 
-    public string FullName => System.IO.Path.Combine(Path, Name);
+    public abstract bool Exists { get; }
 
-    public string Name { get; }
+    public virtual string FullName => System.IO.Path.Combine(Path, Name);
+
+    public bool IsMounted { get; private set; }
+
+    public virtual string Name { get; protected set; }
 
     public DirectoryModel? Parent { get; private set; }
 
-    public string Path { get; }
+    public virtual string Path { get; protected set; }
 
-    public int Priority { get; } = 0;
+    public virtual int Priority { get; protected set; } = 0;
 
     public abstract IEnumerable<Node> Tree { get; }
 
     protected Model(Blueprint blueprint)
         : base(blueprint)
     {
+        Path = blueprint.Path;
+
         Name = (string)blueprint.Details[Template.DetailOption.Name];
         if (string.IsNullOrWhiteSpace(Name))
         {
             throw new ArgumentNullException(nameof(blueprint), $"Details value property '{Template.DetailOption.Name}' cannot be null or containing only white spaces.");
         }
 
-        Path = (string)blueprint.Details[Template.DetailOption.Path];
-        if (string.IsNullOrWhiteSpace(Path))
-        {
-            throw new ArgumentNullException(nameof(blueprint), $"Details value property '{Template.DetailOption.Path}' cannot be null or containing only white spaces.");
-        }
-        if (Path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
-        {
-            throw new ArgumentException($"Details value property '{Template.DetailOption.Path}' cannot contain invalid system characters.", nameof(blueprint));
-        }
-
-        if (blueprint.Details.TryGetValue(Template.DetailOption.Activities, out object? activitiesValue))
-        {
-            Activities = (IReadOnlyDictionary<object, Activity>)activitiesValue;
-        }
         if (blueprint.Details.TryGetValue(Template.DetailOption.Priority, out object? priorityValue))
         {
             Priority = (int)priorityValue;
         }
+
+        ImmutableDictionary<object, Activity>.Builder builder = ImmutableDictionary.CreateBuilder<object, Activity>();
+
+        builder[ActivityOption.Create] = CreateActivity(Template.DetailOption.OnCreating, Template.DetailOption.OnCreated);
+        builder[ActivityOption.Mount] = CreateActivity(Template.DetailOption.OnMounting, Template.DetailOption.OnMounted);
+
+        Activities = builder.ToImmutable();
+    }
+    private Activity CreateActivity(object processingOption, object processedOption)
+    {
+        Activity.Builder builder = new();
+        if (Blueprint.Details.TryGetValue(processingOption, out object? processingValue))
+        {
+            EventHandler<Activity.ProcessingEventArgs> handler;
+            switch (processingValue)
+            {
+                case ScriptBlock scriptBlock:
+                    handler = (sender, args) => scriptBlock.Invoke(sender, args);
+                    break;
+
+                case Action<object?, Activity.ProcessingEventArgs> action:
+                    handler = new(action);
+                    break;
+
+                default:
+                    handler = (EventHandler<Activity.ProcessingEventArgs>)processingValue;
+                    break;
+            }
+            builder.Processing.Push(handler);
+        }
+        if (Blueprint.Details.TryGetValue(processedOption, out object? processedValue))
+        {
+            EventHandler<Activity.ProcessedEventArgs> handler;
+            switch (processedValue)
+            {
+                case ScriptBlock scriptBlock:
+                    handler = (sender, args) => scriptBlock.Invoke(sender, args);
+                    break;
+
+                case Action<object?, Activity.ProcessedEventArgs> action:
+                    handler = new(action);
+                    break;
+
+                default:
+                    handler = (EventHandler<Activity.ProcessedEventArgs>)processedValue;
+                    break;
+            }
+            builder.Processed.Enqueue(handler);
+        }
+        return builder.ToActivity();
     }
 }
 
@@ -56,7 +99,7 @@ public abstract partial class Model : IComparable<Model>
     {
         if (other is not null)
         {
-            if ((Priority != 0) || (other.Priority != 0))
+            if (Priority != other.Priority)
             {
                 return other.Priority.CompareTo(Priority);
             }

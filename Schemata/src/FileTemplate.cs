@@ -14,14 +14,14 @@ public sealed partial class FileTemplate : Template<FileModel>
 
     protected override Blueprint ToBlueprint()
     {
-        return new FileSystemTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
+        return new BlankTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
     }
 
     private KeyValuePair<object, object> GetOnCreatingDetail()
     {
         EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue))
+            if (Details.TryGetValue(DetailOption.OnCreating, out object? onCreatingValue))
             {
                 switch (onCreatingValue)
                 {
@@ -37,14 +37,14 @@ public sealed partial class FileTemplate : Template<FileModel>
             Node node = (Node)sender!;
             ((FileModel)node.Model).Create();
         };
-        return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnCreating, handler);
+        return KeyValuePair.Create<object, object>(DetailOption.OnCreating, handler);
     }
 
     private KeyValuePair<object, object> GetOnMountingDetail()
     {
         EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue))
+            if (Details.TryGetValue(DetailOption.OnMounting, out object? onMountingValue))
             {
                 switch (onMountingValue)
                 {
@@ -58,8 +58,11 @@ public sealed partial class FileTemplate : Template<FileModel>
                 }
             }
             Node node = (Node)sender!;
-            node.Invoke(node.Model.Activities[FileSystemTemplate.ActivityOption.Create]);
+            if (!node.Model.Exists)
+            {
+                node.Invoke(node.Model.Activities[Model.ActivityOption.Create]);
+            }
         };
-        return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnMounting, handler);
+        return KeyValuePair.Create<object, object>(DetailOption.OnMounting, handler);
     }
 }

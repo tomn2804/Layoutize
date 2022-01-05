@@ -80,7 +80,7 @@ public sealed partial class FileTemplateTests
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{templateName}]@{{ Name = '{modelName}' }})
+                $workbench = [Model+Workbench]::new([{templateName}]@{{ [Template+DetailOption]::Name = '{modelName}' }})
 
                 1..{replication} | ForEach-Object -Process {{
                     New-Item -Path '{workingDirectoryPath}' -Name $_ -ItemType 'Directory' | Out-Null

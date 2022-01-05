@@ -25,9 +25,9 @@ namespace Schemata
 
                 using PowerShell instance = PowerShell.Create();
                 List<Schema> schemata = new();
-                foreach (PSObject @object in instance.AddScript(schematic).Invoke())
+                foreach (PSObject _object in instance.AddScript(schematic).Invoke())
                 {
-                    if (@object.BaseObject is Outline s)
+                    if (_object.BaseObject is Outline s)
                     {
                         schemata.Add(s);
                     }

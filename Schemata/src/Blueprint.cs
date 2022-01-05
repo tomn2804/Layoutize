@@ -9,6 +9,8 @@ public sealed partial class Blueprint
 
     public Type ModelType { get; private init; } = null!;
 
+    public string Path { get; private init; } = null!;
+
     internal Builder ToBuilder()
     {
         return new(this);

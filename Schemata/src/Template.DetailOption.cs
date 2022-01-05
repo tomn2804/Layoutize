@@ -2,11 +2,16 @@
 
 public abstract partial class Template
 {
-    public static class DetailOption
+    public class DetailOption
     {
-        public const string Activities = nameof(Model.Activities);
-        public const string Name = nameof(Model.Name);
-        public const string Path = nameof(Model.Path);
-        public const string Priority = nameof(Model.Priority);
+        public const string Name = $"__{nameof(Model.Name)}";
+        public const string Path = $"__{nameof(Model.Path)}";
+        public const string Priority = $"__{nameof(Model.Priority)}";
+
+        public const string OnCreating = $"__{nameof(OnCreating)}";
+        public const string OnCreated = $"__{nameof(OnCreated)}";
+
+        public const string OnMounting = $"__{nameof(OnMounting)}";
+        public const string OnMounted = $"__{nameof(OnMounted)}";
     }
 }

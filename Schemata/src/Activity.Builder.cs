@@ -20,9 +20,9 @@ public sealed partial class Activity
             Processing = new(activity.Processing);
         }
 
-        internal Stack<EventHandler<ProcessedEventArgs>> Processed { get; }
+        internal Queue<EventHandler<ProcessedEventArgs>> Processed { get; }
 
-        internal Queue<EventHandler<ProcessingEventArgs>> Processing { get; }
+        internal Stack<EventHandler<ProcessingEventArgs>> Processing { get; }
 
         internal Activity ToActivity()
         {

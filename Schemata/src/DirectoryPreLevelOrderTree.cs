@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Schemata;
 
-public sealed class DirectoryLevelOrderTree : Tree
+public sealed class DirectoryPreLevelOrderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
@@ -30,7 +30,7 @@ public sealed class DirectoryLevelOrderTree : Tree
         parentNode.Dispose();
     }
 
-    internal DirectoryLevelOrderTree(DirectoryModel model)
+    internal DirectoryPreLevelOrderTree(DirectoryModel model)
     {
         Model = model;
     }

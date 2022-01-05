@@ -2,9 +2,9 @@
 
 public sealed partial class DirectoryTemplate
 {
-    public new static class DetailOption
+    public new class DetailOption : Template.DetailOption
     {
-        public const string Children = nameof(DirectoryModel.Children);
-        public const string Traversal = "Traversal";
+        public const string Children = $"__{nameof(DirectoryModel.Children)}";
+        public const string Traversal = $"__{nameof(Traversal)}";
     }
 }

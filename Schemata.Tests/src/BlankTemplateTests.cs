@@ -43,7 +43,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
                 }}
             }}
 
-            [Blueprint][{templateName}]@{{ Name = '{templateName}' }}
+            [Blueprint][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
         PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);

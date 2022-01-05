@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,9 +31,9 @@ public abstract partial class Model
             }
             foreach (Node node in Parent.Tree.Skip(1))
             {
-                if (node.Model.Activities.TryGetValue(FileSystemTemplate.ActivityOption.Mount, out Activity? activity))
+                if (!node.Model.IsMounted)
                 {
-                    node.Invoke(activity!);
+                    node.Invoke(node.Model.Activities[ActivityOption.Mount]);
                 }
             }
         }

@@ -21,7 +21,7 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
         PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
-        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileSystemTemplate).FullName, typeof(FileTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
         Assert.Equal(typeof(FileModel), result.ModelType);
     }
 
@@ -45,13 +45,13 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
                 }}
             }}
 
-            [Blueprint][{templateName}]@{{ Name = '{templateName}' }}
+            [Blueprint][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
         PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
-        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileSystemTemplate).FullName, typeof(FileTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
         Assert.Equal(templateName, result.Details[Template.DetailOption.Name]);
         Assert.Equal(typeof(FileModel), result.ModelType);
     }

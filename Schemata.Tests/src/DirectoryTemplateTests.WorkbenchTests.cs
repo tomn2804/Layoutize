@@ -80,7 +80,7 @@ public sealed partial class DirectoryTemplateTests
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{templateName}]@{{ Name = '{modelName}' }})
+                $workbench = [Model+Workbench]::new([{templateName}]@{{ [Template+DetailOption]::Name = '{modelName}' }})
 
                 1..{replication} | ForEach-Object -Process {{
                     New-Item -Path '{workingDirectoryPath}' -Name $_ -ItemType 'Directory' | Out-Null
@@ -131,8 +131,8 @@ public sealed partial class DirectoryTemplateTests
                 }}
 
                 $workbench = [Model+Workbench]::new([{parentTemplateName}]@{{
-                    Name = '{parentModelName}'
-                    Children = [{childTemplateName}]@{{ Name = '{childModelName}' }}
+                    [Template+DetailOption]::Name = '{parentModelName}'
+                    [DirectoryTemplate+DetailOption]::Children = [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{childModelName}' }}
                 }})
 
                 $workbench.BuildTo(""{workingDirectoryPath}"")
@@ -179,11 +179,11 @@ public sealed partial class DirectoryTemplateTests
                 }}
 
                 $workbench = [Model+Workbench]::new([{parentTemplateName}]@{{
-                    Name = '{parentModelName}'
-                    Children = @(
-                        [{childTemplateName}]@{{ Name = '{child1ModelName}' }},
-                        [{childTemplateName}]@{{ Name = '{child2ModelName}' }},
-                        [{childTemplateName}]@{{ Name = '{child3ModelName}' }}
+                    [Template+DetailOption]::Name = '{parentModelName}'
+                    [DirectoryTemplate+DetailOption]::Children = @(
+                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
+                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
+                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
                     )
                 }})
 
@@ -247,30 +247,30 @@ public sealed partial class DirectoryTemplateTests
                 }}
 
                 $workbench = [Model+Workbench]::new([{rootTemplateName}]@{{
-                    Name = '{rootModelName}'
-                    Children = @(
+                    [Template+DetailOption]::Name = '{rootModelName}'
+                    [DirectoryTemplate+DetailOption]::Children = @(
                         [{parentTemplateName}]@{{
-                            Name = '{parent1ModelName}'
-                            Children = @(
-                                [{childTemplateName}]@{{ Name = '{child1ModelName}' }},
-                                [{childTemplateName}]@{{ Name = '{child2ModelName}' }},
-                                [{childTemplateName}]@{{ Name = '{child3ModelName}' }}
+                            [Template+DetailOption]::Name = '{parent1ModelName}'
+                            [DirectoryTemplate+DetailOption]::Children = @(
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
                             )
                         }},
                         [{parentTemplateName}]@{{
-                            Name = '{parent2ModelName}'
-                            Children = @(
-                                [{childTemplateName}]@{{ Name = '{child1ModelName}' }},
-                                [{childTemplateName}]@{{ Name = '{child2ModelName}' }},
-                                [{childTemplateName}]@{{ Name = '{child3ModelName}' }}
+                            [Template+DetailOption]::Name = '{parent2ModelName}'
+                            [DirectoryTemplate+DetailOption]::Children = @(
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
                             )
                         }},
                         [{parentTemplateName}]@{{
-                            Name = '{parent3ModelName}'
-                            Children = @(
-                                [{childTemplateName}]@{{ Name = '{child1ModelName}' }},
-                                [{childTemplateName}]@{{ Name = '{child2ModelName}' }},
-                                [{childTemplateName}]@{{ Name = '{child3ModelName}' }}
+                            [Template+DetailOption]::Name = '{parent3ModelName}'
+                            [DirectoryTemplate+DetailOption]::Children = @(
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
                             )
                         }}
                     )
@@ -340,37 +340,37 @@ public sealed partial class DirectoryTemplateTests
                 }}
 
                 $workbench = [Model+Workbench]::new([{rootTemplateName}]@{{
-                    Name = '{rootModelName}'
-                    Children = @(
+                    [Template+DetailOption]::Name = '{rootModelName}'
+                    [DirectoryTemplate+DetailOption]::Children = @(
                         [{parentTemplateName}]@{{
-                            Name = '{parent1ModelName}'
-                            Priority = 1
-                            Children = @(
-                                [{childTemplateName}]@{{ Name = '{child1ModelName}'; OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ Name = '{child2ModelName}'; Priority = -1; OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ Name = '{child3ModelName}'; Priority = 2; OnCreated = {{ Start-Sleep -Seconds 1 }} }}
+                            [Template+DetailOption]::Name = '{parent1ModelName}'
+                            [Template+DetailOption]::Priority = 1
+                            [DirectoryTemplate+DetailOption]::Children = @(
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
                             )
-                            OnCreated = {{ Start-Sleep -Seconds 1 }}
+                            [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }}
                         }},
                         [{parentTemplateName}]@{{
-                            Name = '{parent2ModelName}'
-                            Priority = 2
-                            Children = @(
-                                [{childTemplateName}]@{{ Name = '{child1ModelName}'; OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ Name = '{child2ModelName}'; Priority = -1; OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ Name = '{child3ModelName}'; Priority = 2; OnCreated = {{ Start-Sleep -Seconds 1 }} }}
+                            [Template+DetailOption]::Name = '{parent2ModelName}'
+                            [Template+DetailOption]::Priority = 2
+                            [DirectoryTemplate+DetailOption]::Children = @(
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
                             )
-                            OnCreated = {{ Start-Sleep -Seconds 1 }}
+                            [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }}
                         }},
                         [{parentTemplateName}]@{{
-                            Name = '{parent3ModelName}'
-                            Priority = 3
-                            Children = @(
-                                [{childTemplateName}]@{{ Name = '{child1ModelName}'; OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ Name = '{child2ModelName}'; Priority = -1; OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ Name = '{child3ModelName}'; Priority = 2; OnCreated = {{ Start-Sleep -Seconds 1 }} }}
+                            [Template+DetailOption]::Name = '{parent3ModelName}'
+                            [Template+DetailOption]::Priority = 3
+                            [DirectoryTemplate+DetailOption]::Children = @(
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
                             )
-                            OnCreated = {{ Start-Sleep -Seconds 1 }}
+                            [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }}
                         }}
                     )
                 }})

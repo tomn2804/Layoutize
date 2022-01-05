@@ -58,36 +58,9 @@ public abstract partial class Template
         DetailsUpdating?.Invoke(this, args);
     }
 
-    protected virtual Blueprint ToBlueprint()
-    {
-        string? name = Details[RequiredDetails.Name]?.ToString();
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentNullException("details", $"Details value property '{RequiredDetails.Name}' cannot be null or containing only white spaces.");
-        }
-        return new Blueprint.Builder(name).ToBlueprint();
-    }
+    protected abstract Blueprint ToBlueprint();
 
     private readonly ImmutableDictionary<object, object> _details;
-}
-
-public abstract partial class Template
-{
-    public static class RequiredDetails
-    {
-        public static readonly string Name = "Name";
-    }
-
-    public static class OptionalDetails
-    {
-        public static readonly string Priority = "Priority";
-
-        public static readonly string OnCreated = "OnCreated";
-        public static readonly string OnCreating = "OnCreating";
-
-        public static readonly string OnMounted = "OnMounted";
-        public static readonly string OnMounting = "OnMounting";
-    }
 }
 
 public abstract class Template<T> : Template where T : Model

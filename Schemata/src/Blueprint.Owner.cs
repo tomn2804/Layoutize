@@ -7,18 +7,35 @@ public sealed partial class Blueprint
 {
     public abstract partial class Owner
     {
+        public event EventHandler? BlueprintUpdated;
+
         protected Owner(Blueprint blueprint)
         {
-            Blueprint = blueprint;
+            _blueprint = blueprint;
             foreach (Template template in Blueprint.Templates)
             {
                 template.DetailsUpdating += UpdateBlueprint;
             }
         }
 
-        protected Blueprint Blueprint { get; private set; }
+        protected Blueprint Blueprint
+        {
+            get => _blueprint;
+            private set
+            {
+                _blueprint = value;
+                OnBlueprintUpdated(EventArgs.Empty);
+            }
+        }
 
-        protected virtual void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
+        protected virtual void OnBlueprintUpdated(EventArgs args)
+        {
+            BlueprintUpdated?.Invoke(this, args);
+        }
+
+        private Blueprint _blueprint;
+
+        private void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {
             Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
             Builder builder = newBlueprint.ToBuilder();

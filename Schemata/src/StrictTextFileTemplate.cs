@@ -11,6 +11,6 @@ public sealed class StrictTextFileTemplate : Template<FileModel>
 
     protected override Blueprint ToBlueprint()
     {
-        return new TextFileTemplate((IDictionary)Details);
+        return new TextFileTemplate(Details);
     }
 }

@@ -12,7 +12,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
     [InlineData("Test")]
     public override void ToBlueprint_WithValidName_ReturnsBlueprint(string name)
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
+        Dictionary<object, object> details = new() { { Template.Details.Name, name } };
         BlankTemplate template = new(details);
 
         Blueprint result = template;
@@ -51,7 +51,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(templateName, result.Name);
+        Assert.Equal(templateName, result.Details[Template.Details.Name]);
         Assert.Equal(typeof(FileModel), result.ModelType);
     }
 

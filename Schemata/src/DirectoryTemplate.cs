@@ -12,52 +12,51 @@ public sealed partial class DirectoryTemplate : Template<DirectoryModel>
     {
     }
 
-    protected override Blueprint ToBlueprint()
+    private KeyValuePair<object, object> GetOnCreatingDetail()
     {
-        Blueprint blueprint = new BlankTemplate(Details);
-        Blueprint.Builder builder = blueprint.ToBuilder();
-
-        if (Details[RequiredDetails.Name].ToString()!.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+        EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            throw new ArgumentException($"Details value property '{RequiredDetails.Name}' cannot contain invalid characters.", "details");
-        }
-
-        Activity.Builder createActivity = builder.Activities[Model.DefaultActivity.Create].ToBuilder();
-        createActivity.Processing.Enqueue((object? sender, Activity.ProcessingEventArgs args) => ((DirectoryModel)args.Model).Create());
-        builder.Activities[Model.DefaultActivity.Create] = createActivity.ToActivity();
-
-        Activity.Builder mountActivity = builder.Activities[Model.DefaultActivity.Mount].ToBuilder();
-        mountActivity.Processing.Enqueue((object? sender, Activity.ProcessingEventArgs args) =>
-        {
-            ((Node)sender!).Invoke(args.Model.Activities[Model.DefaultActivity.Create]);
-            if (Details.TryGetValue(OptionalDetails.Children, out object? childrenValue))
+            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue) && onCreatingValue is EventHandler<Activity.ProcessingEventArgs> onCreating)
             {
-                switch (childrenValue)
+                onCreating.Invoke(sender, args);
+            }
+
+            Node node = (Node)sender!;
+            DirectoryModel model = (DirectoryModel)node.Model;
+            model.Create();
+
+            if (Details.TryGetValue(DetailOption.Children, out object? childrenValue))
+            {
+                IEnumerable<Template>? children = childrenValue as IEnumerable<Template>;
+                if (children is null)
                 {
-                    case Template child:
-                        ((DirectoryModel)args.Model).Children.Add(child);
-                        break;
-                    case IEnumerable<Template> children:
-                        foreach (Template child in children)
-                        {
-                            ((DirectoryModel)args.Model).Children.Add(child);
-                        }
-                        break;
-                    default:
-                        throw new ArgumentException($"Details value property '{OptionalDetails.Children}' must be of type '{typeof(Template).FullName}' or '{typeof(IEnumerable<Template>).FullName}'.", "details");
+                    children = new[] { (Template)childrenValue };
+                }
+                foreach (Template child in children)
+                {
+                    model.Children.Add(child);
                 }
             }
-        });
-        builder.Activities[Model.DefaultActivity.Mount] = mountActivity.ToActivity();
-
-        return builder.ToBlueprint();
+        };
+        return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnCreating, handler);
     }
-}
 
-public sealed partial class DirectoryTemplate
-{
-    public static new class OptionalDetails
+    private KeyValuePair<object, object> GetOnMountingDetail()
     {
-        public static readonly string Children = "Children";
+        EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
+        {
+            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue) && onMountingValue is EventHandler<Activity.ProcessingEventArgs> onMounting)
+            {
+                onMounting.Invoke(sender, args);
+            }
+            Node node = (Node)sender!;
+            node.Invoke(node.Model.Activities[FileSystemTemplate.ActivityOption.Create]);
+        };
+        return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnMounting, handler);
+    }
+
+    protected override Blueprint ToBlueprint()
+    {
+        return new FileSystemTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail(), }));
     }
 }

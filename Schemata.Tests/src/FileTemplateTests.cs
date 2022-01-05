@@ -15,7 +15,7 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
     [InlineData("Test")]
     public override void ToBlueprint_WithValidName_ReturnsBlueprint(string name)
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
+        Dictionary<object, object> details = new() { { Template.Details.Name, name } };
         FileTemplate template = new(details);
 
         Blueprint result = template;
@@ -54,14 +54,14 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(templateName, result.Name);
+        Assert.Equal(templateName, result.Details[Template.Details.Name]);
         Assert.Equal(typeof(FileModel), result.ModelType);
     }
 
     [Fact]
     public void ToBlueprint_FromNonDerivedModelType_ThrowsException()
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, "_" } };
+        Dictionary<object, object> details = new() { { Template.Details.Name, "_" } };
         InvalidData.NonDerivedModelTypeTemplate template = new(details);
         Assert.Throws<InvalidOperationException>(() => (Blueprint)template);
     }
@@ -75,7 +75,7 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
     [Theory, MemberData(nameof(InvalidData.NonNullNames), MemberType = typeof(InvalidData))]
     public void ToBlueprint_WithInvalidNonNullName_ThrowsException(string name)
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
+        Dictionary<object, object> details = new() { { Template.Details.Name, name } };
         FileTemplate template = new(details);
         Assert.Throws<ArgumentException>("details", () => (Blueprint)template);
     }

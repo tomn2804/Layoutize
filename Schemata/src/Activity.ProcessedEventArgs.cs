@@ -6,11 +6,11 @@ public sealed partial class Activity
 {
     public sealed class ProcessedEventArgs : EventArgs
     {
-        public Model Model { get; }
+        public Activity Activity { get; }
 
-        internal ProcessedEventArgs(Model model)
+        internal ProcessedEventArgs(Activity activity)
         {
-            Model = model;
+            Activity = activity;
         }
     }
 }

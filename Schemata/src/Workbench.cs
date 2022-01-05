@@ -6,21 +6,25 @@ namespace Schemata;
 
 public sealed class Workbench
 {
-    public Workbench(Blueprint blueprint)
+    public Workbench(Template template)
     {
-        Blueprint = blueprint;
+        Template = template;
     }
 
-    private Blueprint Blueprint { get; }
+    private Template Template { get; }
+
+    public Model Build()
+    {
+        return BuildTo(Directory.GetCurrentDirectory());
+    }
 
     public Model BuildTo(string path)
     {
-        Blueprint.Builder builder = Blueprint.ToBuilder();
-        builder.Path = path;
-        Model model = (Model)Activator.CreateInstance(Blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new object[] { builder.ToBlueprint() }, null)!;
+        Blueprint blueprint = (Template)Activator.CreateInstance(Template.GetType(), Template.Details.SetItem(Template.DetailOption.Path, path))!;
+        Model model = (Model)Activator.CreateInstance(blueprint.ModelType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { blueprint }, null)!;
         foreach (Node node in model.Tree)
         {
-            node.Invoke(node.Model.Activities[Model.DefaultActivity.Mount]);
+            node.Invoke(node.Model.Activities[FileSystemTemplate.ActivityOption.Mount]);
         }
         return model;
     }

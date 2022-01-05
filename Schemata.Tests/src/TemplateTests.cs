@@ -8,7 +8,7 @@ public abstract class TemplateTests<T> where T : Template
 {
     public virtual void ToBlueprint_WithInvalidNullName_ThrowsException(string name)
     {
-        Dictionary<object, object> details = new() { { Template.RequiredDetails.Name, name } };
+        Dictionary<object, object> details = new() { { Template.Details.Name, name } };
         T template = (T)Activator.CreateInstance(typeof(T), details)!;
         Assert.Throws<ArgumentNullException>("details", () => (Blueprint)template);
     }

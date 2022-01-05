@@ -2,47 +2,35 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 
 namespace Schemata;
 
 public sealed partial class Blueprint
 {
-    public sealed class Builder
+    internal sealed class Builder
     {
-        public Builder(string name)
+        internal Builder()
         {
-            Activities = new();
-            Name = name;
-            Path = Directory.GetCurrentDirectory();
             Templates = new();
         }
 
-        public Builder(Blueprint blueprint)
+        internal Builder(Blueprint blueprint)
         {
-            Activities = blueprint.Activities.ToDictionary(entry => entry.Key, entry => entry.Value);
-            Name = blueprint.Name;
-            Path = blueprint.Path;
             Templates = blueprint.Templates.ToList();
+            Debug.Assert(blueprint.Details == Details);
             Debug.Assert(blueprint.ModelType == ModelType);
         }
 
-        public Dictionary<object, Activity> Activities { get; }
+        internal IReadOnlyDictionary<object, object> Details => Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
 
-        public ImmutableDictionary<object, object> Details => Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
+        internal Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
 
-        public Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
+        internal List<Template> Templates { get; }
 
-        public string Name { get; set; }
-
-        public string Path { get; set; }
-
-        public List<Template> Templates { get; }
-
-        public Blueprint ToBlueprint()
+        internal Blueprint ToBlueprint()
         {
-            return new(Activities.ToImmutableDictionary(), Details, ModelType, Name, Path, Templates.ToImmutableList());
+            return new() { Details = Details, ModelType = ModelType, Templates = Templates.ToImmutableList() };
         }
     }
 }

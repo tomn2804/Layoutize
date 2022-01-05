@@ -4,16 +4,15 @@ using System.Linq;
 
 namespace Schemata;
 
-public sealed partial class Node : Activity.Owner
+public sealed partial class Node : Activity.Caller
 {
     public Model Model { get; }
     
     public void Invoke(Activity activity)
     {
         Callbacks.Push(activity);
-        OnProcessing(activity, new(Model));
+        OnProcessing(new(activity));
     }
-
 
     internal Node(Model model)
     {
@@ -29,7 +28,7 @@ public sealed partial class Node : IDisposable
     {
         while (Callbacks.Any())
         {
-            OnProcessed(Callbacks.Pop(), new(Model));
+            OnProcessed(new(Callbacks.Pop()));
         }
     }
 }

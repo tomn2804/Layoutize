@@ -5,18 +5,16 @@ namespace Schemata;
 
 public sealed partial class Activity
 {
-    public Builder ToBuilder()
+    internal Builder ToBuilder()
     {
         return new(this);
     }
 
-    internal IReadOnlyCollection<EventHandler<ProcessedEventArgs>> Processed { get; }
+    internal IEnumerable<EventHandler<ProcessedEventArgs>> Processed { get; init; } = null!;
 
-    internal IReadOnlyCollection<EventHandler<ProcessingEventArgs>> Processing { get; }
+    internal IEnumerable<EventHandler<ProcessingEventArgs>> Processing { get; init; } = null!;
 
-    private Activity(IReadOnlyCollection<EventHandler<ProcessedEventArgs>> processed, IReadOnlyCollection<EventHandler<ProcessingEventArgs>> processing)
+    private Activity()
     {
-        Processed = processed;
-        Processing = processing;
     }
 }

@@ -1,7 +1,6 @@
 ﻿# Templata
 An object-oriented and schematic ways of building and managing Windows files/directories using PowerShell.
 
-&nbsp;
 # Quick preview:
 
 ## PowerShell input:
@@ -33,14 +32,12 @@ D:\Bar
 ## Disk output:
 ![Quick preview output](./media/quick-preview-output.png)
 
-&nbsp;
 # More preview:
 
 <details>
 <summary>Extending from existing template</summary>
 
-&nbsp;
-# PowerShell input:
+## PowerShell input:
 ```PowerShell
 using module Templata
 using namespace Templata

@@ -1,0 +1,22 @@
+﻿using System;
+using System.IO;
+
+namespace Templata.Tests;
+
+public sealed class WorkingDirectoryFixture : IDisposable
+{
+    public WorkingDirectoryFixture()
+    {
+        Directory.CreateDirectory(Path);
+    }
+
+    public static string Path => $"{System.IO.Path.GetTempPath()}Templata.Tests";
+
+    public void Dispose()
+    {
+        if (Directory.Exists(Path))
+        {
+            Directory.Delete(Path, true);
+        }
+    }
+}

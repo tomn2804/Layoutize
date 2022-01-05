@@ -22,7 +22,7 @@
     <Compile Include="src\Blueprint.Builder.cs" />
     <Compile Include="src\Blueprint.cs" />
     <Compile Include="src\Blueprint.Owner.cs" />
-    <Compile Include="src\ChildrenSet.cs" />
+    <Compile Include="src\Model.ChildrenSet.cs" />
     <Compile Include="src\DirectoryLevelOrderTree.cs" />
     <Compile Include="src\DirectoryModel.cs" />
     <Compile Include="src\DirectoryPreorderTree.cs" />
@@ -42,7 +42,7 @@
     <Compile Include="src\Template.DetailOption.cs" />
     <Compile Include="src\Template.DetailsUpdatingEventArgs.cs" />
     <Compile Include="src\Tree.cs" />
-    <Compile Include="src\Workbench.cs" />
+    <Compile Include="src\Model.Workbench.cs" />
   </ItemGroup>
 
   <ItemGroup>

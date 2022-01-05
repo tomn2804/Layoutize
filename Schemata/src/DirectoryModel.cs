@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.IO;
-using System.Collections;
 
 namespace Schemata;
 
 public class DirectoryModel : Model
 {
-    public ChildrenSet Children { get; }
-
-    public override Tree Tree { get; }
-
     public DirectoryModel(Blueprint blueprint)
         : base(blueprint)
     {
@@ -28,12 +21,17 @@ public class DirectoryModel : Model
             case DirectoryTemplate.TraversalOption.LevelOrder:
                 Tree = new DirectoryLevelOrderTree(this);
                 break;
+
             case DirectoryTemplate.TraversalOption.Preorder:
             default:
                 Tree = new DirectoryPreorderTree(this);
                 break;
         }
     }
+
+    public ChildrenSet Children { get; }
+
+    public override Tree Tree { get; }
 
     public virtual void Create()
     {

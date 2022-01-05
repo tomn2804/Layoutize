@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Management.Automation;
 
 namespace Schemata;
 
@@ -12,13 +12,27 @@ public sealed partial class FileTemplate : Template<FileModel>
     {
     }
 
+    protected override Blueprint ToBlueprint()
+    {
+        return new FileSystemTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
+    }
+
     private KeyValuePair<object, object> GetOnCreatingDetail()
     {
         EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue) && onCreatingValue is EventHandler<Activity.ProcessingEventArgs> onCreating)
+            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue))
             {
-                onCreating.Invoke(sender, args);
+                switch (onCreatingValue)
+                {
+                    case ScriptBlock scriptBlock:
+                        scriptBlock.Invoke(sender, args);
+                        break;
+
+                    default:
+                        ((EventHandler<Activity.ProcessingEventArgs>)onCreatingValue).Invoke(sender, args);
+                        break;
+                }
             }
             Node node = (Node)sender!;
             ((FileModel)node.Model).Create();
@@ -30,18 +44,22 @@ public sealed partial class FileTemplate : Template<FileModel>
     {
         EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue) && onMountingValue is EventHandler<Activity.ProcessingEventArgs> onMounting)
+            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue))
             {
-                onMounting.Invoke(sender, args);
+                switch (onMountingValue)
+                {
+                    case ScriptBlock scriptBlock:
+                        scriptBlock.Invoke(sender, args);
+                        break;
+
+                    default:
+                        ((EventHandler<Activity.ProcessingEventArgs>)onMountingValue).Invoke(sender, args);
+                        break;
+                }
             }
             Node node = (Node)sender!;
             node.Invoke(node.Model.Activities[FileSystemTemplate.ActivityOption.Create]);
         };
         return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnMounting, handler);
-    }
-
-    protected override Blueprint ToBlueprint()
-    {
-        return new FileSystemTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail(), }));
     }
 }

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.IO;
 
 namespace Schemata;
 
-public abstract partial class Model
+public abstract partial class Model : Blueprint.Owner
 {
     public IReadOnlyDictionary<object, Activity> Activities { get; } = ImmutableDictionary.Create<object, Activity>();
 
     public string FullName => System.IO.Path.Combine(Path, Name);
 
     public string Name { get; }
+
+    public DirectoryModel? Parent { get; private set; }
 
     public string Path { get; }
 
@@ -21,6 +21,7 @@ public abstract partial class Model
     public abstract IEnumerable<Node> Tree { get; }
 
     protected Model(Blueprint blueprint)
+        : base(blueprint)
     {
         Name = (string)blueprint.Details[Template.DetailOption.Name];
         if (string.IsNullOrWhiteSpace(Name))

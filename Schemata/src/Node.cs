@@ -7,7 +7,7 @@ namespace Schemata;
 public sealed partial class Node : Activity.Caller
 {
     public Model Model { get; }
-    
+
     public void Invoke(Activity activity)
     {
         Callbacks.Push(activity);

@@ -8,8 +8,6 @@ namespace Schemata;
 
 public abstract partial class Template
 {
-    internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
-
     public ImmutableDictionary<object, object> Details
     {
         get => _details;
@@ -35,6 +33,8 @@ public abstract partial class Template
         return builder.ToBlueprint();
     }
 
+    internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
+
     protected Template(IDictionary details)
     {
         switch (details)
@@ -53,7 +53,7 @@ public abstract partial class Template
         }
     }
 
-    private protected virtual void OnDetailsUpdating(DetailsUpdatingEventArgs args)
+    protected virtual void OnDetailsUpdating(DetailsUpdatingEventArgs args)
     {
         DetailsUpdating?.Invoke(this, args);
     }

@@ -6,7 +6,9 @@ public sealed class FileTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
-        yield return new Node(Model);
+        Node node = new(Model);
+        yield return node;
+        node.Dispose();
     }
 
     internal FileTree(FileModel model)

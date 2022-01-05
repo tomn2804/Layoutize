@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Schemata.Tests;
 
-public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
+public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemplate>
 {
     [Fact]
     public override void ToBlueprint_BasicCase_ReturnsBlueprint()
     {
-        Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(FileTemplateTests) } };
-        FileTemplate template = new(details);
+        Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(DirectoryTemplateTests) } };
+        DirectoryTemplate template = new(details);
 
         Blueprint result = template;
 
         PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
-        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileSystemTemplate).FullName, typeof(FileTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(typeof(FileModel), result.ModelType);
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileSystemTemplate).FullName, typeof(DirectoryTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(typeof(DirectoryModel), result.ModelType);
     }
 
     [Fact]
@@ -31,18 +32,18 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
     {
         using PowerShell terminal = PowerShell.Create();
 
-        string templateName = nameof(FileTemplateTests);
+        string templateName = nameof(DirectoryTemplateTests);
 
         Blueprint result = (Blueprint)terminal.AddScript($@"
             using module Schemata
             using namespace Schemata
             using namespace System.Collections
 
-            class {templateName} : Template[FileModel] {{
+            class {templateName} : Template[DirectoryModel] {{
                 {templateName}([IDictionary]$details) : base($details) {{}}
 
                 [Blueprint]ToBlueprint() {{
-                    return [FileTemplate]$this.Details
+                    return [DirectoryTemplate]$this.Details
                 }}
             }}
 
@@ -52,9 +53,9 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
         PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
-        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileSystemTemplate).FullName, typeof(FileTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileSystemTemplate).FullName, typeof(DirectoryTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
         Assert.Equal(templateName, result.Details[Template.DetailOption.Name]);
-        Assert.Equal(typeof(FileModel), result.ModelType);
+        Assert.Equal(typeof(DirectoryModel), result.ModelType);
     }
 
     [Fact]
@@ -66,11 +67,11 @@ public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
     }
 }
 
-public sealed partial class FileTemplateTests
+public sealed partial class DirectoryTemplateTests
 {
     public sealed class InvalidData
     {
-        public class NonDerivedModelTypeTemplate : Template<DirectoryModel>
+        public class NonDerivedModelTypeTemplate : Template<FileModel>
         {
             public NonDerivedModelTypeTemplate(IDictionary details)
                 : base(details)
@@ -79,7 +80,7 @@ public sealed partial class FileTemplateTests
 
             protected override Blueprint ToBlueprint()
             {
-                return new FileTemplate(Details);
+                return new DirectoryTemplate(Details);
             }
         }
     }

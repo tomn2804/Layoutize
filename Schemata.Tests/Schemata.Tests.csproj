@@ -19,9 +19,13 @@
 
   <ItemGroup>
     <Compile Include="src\BlankTemplateTests.cs" />
+    <Compile Include="src\DirectoryTemplateTests.cs" />
+    <Compile Include="src\DirectoryTemplateTests.WorkbenchTests.cs" />
     <Compile Include="src\FileTemplateTests.cs" />
     <Compile Include="src\FileTemplateTests.WorkbenchTests.cs" />
     <Compile Include="src\TemplateTests.cs" />
+    <Compile Include="src\WorkingDirectoryCollection.cs" />
+    <Compile Include="src\WorkingDirectoryFixture.cs" />
   </ItemGroup>
 
   <ItemGroup>

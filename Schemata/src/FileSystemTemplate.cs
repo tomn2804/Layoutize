@@ -21,7 +21,7 @@ public sealed partial class FileSystemTemplate : Template<Model>
     {
         ImmutableDictionary<object, Activity> activities = ImmutableDictionary.CreateRange(new[]
         {
-            KeyValuePair.Create<object, Activity>(ActivityOption.Mount, CreateActivity(DetailOption.OnCreating, DetailOption.OnCreated)),
+            KeyValuePair.Create<object, Activity>(ActivityOption.Create, CreateActivity(DetailOption.OnCreating, DetailOption.OnCreated)),
             KeyValuePair.Create<object, Activity>(ActivityOption.Mount, CreateActivity(DetailOption.OnMounting, DetailOption.OnMounted))
         });
         return KeyValuePair.Create<object, object>(Template.DetailOption.Activities, activities);

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Schemata.Tests;
 
-public sealed partial class FileTemplateTests
+public sealed partial class DirectoryTemplateTests
 {
     [Collection("Working directory")]
     public sealed partial class WorkbenchTests
@@ -28,7 +28,7 @@ public sealed partial class FileTemplateTests
             using PowerShell instance = PowerShell.Create();
 
             int replication = 3;
-            string templateName = nameof(FileTemplateTests);
+            string templateName = nameof(DirectoryTemplateTests);
             string workingDirectoryPath = Fixture.CreateUniqueWorkingDirectory();
 
             IEnumerable<PSObject> results = instance.AddScript($@"
@@ -36,11 +36,11 @@ public sealed partial class FileTemplateTests
                 using namespace Schemata
                 using namespace System.Collections
 
-                class {templateName} : Template[FileModel] {{
+                class {templateName} : Template[DirectoryModel] {{
                     {templateName}([IDictionary]$details) : base($details) {{}}
 
                     [Blueprint]ToBlueprint() {{
-                        return [FileTemplate]$this.Details
+                        return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
@@ -54,17 +54,17 @@ public sealed partial class FileTemplateTests
 
             Assert.All(Enumerable.Range(1, replication), i =>
             {
-                Assert.True(File.Exists($"{workingDirectoryPath}\\{i}\\{name}"));
-                Assert.False(File.ReadAllLines($"{workingDirectoryPath}\\{i}\\{name}").Any());
+                Assert.True(Directory.Exists($"{workingDirectoryPath}\\{i}\\{name}"));
+                Assert.False(Directory.EnumerateFileSystemEntries($"{workingDirectoryPath}\\{i}\\{name}").Any());
             });
-            Assert.All(results, result => Assert.IsType<FileModel>(result.BaseObject));
+            Assert.All(results, result => Assert.IsType<DirectoryModel>(result.BaseObject));
         }
 
         [Theory, MemberData(nameof(InvalidData.NonNullNames), MemberType = typeof(InvalidData))]
         public void Build_WithInvalidNonNullName_ThrowsException(string name)
         {
             Dictionary<object, object> details = new() { { Template.DetailOption.Name, name } };
-            FileTemplate template = new(details);
+            DirectoryTemplate template = new(details);
             Workbench workbench = new(template);
             Assert.Throws<ArgumentException>("blueprint", () =>
             {
@@ -72,7 +72,7 @@ public sealed partial class FileTemplateTests
                 {
                     workbench.Build();
                 }
-                catch(TargetInvocationException e)
+                catch (TargetInvocationException e)
                 {
                     throw e.InnerException;
                 }
@@ -83,7 +83,7 @@ public sealed partial class FileTemplateTests
         public void Build_WithInvalidNullName_ThrowsException(string name)
         {
             Dictionary<object, object> details = new() { { Template.DetailOption.Name, name } };
-            FileTemplate template = new(details);
+            DirectoryTemplate template = new(details);
             Workbench workbench = new(template);
             Assert.Throws<ArgumentNullException>("blueprint", () =>
             {
@@ -103,8 +103,8 @@ public sealed partial class FileTemplateTests
     {
         public sealed class InvalidData
         {
-            public static IEnumerable<object[]> NonNullNames => Path.GetInvalidFileNameChars().Where(name => !string.IsNullOrWhiteSpace(name.ToString())).Select(name => new object[] { name.ToString() });
-            public static IEnumerable<object[]> NullNames => Path.GetInvalidFileNameChars().Where(name => string.IsNullOrWhiteSpace(name.ToString())).Select(name => new object[] { name.ToString() });
+            public static IEnumerable<object[]> NonNullNames => Path.GetInvalidPathChars().Where(name => !string.IsNullOrWhiteSpace(name.ToString())).Select(name => new object[] { name.ToString() });
+            public static IEnumerable<object[]> NullNames => Path.GetInvalidPathChars().Where(name => string.IsNullOrWhiteSpace(name.ToString())).Select(name => new object[] { name.ToString() });
         }
     }
 }

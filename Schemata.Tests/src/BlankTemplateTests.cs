@@ -8,11 +8,10 @@ namespace Schemata.Tests;
 
 public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
 {
-    [Theory]
-    [InlineData("Test")]
-    public override void ToBlueprint_WithValidName_ReturnsBlueprint(string name)
+    [Fact]
+    public override void ToBlueprint_BasicCase_ReturnsBlueprint()
     {
-        Dictionary<object, object> details = new() { { Template.Details.Name, name } };
+        Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(BlankTemplateTests) } };
         BlankTemplate template = new(details);
 
         Blueprint result = template;
@@ -29,7 +28,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
     {
         using PowerShell terminal = PowerShell.Create();
 
-        string templateName = "BlankFileTemplate";
+        string templateName = nameof(BlankTemplateTests);
 
         Blueprint result = (Blueprint)terminal.AddScript($@"
             using module Schemata
@@ -51,18 +50,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(templateName, result.Details[Template.Details.Name]);
+        Assert.Equal(templateName, result.Details[Template.DetailOption.Name]);
         Assert.Equal(typeof(FileModel), result.ModelType);
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData(" ")]
-    [InlineData(" \t ")]
-    [InlineData(" \n\r ")]
-    public override void ToBlueprint_WithInvalidNullName_ThrowsException(string name)
-    {
-        base.ToBlueprint_WithInvalidNullName_ThrowsException(name);
     }
 }

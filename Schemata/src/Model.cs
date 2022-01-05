@@ -5,6 +5,15 @@ using System.Management.Automation;
 
 namespace Schemata;
 
+public abstract partial class Model
+{
+    public class ActivityOption
+    {
+        public const string Create = nameof(Create);
+        public const string Mount = nameof(Mount);
+    }
+}
+
 public abstract partial class Model : Blueprint.Owner
 {
     public virtual IReadOnlyDictionary<object, Activity> Activities { get; protected set; } = ImmutableDictionary.Create<object, Activity>();

@@ -8,6 +8,22 @@ namespace Schemata;
 
 public abstract partial class Template
 {
+    public class DetailOption
+    {
+        public const string Name = nameof(Model.Name);
+        public const string Path = nameof(Model.Path);
+        public const string Priority = nameof(Model.Priority);
+
+        public const string OnCreating = nameof(OnCreating);
+        public const string OnCreated = nameof(OnCreated);
+
+        public const string OnMounting = nameof(OnMounting);
+        public const string OnMounted = nameof(OnMounted);
+    }
+}
+
+public abstract partial class Template
+{
     public ImmutableDictionary<object, object> Details
     {
         get => _details;

@@ -7,6 +7,14 @@ using System.Linq;
 
 namespace Schemata;
 
+public sealed partial class TextFileTemplate
+{
+    public new class DetailOption : Template.DetailOption
+    {
+        public const string Text = nameof(Text);
+    }
+}
+
 public sealed partial class TextFileTemplate : Template<FileModel>
 {
     public TextFileTemplate(IDictionary details)

@@ -6,6 +6,13 @@ using System.Management.Automation;
 
 namespace Schemata;
 
+public sealed partial class StrictTextFileTemplate
+{
+    public new class DetailOption : TextFileTemplate.DetailOption
+    {
+    }
+}
+
 public sealed partial class StrictTextFileTemplate : Template<FileModel>
 {
     public StrictTextFileTemplate(IDictionary details)

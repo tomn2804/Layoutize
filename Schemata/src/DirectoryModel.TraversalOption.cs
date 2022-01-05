@@ -4,7 +4,7 @@ public partial class DirectoryModel
 {
     public class TraversalOption
     {
-        public const string PreLevelOrder = $"__{nameof(PreLevelOrder)}";
-        public const string Preorder = $"__{nameof(Preorder)}";
+        public const string PreLevelOrder = nameof(PreLevelOrder);
+        public const string Preorder = nameof(Preorder);
     }
 }

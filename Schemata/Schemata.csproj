@@ -22,7 +22,6 @@
     <Compile Include="src\Blueprint.Builder.cs" />
     <Compile Include="src\Blueprint.cs" />
     <Compile Include="src\Blueprint.Owner.cs" />
-    <Compile Include="src\DirectoryTemplate.DetailOption.cs" />
     <Compile Include="src\Model.ChildrenSet.cs" />
     <Compile Include="src\DirectoryPreLevelOrderTree.cs" />
     <Compile Include="src\DirectoryModel.cs" />
@@ -30,7 +29,6 @@
     <Compile Include="src\DirectoryTemplate.cs" />
     <Compile Include="src\DirectoryModel.TraversalOption.cs" />
     <Compile Include="src\FileModel.cs" />
-    <Compile Include="src\Model.ActivityOption.cs" />
     <Compile Include="src\FileTemplate.cs" />
     <Compile Include="src\FileTree.cs" />
     <Compile Include="src\Model.Comparer.cs" />
@@ -38,11 +36,9 @@
     <Compile Include="src\Node.cs" />
     <Compile Include="src\StrictTextFileTemplate.cs" />
     <Compile Include="src\Template.cs" />
-    <Compile Include="src\Template.DetailOption.cs" />
     <Compile Include="src\Template.DetailsUpdatingEventArgs.cs" />
     <Compile Include="src\TextEditor.cs" />
     <Compile Include="src\TextFileTemplate.cs" />
-    <Compile Include="src\TextFileTemplate.DetailOption.cs" />
     <Compile Include="src\Tree.cs" />
     <Compile Include="src\Model.Workbench.cs" />
   </ItemGroup>

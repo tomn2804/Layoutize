@@ -5,6 +5,13 @@ using System.Management.Automation;
 
 namespace Schemata;
 
+public sealed partial class FileTemplate
+{
+    public new class DetailOption : Template.DetailOption
+    {
+    }
+}
+
 public sealed partial class FileTemplate : Template<FileModel>
 {
     public FileTemplate(IDictionary details)

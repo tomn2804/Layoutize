@@ -6,6 +6,15 @@ using System.Management.Automation;
 
 namespace Schemata;
 
+public sealed partial class DirectoryTemplate
+{
+    public new class DetailOption : Template.DetailOption
+    {
+        public const string Children = nameof(Children);
+        public const string Traversal = nameof(Traversal);
+    }
+}
+
 public sealed partial class DirectoryTemplate : Template<DirectoryModel>
 {
     public DirectoryTemplate(IDictionary details)

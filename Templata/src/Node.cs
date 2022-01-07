@@ -6,7 +6,7 @@ namespace Templata;
 
 public sealed partial class Node : Activity.Caller
 {
-    public Model Model { get; }
+    public View View { get; }
 
     public void Invoke(Activity activity)
     {
@@ -14,9 +14,9 @@ public sealed partial class Node : Activity.Caller
         OnProcessing(new(activity));
     }
 
-    internal Node(Model model)
+    internal Node(View view)
     {
-        Model = model;
+        View = view;
     }
 
     private Stack<Activity> Callbacks { get; } = new();

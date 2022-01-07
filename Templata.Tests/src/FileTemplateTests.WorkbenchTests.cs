@@ -23,8 +23,8 @@ public sealed partial class FileTemplateTests
         {
             Dictionary<object, object> details = new() { { Template.DetailOption.Name, name } };
             FileTemplate template = new(details);
-            Model.Workbench workbench = new(template);
-            Assert.Throws<ArgumentException>("blueprint", () =>
+            View.Factory workbench = new(template);
+            Assert.Throws<ArgumentException>("context", () =>
             {
                 try
                 {
@@ -42,8 +42,8 @@ public sealed partial class FileTemplateTests
         {
             Dictionary<object, object> details = new() { { Template.DetailOption.Name, name } };
             FileTemplate template = new(details);
-            Model.Workbench workbench = new(template);
-            Assert.Throws<ArgumentNullException>("blueprint", () =>
+            View.Factory workbench = new(template);
+            Assert.Throws<ArgumentNullException>("context", () =>
             {
                 try
                 {
@@ -59,28 +59,28 @@ public sealed partial class FileTemplateTests
         [Theory]
         [InlineData("Test")]
         [InlineData("Test.txt")]
-        public void BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsModel(string modelName)
+        public void BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsView(string viewName)
         {
             using PowerShell instance = PowerShell.Create();
 
             int replication = 3;
             string templateName = nameof(FileTemplateTests);
-            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsModel));
+            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsView));
 
             IEnumerable<PSObject> results = instance.AddScript($@"
                 using module Templata
                 using namespace Templata
                 using namespace System.Collections
 
-                class {templateName} : Template[FileModel] {{
+                class {templateName} : Template[FileView] {{
                     {templateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [FileTemplate]$this.Details
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{templateName}]@{{ [Template+DetailOption]::Name = '{modelName}' }})
+                $workbench = [View+Workbench]::new([{templateName}]@{{ [Template+DetailOption]::Name = '{viewName}' }})
 
                 1..{replication} | ForEach-Object -Process {{
                     New-Item -Path '{workingDirectoryPath}' -Name $_ -ItemType 'Directory' | Out-Null
@@ -90,10 +90,10 @@ public sealed partial class FileTemplateTests
 
             Assert.All(Enumerable.Range(1, replication), i =>
             {
-                Assert.True(File.Exists($"{workingDirectoryPath}\\{i}\\{modelName}"));
-                Assert.False(File.ReadAllLines($"{workingDirectoryPath}\\{i}\\{modelName}").Any());
+                Assert.True(File.Exists($"{workingDirectoryPath}\\{i}\\{viewName}"));
+                Assert.False(File.ReadAllLines($"{workingDirectoryPath}\\{i}\\{viewName}").Any());
             });
-            Assert.All(results, result => Assert.IsType<FileModel>(result.BaseObject));
+            Assert.All(results, result => Assert.IsType<FileView>(result.BaseObject));
         }
 
         private WorkingDirectoryFixture Fixture { get; }

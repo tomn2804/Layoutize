@@ -9,15 +9,15 @@ public sealed partial class BlankTemplate
     }
 }
 
-public sealed partial class BlankTemplate : Template<Model>
+public sealed partial class BlankTemplate : Template<View>
 {
     public BlankTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Blueprint ToBlueprint()
+    protected override Context ToBlueprint()
     {
-        return new Blueprint.Builder().ToBlueprint();
+        return new Context.Builder().ToBlueprint();
     }
 }

@@ -23,8 +23,8 @@ public sealed partial class DirectoryTemplateTests
         {
             Dictionary<object, object> details = new() { { Template.DetailOption.Name, name } };
             DirectoryTemplate template = new(details);
-            Model.Workbench workbench = new(template);
-            Assert.Throws<ArgumentException>("blueprint", () =>
+            View.Factory workbench = new(template);
+            Assert.Throws<ArgumentException>("context", () =>
             {
                 try
                 {
@@ -42,8 +42,8 @@ public sealed partial class DirectoryTemplateTests
         {
             Dictionary<object, object> details = new() { { Template.DetailOption.Name, name } };
             DirectoryTemplate template = new(details);
-            Model.Workbench workbench = new(template);
-            Assert.Throws<ArgumentNullException>("blueprint", () =>
+            View.Factory workbench = new(template);
+            Assert.Throws<ArgumentNullException>("context", () =>
             {
                 try
                 {
@@ -59,28 +59,28 @@ public sealed partial class DirectoryTemplateTests
         [Theory]
         [InlineData("Test")]
         [InlineData("Test.txt")]
-        public void BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsModel(string modelName)
+        public void BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsView(string viewName)
         {
             using PowerShell instance = PowerShell.Create();
 
             int replication = 3;
             string templateName = nameof(templateName);
-            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsModel));
+            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsView));
 
             IEnumerable<PSObject> results = instance.AddScript($@"
                 using module Templata
                 using namespace Templata
                 using namespace System.Collections
 
-                class {templateName} : Template[DirectoryModel] {{
+                class {templateName} : Template[DirectoryView] {{
                     {templateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{templateName}]@{{ [Template+DetailOption]::Name = '{modelName}' }})
+                $workbench = [View+Workbench]::new([{templateName}]@{{ [Template+DetailOption]::Name = '{viewName}' }})
 
                 1..{replication} | ForEach-Object -Process {{
                     New-Item -Path '{workingDirectoryPath}' -Name $_ -ItemType 'Directory' | Out-Null
@@ -90,187 +90,187 @@ public sealed partial class DirectoryTemplateTests
 
             Assert.All(Enumerable.Range(1, replication), i =>
             {
-                Assert.True(Directory.Exists($"{workingDirectoryPath}\\{i}\\{modelName}"));
-                Assert.False(Directory.EnumerateFileSystemEntries($"{workingDirectoryPath}\\{i}\\{modelName}").Any());
+                Assert.True(Directory.Exists($"{workingDirectoryPath}\\{i}\\{viewName}"));
+                Assert.False(Directory.EnumerateFileSystemEntries($"{workingDirectoryPath}\\{i}\\{viewName}").Any());
             });
-            Assert.All(results, result => Assert.IsType<DirectoryModel>(result.BaseObject));
+            Assert.All(results, result => Assert.IsType<DirectoryView>(result.BaseObject));
         }
 
         [Fact]
-        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithAChildFile_ReturnsModel()
+        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithAChildFile_ReturnsView()
         {
             using PowerShell instance = PowerShell.Create();
 
-            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithAChildFile_ReturnsModel));
+            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithAChildFile_ReturnsView));
 
-            string parentTemplateName, parentModelName;
-            parentTemplateName = parentModelName = nameof(parentTemplateName);
+            string parentTemplateName, parentViewName;
+            parentTemplateName = parentViewName = nameof(parentTemplateName);
 
-            string childTemplateName, childModelName;
-            childTemplateName = childModelName = nameof(childTemplateName);
+            string childTemplateName, childViewName;
+            childTemplateName = childViewName = nameof(childTemplateName);
 
-            DirectoryModel result = (DirectoryModel)instance.AddScript($@"
+            DirectoryView result = (DirectoryView)instance.AddScript($@"
                 using module Templata
                 using namespace Templata
                 using namespace System.Collections
 
-                class {parentTemplateName} : Template[DirectoryModel] {{
+                class {parentTemplateName} : Template[DirectoryView] {{
                     {parentTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                class {childTemplateName} : Template[FileModel] {{
+                class {childTemplateName} : Template[FileView] {{
                     {childTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [FileTemplate]$this.Details
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{parentTemplateName}]@{{
-                    [Template+DetailOption]::Name = '{parentModelName}'
-                    [DirectoryTemplate+DetailOption]::Children = [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{childModelName}' }}
+                $workbench = [View+Workbench]::new([{parentTemplateName}]@{{
+                    [Template+DetailOption]::Name = '{parentViewName}'
+                    [DirectoryTemplate+DetailOption]::Children = [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{childViewName}' }}
                 }})
 
                 $workbench.BuildTo(""{workingDirectoryPath}"")
             ").Invoke().Last().BaseObject;
 
-            Assert.True(Directory.Exists($"{workingDirectoryPath}\\{parentModelName}"));
-            Assert.True(File.Exists($"{workingDirectoryPath}\\{parentModelName}\\{childModelName}"));
+            Assert.True(Directory.Exists($"{workingDirectoryPath}\\{parentViewName}"));
+            Assert.True(File.Exists($"{workingDirectoryPath}\\{parentViewName}\\{childViewName}"));
         }
 
         [Fact]
-        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenFiles_ReturnsModel()
+        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenFiles_ReturnsView()
         {
             using PowerShell instance = PowerShell.Create();
 
-            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenFiles_ReturnsModel));
+            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenFiles_ReturnsView));
 
-            string parentTemplateName, parentModelName;
-            parentTemplateName = parentModelName = nameof(parentTemplateName);
+            string parentTemplateName, parentViewName;
+            parentTemplateName = parentViewName = nameof(parentTemplateName);
 
             string childTemplateName = nameof(childTemplateName);
-            string child1ModelName = nameof(child1ModelName);
-            string child2ModelName = nameof(child2ModelName);
-            string child3ModelName = nameof(child3ModelName);
+            string child1ViewName = nameof(child1ViewName);
+            string child2ViewName = nameof(child2ViewName);
+            string child3ViewName = nameof(child3ViewName);
 
-            DirectoryModel result = (DirectoryModel)instance.AddScript($@"
+            DirectoryView result = (DirectoryView)instance.AddScript($@"
                 using module Templata
                 using namespace Templata
                 using namespace System.Collections
 
-                class {parentTemplateName} : Template[DirectoryModel] {{
+                class {parentTemplateName} : Template[DirectoryView] {{
                     {parentTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                class {childTemplateName} : Template[FileModel] {{
+                class {childTemplateName} : Template[FileView] {{
                     {childTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [FileTemplate]$this.Details
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{parentTemplateName}]@{{
-                    [Template+DetailOption]::Name = '{parentModelName}'
+                $workbench = [View+Workbench]::new([{parentTemplateName}]@{{
+                    [Template+DetailOption]::Name = '{parentViewName}'
                     [DirectoryTemplate+DetailOption]::Children = @(
-                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
-                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
-                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
+                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}' }},
+                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}' }},
+                        [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}' }}
                     )
                 }})
 
                 $workbench.BuildTo(""{workingDirectoryPath}"")
             ").Invoke().Last().BaseObject;
 
-            Assert.True(Directory.Exists($"{workingDirectoryPath}\\{parentModelName}"));
-            Assert.All(new[] { child1ModelName, child2ModelName, child3ModelName }, childModelName =>
+            Assert.True(Directory.Exists($"{workingDirectoryPath}\\{parentViewName}"));
+            Assert.All(new[] { child1ViewName, child2ViewName, child3ViewName }, childViewName =>
             {
-                Assert.True(File.Exists($"{workingDirectoryPath}\\{parentModelName}\\{childModelName}"));
+                Assert.True(File.Exists($"{workingDirectoryPath}\\{parentViewName}\\{childViewName}"));
             });
         }
 
         [Fact]
-        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypes_ReturnsModel()
+        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypes_ReturnsView()
         {
             using PowerShell instance = PowerShell.Create();
 
-            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypes_ReturnsModel));
+            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypes_ReturnsView));
 
-            string rootTemplateName, rootModelName;
-            rootTemplateName = rootModelName = nameof(rootTemplateName);
+            string rootTemplateName, rootViewName;
+            rootTemplateName = rootViewName = nameof(rootTemplateName);
 
             string parentTemplateName = nameof(parentTemplateName);
-            string parent1ModelName = nameof(parent1ModelName);
-            string parent2ModelName = nameof(parent2ModelName);
-            string parent3ModelName = nameof(parent3ModelName);
+            string parent1ViewName = nameof(parent1ViewName);
+            string parent2ViewName = nameof(parent2ViewName);
+            string parent3ViewName = nameof(parent3ViewName);
 
             string childTemplateName = nameof(childTemplateName);
-            string child1ModelName = nameof(child1ModelName);
-            string child2ModelName = nameof(child2ModelName);
-            string child3ModelName = nameof(child3ModelName);
+            string child1ViewName = nameof(child1ViewName);
+            string child2ViewName = nameof(child2ViewName);
+            string child3ViewName = nameof(child3ViewName);
 
-            DirectoryModel result = (DirectoryModel)instance.AddScript($@"
+            DirectoryView result = (DirectoryView)instance.AddScript($@"
                 using module Templata
                 using namespace Templata
                 using namespace System.Collections
 
-                class {rootTemplateName} : Template[DirectoryModel] {{
+                class {rootTemplateName} : Template[DirectoryView] {{
                     {rootTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                class {parentTemplateName} : Template[DirectoryModel] {{
+                class {parentTemplateName} : Template[DirectoryView] {{
                     {parentTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                class {childTemplateName} : Template[FileModel] {{
+                class {childTemplateName} : Template[FileView] {{
                     {childTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [FileTemplate]$this.Details
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{rootTemplateName}]@{{
-                    [Template+DetailOption]::Name = '{rootModelName}'
+                $workbench = [View+Workbench]::new([{rootTemplateName}]@{{
+                    [Template+DetailOption]::Name = '{rootViewName}'
                     [DirectoryTemplate+DetailOption]::Children = @(
                         [{parentTemplateName}]@{{
-                            [Template+DetailOption]::Name = '{parent1ModelName}'
+                            [Template+DetailOption]::Name = '{parent1ViewName}'
                             [DirectoryTemplate+DetailOption]::Children = @(
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}' }}
                             )
                         }},
                         [{parentTemplateName}]@{{
-                            [Template+DetailOption]::Name = '{parent2ModelName}'
+                            [Template+DetailOption]::Name = '{parent2ViewName}'
                             [DirectoryTemplate+DetailOption]::Children = @(
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}' }}
                             )
                         }},
                         [{parentTemplateName}]@{{
-                            [Template+DetailOption]::Name = '{parent3ModelName}'
+                            [Template+DetailOption]::Name = '{parent3ViewName}'
                             [DirectoryTemplate+DetailOption]::Children = @(
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}' }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}' }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}' }}
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}' }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}' }}
                             )
                         }}
                     )
@@ -279,96 +279,96 @@ public sealed partial class DirectoryTemplateTests
                 $workbench.BuildTo(""{workingDirectoryPath}"")
             ").Invoke().Last().BaseObject;
 
-            Assert.True(Directory.Exists($"{workingDirectoryPath}\\{rootModelName}"));
-            Assert.All(new[] { parent1ModelName, parent2ModelName, parent3ModelName }, parentModelName =>
+            Assert.True(Directory.Exists($"{workingDirectoryPath}\\{rootViewName}"));
+            Assert.All(new[] { parent1ViewName, parent2ViewName, parent3ViewName }, parentViewName =>
             {
-                Assert.True(Directory.Exists($"{workingDirectoryPath}\\{rootModelName}\\{parentModelName}"));
-                Assert.All(new[] { child1ModelName, child2ModelName, child3ModelName }, childModelName =>
+                Assert.True(Directory.Exists($"{workingDirectoryPath}\\{rootViewName}\\{parentViewName}"));
+                Assert.All(new[] { child1ViewName, child2ViewName, child3ViewName }, childViewName =>
                 {
-                    Assert.True(File.Exists($"{workingDirectoryPath}\\{rootModelName}\\{parentModelName}\\{childModelName}"));
+                    Assert.True(File.Exists($"{workingDirectoryPath}\\{rootViewName}\\{parentViewName}\\{childViewName}"));
                 });
             });
         }
 
         [Fact]
-        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypesAndPriorities_ReturnsModel()
+        public void BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypesAndPriorities_ReturnsView()
         {
             using PowerShell instance = PowerShell.Create();
 
-            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypesAndPriorities_ReturnsModel));
+            string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicCompositionWithMultipleChildrenTypesAndPriorities_ReturnsView));
 
-            string rootTemplateName, rootModelName;
-            rootTemplateName = rootModelName = nameof(rootTemplateName);
+            string rootTemplateName, rootViewName;
+            rootTemplateName = rootViewName = nameof(rootTemplateName);
 
             string parentTemplateName = nameof(parentTemplateName);
-            string parent1ModelName = nameof(parent1ModelName);
-            string parent2ModelName = nameof(parent2ModelName);
-            string parent3ModelName = nameof(parent3ModelName);
+            string parent1ViewName = nameof(parent1ViewName);
+            string parent2ViewName = nameof(parent2ViewName);
+            string parent3ViewName = nameof(parent3ViewName);
 
             string childTemplateName = nameof(childTemplateName);
-            string child1ModelName = nameof(child1ModelName);
-            string child2ModelName = nameof(child2ModelName);
-            string child3ModelName = nameof(child3ModelName);
+            string child1ViewName = nameof(child1ViewName);
+            string child2ViewName = nameof(child2ViewName);
+            string child3ViewName = nameof(child3ViewName);
 
-            DirectoryModel result = (DirectoryModel)instance.AddScript($@"
+            DirectoryView result = (DirectoryView)instance.AddScript($@"
                 using module Templata
                 using namespace Templata
                 using namespace System.Collections
 
-                class {rootTemplateName} : Template[DirectoryModel] {{
+                class {rootTemplateName} : Template[DirectoryView] {{
                     {rootTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                class {parentTemplateName} : Template[DirectoryModel] {{
+                class {parentTemplateName} : Template[DirectoryView] {{
                     {parentTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [DirectoryTemplate]$this.Details
                     }}
                 }}
 
-                class {childTemplateName} : Template[FileModel] {{
+                class {childTemplateName} : Template[FileView] {{
                     {childTemplateName}([IDictionary]$details) : base($details) {{}}
 
-                    [Blueprint]ToBlueprint() {{
+                    [Context]ToBlueprint() {{
                         return [FileTemplate]$this.Details
                     }}
                 }}
 
-                $workbench = [Model+Workbench]::new([{rootTemplateName}]@{{
-                    [Template+DetailOption]::Name = '{rootModelName}'
+                $workbench = [View+Workbench]::new([{rootTemplateName}]@{{
+                    [Template+DetailOption]::Name = '{rootViewName}'
                     [DirectoryTemplate+DetailOption]::Children = @(
                         [{parentTemplateName}]@{{
-                            [Template+DetailOption]::Name = '{parent1ModelName}'
+                            [Template+DetailOption]::Name = '{parent1ViewName}'
                             [Template+DetailOption]::Priority = 1
                             [DirectoryTemplate+DetailOption]::Children = @(
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
                             )
                             [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }}
                         }},
                         [{parentTemplateName}]@{{
-                            [Template+DetailOption]::Name = '{parent2ModelName}'
+                            [Template+DetailOption]::Name = '{parent2ViewName}'
                             [Template+DetailOption]::Priority = 2
                             [DirectoryTemplate+DetailOption]::Children = @(
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
                             )
                             [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }}
                         }},
                         [{parentTemplateName}]@{{
-                            [Template+DetailOption]::Name = '{parent3ModelName}'
+                            [Template+DetailOption]::Name = '{parent3ViewName}'
                             [Template+DetailOption]::Priority = 3
                             [DirectoryTemplate+DetailOption]::Children = @(
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ModelName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ModelName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
-                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ModelName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child1ViewName}'; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child2ViewName}'; [Template+DetailOption]::Priority = -1; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }},
+                                [{childTemplateName}]@{{ [Template+DetailOption]::Name = '{child3ViewName}'; [Template+DetailOption]::Priority = 2; [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }} }}
                             )
                             [Template+DetailOption]::OnCreated = {{ Start-Sleep -Seconds 1 }}
                         }}
@@ -378,19 +378,19 @@ public sealed partial class DirectoryTemplateTests
                 $workbench.BuildTo(""{workingDirectoryPath}"")
             ").Invoke().Last().BaseObject;
 
-            DateTime parent1CreationTime = Directory.GetCreationTime($"{workingDirectoryPath}\\{rootModelName}\\{parent1ModelName}");
-            DateTime parent2CreationTime = Directory.GetCreationTime($"{workingDirectoryPath}\\{rootModelName}\\{parent2ModelName}");
-            DateTime parent3CreationTime = Directory.GetCreationTime($"{workingDirectoryPath}\\{rootModelName}\\{parent3ModelName}");
+            DateTime parent1CreationTime = Directory.GetCreationTime($"{workingDirectoryPath}\\{rootViewName}\\{parent1ViewName}");
+            DateTime parent2CreationTime = Directory.GetCreationTime($"{workingDirectoryPath}\\{rootViewName}\\{parent2ViewName}");
+            DateTime parent3CreationTime = Directory.GetCreationTime($"{workingDirectoryPath}\\{rootViewName}\\{parent3ViewName}");
 
             Assert.True(parent3CreationTime < parent2CreationTime);
             Assert.True(parent2CreationTime < parent1CreationTime);
             Assert.True(parent3CreationTime < parent1CreationTime);
 
-            Assert.All(new[] { parent1ModelName, parent2ModelName, parent3ModelName }, parentModelName =>
+            Assert.All(new[] { parent1ViewName, parent2ViewName, parent3ViewName }, parentViewName =>
             {
-                DateTime child1CreationTime = File.GetCreationTime($"{workingDirectoryPath}\\{rootModelName}\\{parentModelName}\\{child1ModelName}");
-                DateTime child2CreationTime = File.GetCreationTime($"{workingDirectoryPath}\\{rootModelName}\\{parentModelName}\\{child2ModelName}");
-                DateTime child3CreationTime = File.GetCreationTime($"{workingDirectoryPath}\\{rootModelName}\\{parentModelName}\\{child3ModelName}");
+                DateTime child1CreationTime = File.GetCreationTime($"{workingDirectoryPath}\\{rootViewName}\\{parentViewName}\\{child1ViewName}");
+                DateTime child2CreationTime = File.GetCreationTime($"{workingDirectoryPath}\\{rootViewName}\\{parentViewName}\\{child2ViewName}");
+                DateTime child3CreationTime = File.GetCreationTime($"{workingDirectoryPath}\\{rootViewName}\\{parentViewName}\\{child3ViewName}");
 
                 Assert.True(child3CreationTime < child1CreationTime);
                 Assert.True(child1CreationTime < child2CreationTime);

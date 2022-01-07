@@ -16,13 +16,13 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
         Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(DirectoryTemplateTests) } };
         DirectoryTemplate template = new(details);
 
-        Blueprint result = template;
+        Context result = template;
 
-        PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(typeof(DirectoryModel), result.ModelType);
+        Assert.Equal(typeof(DirectoryView), result.ViewType);
     }
 
     [Fact]
@@ -32,36 +32,36 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
 
         string templateName = nameof(DirectoryTemplateTests);
 
-        Blueprint result = (Blueprint)terminal.AddScript($@"
+        Context result = (Context)terminal.AddScript($@"
             using module Templata
             using namespace Templata
             using namespace System.Collections
 
-            class {templateName} : Template[DirectoryModel] {{
+            class {templateName} : Template[DirectoryView] {{
                 {templateName}([IDictionary]$details) : base($details) {{}}
 
-                [Blueprint]ToBlueprint() {{
+                [Context]ToBlueprint() {{
                     return [DirectoryTemplate]$this.Details
                 }}
             }}
 
-            [Blueprint][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
+            [Context][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
-        PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
         Assert.Equal(templateName, result.Details[Template.DetailOption.Name]);
-        Assert.Equal(typeof(DirectoryModel), result.ModelType);
+        Assert.Equal(typeof(DirectoryView), result.ViewType);
     }
 
     [Fact]
-    public void ToBlueprint_FromNonDerivedModelType_ThrowsException()
+    public void ToBlueprint_FromNonDerivedViewType_ThrowsException()
     {
         Dictionary<object, object> details = new() { { Template.DetailOption.Name, "_" } };
-        InvalidData.NonDerivedModelTypeTemplate template = new(details);
-        Assert.Throws<InvalidOperationException>(() => (Blueprint)template);
+        InvalidData.NonDerivedViewTypeTemplate template = new(details);
+        Assert.Throws<InvalidOperationException>(() => (Context)template);
     }
 }
 
@@ -69,14 +69,14 @@ public sealed partial class DirectoryTemplateTests
 {
     public sealed class InvalidData
     {
-        public class NonDerivedModelTypeTemplate : Template<FileModel>
+        public class NonDerivedViewTypeTemplate : Template<FileView>
         {
-            public NonDerivedModelTypeTemplate(IDictionary details)
+            public NonDerivedViewTypeTemplate(IDictionary details)
                 : base(details)
             {
             }
 
-            protected override Blueprint ToBlueprint()
+            protected override Context ToBlueprint()
             {
                 return new DirectoryTemplate(Details);
             }

@@ -1,6 +1,6 @@
 ﻿namespace Templata;
 
-public partial class DirectoryModel
+public partial class DirectoryView
 {
     public class TraversalOption
     {

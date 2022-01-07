@@ -15,14 +15,14 @@ public sealed partial class DirectoryTemplate
     }
 }
 
-public sealed partial class DirectoryTemplate : Template<DirectoryModel>
+public sealed partial class DirectoryTemplate : Template<DirectoryView>
 {
     public DirectoryTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Blueprint ToBlueprint()
+    protected override Context ToBlueprint()
     {
         return new BlankTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountedDetail(), GetOnMountingDetail() }));
     }
@@ -45,7 +45,7 @@ public sealed partial class DirectoryTemplate : Template<DirectoryModel>
                 }
             }
             Node node = (Node)sender!;
-            ((DirectoryModel)node.Model).Create();
+            ((DirectoryView)node.View).Create();
         };
         return KeyValuePair.Create<object, object>(Template.DetailOption.OnCreating, handler);
     }
@@ -62,7 +62,7 @@ public sealed partial class DirectoryTemplate : Template<DirectoryModel>
                 {
                     children = new[] { childrenValue };
                 }
-                ((DirectoryModel)node.Model).Children.AddRange(children.Cast<Template>());
+                ((DirectoryView)node.View).Children.AddRange(children.Cast<Template>());
             }
             if (Details.TryGetValue(Template.DetailOption.OnMounted, out object? onMountedValue))
             {
@@ -99,9 +99,9 @@ public sealed partial class DirectoryTemplate : Template<DirectoryModel>
                 }
             }
             Node node = (Node)sender!;
-            if (!node.Model.Exists)
+            if (!node.View.Exists)
             {
-                node.Invoke(node.Model.Activities[Model.ActivityOption.Create]);
+                node.Invoke(node.View.Activities[View.ActivityOption.Create]);
             }
         };
         return KeyValuePair.Create<object, object>(Template.DetailOption.OnMounting, handler);

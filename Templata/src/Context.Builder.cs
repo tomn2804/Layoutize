@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Templata;
 
-public sealed partial class Blueprint
+public sealed partial class Context
 {
     internal sealed class Builder
     {
@@ -17,25 +17,25 @@ public sealed partial class Blueprint
             Templates = new();
         }
 
-        internal Builder(Blueprint blueprint)
+        internal Builder(Context context)
         {
-            Path = blueprint.Path;
-            Templates = blueprint.Templates.ToList();
-            Debug.Assert(blueprint.Details == Details);
-            Debug.Assert(blueprint.ModelType == ModelType);
+            Path = context.Path;
+            Templates = context.Templates.ToList();
+            Debug.Assert(context.Details == Details);
+            Debug.Assert(context.ViewType == ViewType);
         }
 
         internal IReadOnlyDictionary<object, object> Details => Templates.FirstOrDefault()?.Details ?? ImmutableDictionary.Create<object, object>();
 
-        internal Type ModelType => Templates.LastOrDefault()?.ModelType ?? typeof(Model);
+        internal Type ViewType => Templates.LastOrDefault()?.ViewType ?? typeof(View);
 
         internal string Path { get; set; }
 
         internal List<Template> Templates { get; }
 
-        internal Blueprint ToBlueprint()
+        internal Context ToBlueprint()
         {
-            return new() { Details = Details, ModelType = ModelType, Path = Path, Templates = Templates.ToImmutableList() };
+            return new() { Details = Details, ViewType = ViewType, Path = Path, Templates = Templates.ToImmutableList() };
         }
     }
 }

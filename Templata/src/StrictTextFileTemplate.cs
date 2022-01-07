@@ -13,14 +13,14 @@ public sealed partial class StrictTextFileTemplate
     }
 }
 
-public sealed partial class StrictTextFileTemplate : Template<FileModel>
+public sealed partial class StrictTextFileTemplate : Template<FileView>
 {
     public StrictTextFileTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Blueprint ToBlueprint()
+    protected override Context ToBlueprint()
     {
         return new TextFileTemplate(Details.SetItems(new[] { GetOnMountedDetail() }));
     }
@@ -30,7 +30,7 @@ public sealed partial class StrictTextFileTemplate : Template<FileModel>
         EventHandler<Activity.ProcessedEventArgs> handler = (object? sender, Activity.ProcessedEventArgs args) =>
         {
             Node node = (Node)sender!;
-            File.WriteAllLines(node.Model.FullName, TextEditor.Format(File.ReadLines(node.Model.FullName)));
+            File.WriteAllLines(node.View.FullName, TextEditor.Format(File.ReadLines(node.View.FullName)));
             if (Details.TryGetValue(DetailOption.OnMounted, out object? onMountedValue))
             {
                 switch (onMountedValue)

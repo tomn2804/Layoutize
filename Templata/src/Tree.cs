@@ -12,5 +12,5 @@ public abstract class Tree : IEnumerable<Node>
         return GetEnumerator();
     }
 
-    protected abstract Model Model { get; }
+    protected abstract View View { get; }
 }

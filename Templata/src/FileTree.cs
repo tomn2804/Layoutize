@@ -6,15 +6,15 @@ public sealed class FileTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
-        Node node = new(Model);
+        Node node = new(View);
         yield return node;
         node.Dispose();
     }
 
-    internal FileTree(FileModel model)
+    internal FileTree(FileView view)
     {
-        Model = model;
+        View = view;
     }
 
-    protected override FileModel Model { get; }
+    protected override FileView View { get; }
 }

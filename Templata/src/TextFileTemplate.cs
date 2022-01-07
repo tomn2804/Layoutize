@@ -15,14 +15,14 @@ public sealed partial class TextFileTemplate
     }
 }
 
-public sealed partial class TextFileTemplate : Template<FileModel>
+public sealed partial class TextFileTemplate : Template<FileView>
 {
     public TextFileTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Blueprint ToBlueprint()
+    protected override Context ToBlueprint()
     {
         return new FileTemplate(Details.SetItems(new[] { GetOnCreatedDetail() }));
     }
@@ -39,7 +39,7 @@ public sealed partial class TextFileTemplate : Template<FileModel>
                 {
                     texts = new[] { textValue };
                 }
-                File.WriteAllLines(node.Model.FullName, texts.Cast<string>());
+                File.WriteAllLines(node.View.FullName, texts.Cast<string>());
             }
             if (Details.TryGetValue(Template.DetailOption.OnCreated, out object? onCreatedValue))
             {

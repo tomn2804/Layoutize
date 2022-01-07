@@ -12,14 +12,14 @@ public sealed partial class FileTemplate
     }
 }
 
-public sealed partial class FileTemplate : Template<FileModel>
+public sealed partial class FileTemplate : Template<FileView>
 {
     public FileTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Blueprint ToBlueprint()
+    protected override Context ToBlueprint()
     {
         return new BlankTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
     }
@@ -42,7 +42,7 @@ public sealed partial class FileTemplate : Template<FileModel>
                 }
             }
             Node node = (Node)sender!;
-            ((FileModel)node.Model).Create();
+            ((FileView)node.View).Create();
         };
         return KeyValuePair.Create<object, object>(DetailOption.OnCreating, handler);
     }
@@ -65,9 +65,9 @@ public sealed partial class FileTemplate : Template<FileModel>
                 }
             }
             Node node = (Node)sender!;
-            if (!node.Model.Exists)
+            if (!node.View.Exists)
             {
-                node.Invoke(node.Model.Activities[Model.ActivityOption.Create]);
+                node.Invoke(node.View.Activities[View.ActivityOption.Create]);
             }
         };
         return KeyValuePair.Create<object, object>(DetailOption.OnMounting, handler);

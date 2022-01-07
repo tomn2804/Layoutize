@@ -3,22 +3,22 @@ using System.Diagnostics;
 
 namespace Templata;
 
-public sealed partial class Blueprint
+public sealed partial class Context
 {
     public abstract partial class Owner
     {
         public event EventHandler? BlueprintUpdated;
 
-        protected Owner(Blueprint blueprint)
+        protected Owner(Context context)
         {
-            _blueprint = blueprint;
-            foreach (Template template in Blueprint.Templates)
+            _blueprint = context;
+            foreach (Template template in Context.Templates)
             {
                 template.DetailsUpdating += UpdateBlueprint;
             }
         }
 
-        protected Blueprint Blueprint
+        protected Context Context
         {
             get => _blueprint;
             private set
@@ -33,18 +33,18 @@ public sealed partial class Blueprint
             BlueprintUpdated?.Invoke(this, args);
         }
 
-        private Blueprint _blueprint;
+        private Context _blueprint;
 
         private void UpdateBlueprint(object? sender, Template.DetailsUpdatingEventArgs args)
         {
-            Blueprint newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
+            Context newBlueprint = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
             Builder builder = newBlueprint.ToBuilder();
 
-            Debug.Assert(Blueprint.Templates[builder.Templates.Count - 1] == sender);
+            Debug.Assert(Context.Templates[builder.Templates.Count - 1] == sender);
 
             for (int i = 0; i < builder.Templates.Count; ++i)
             {
-                Template oldTemplate = Blueprint.Templates[i];
+                Template oldTemplate = Context.Templates[i];
                 Template newTemplate = builder.Templates[i];
 
                 Debug.Assert(oldTemplate != newTemplate);
@@ -53,12 +53,12 @@ public sealed partial class Blueprint
                 newTemplate.DetailsUpdating += UpdateBlueprint;
             }
 
-            for (int i = builder.Templates.Count; i < Blueprint.Templates.Count; ++i)
+            for (int i = builder.Templates.Count; i < Context.Templates.Count; ++i)
             {
-                builder.Templates.Add(Blueprint.Templates[i]);
+                builder.Templates.Add(Context.Templates[i]);
             }
 
-            Blueprint = builder.ToBlueprint();
+            Context = builder.ToBlueprint();
         }
     }
 
@@ -72,7 +72,7 @@ public sealed partial class Blueprint
 
         protected virtual void Dispose(bool _)
         {
-            foreach (Template template in Blueprint.Templates)
+            foreach (Template template in Context.Templates)
             {
                 template.DetailsUpdating -= UpdateBlueprint;
             }

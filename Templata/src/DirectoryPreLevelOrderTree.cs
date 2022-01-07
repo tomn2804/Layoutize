@@ -7,10 +7,10 @@ public sealed class DirectoryPreLevelOrderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
-        Node parentNode = new(Model);
+        Node parentNode = new(View);
         yield return parentNode;
-        Queue<IEnumerator<Node>> childNodes = new(Model.Children.Count);
-        foreach (Model child in Model.Children)
+        Queue<IEnumerator<Node>> childNodes = new(View.Children.Count);
+        foreach (View child in View.Children)
         {
             IEnumerator<Node> childNode = child.Tree.GetEnumerator();
             if (childNode.MoveNext())
@@ -30,10 +30,10 @@ public sealed class DirectoryPreLevelOrderTree : Tree
         parentNode.Dispose();
     }
 
-    internal DirectoryPreLevelOrderTree(DirectoryModel model)
+    internal DirectoryPreLevelOrderTree(DirectoryView view)
     {
-        Model = model;
+        View = view;
     }
 
-    protected override DirectoryModel Model { get; }
+    protected override DirectoryView View { get; }
 }

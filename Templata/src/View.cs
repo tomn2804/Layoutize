@@ -5,7 +5,7 @@ using System.Management.Automation;
 
 namespace Templata;
 
-public abstract partial class Model
+public abstract partial class View
 {
     public class ActivityOption
     {
@@ -14,7 +14,7 @@ public abstract partial class Model
     }
 }
 
-public abstract partial class Model : Blueprint.Owner
+public abstract partial class View : Context.Owner
 {
     public virtual IReadOnlyDictionary<object, Activity> Activities { get; protected set; } = ImmutableDictionary.Create<object, Activity>();
 
@@ -26,7 +26,7 @@ public abstract partial class Model : Blueprint.Owner
 
     public virtual string Name { get; protected set; }
 
-    public DirectoryModel? Parent { get; private set; }
+    public DirectoryView? Parent { get; private set; }
 
     public virtual string Path { get; protected set; }
 
@@ -34,18 +34,18 @@ public abstract partial class Model : Blueprint.Owner
 
     public abstract IEnumerable<Node> Tree { get; }
 
-    protected Model(Blueprint blueprint)
-        : base(blueprint)
+    protected View(Context context)
+        : base(context)
     {
-        Path = blueprint.Path;
+        Path = context.Path;
 
-        Name = (string)blueprint.Details[Template.DetailOption.Name];
+        Name = (string)context.Details[Template.DetailOption.Name];
         if (string.IsNullOrWhiteSpace(Name))
         {
-            throw new ArgumentNullException(nameof(blueprint), $"Details value property '{Template.DetailOption.Name}' cannot be null or containing only white spaces.");
+            throw new ArgumentNullException(nameof(context), $"Details value property '{Template.DetailOption.Name}' cannot be null or containing only white spaces.");
         }
 
-        if (blueprint.Details.TryGetValue(Template.DetailOption.Priority, out object? priorityValue))
+        if (context.Details.TryGetValue(Template.DetailOption.Priority, out object? priorityValue))
         {
             Priority = (int)priorityValue;
         }
@@ -60,7 +60,7 @@ public abstract partial class Model : Blueprint.Owner
     private Activity CreateActivity(object processingOption, object processedOption)
     {
         Activity.Builder builder = new();
-        if (Blueprint.Details.TryGetValue(processingOption, out object? processingValue))
+        if (Context.Details.TryGetValue(processingOption, out object? processingValue))
         {
             EventHandler<Activity.ProcessingEventArgs> handler;
             switch (processingValue)
@@ -79,7 +79,7 @@ public abstract partial class Model : Blueprint.Owner
             }
             builder.Processing.Push(handler);
         }
-        if (Blueprint.Details.TryGetValue(processedOption, out object? processedValue))
+        if (Context.Details.TryGetValue(processedOption, out object? processedValue))
         {
             EventHandler<Activity.ProcessedEventArgs> handler;
             switch (processedValue)
@@ -102,9 +102,9 @@ public abstract partial class Model : Blueprint.Owner
     }
 }
 
-public abstract partial class Model : IComparable<Model>
+public abstract partial class View : IComparable<View>
 {
-    public int CompareTo(Model? other)
+    public int CompareTo(View? other)
     {
         if (other is not null)
         {

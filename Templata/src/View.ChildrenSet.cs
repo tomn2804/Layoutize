@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace Templata;
 
-public abstract partial class Model
+public abstract partial class View
 {
     public partial class ChildrenSet
     {
-        public ChildrenSet(DirectoryModel parent)
+        public ChildrenSet(DirectoryView parent)
         {
             Parent = parent;
         }
@@ -18,7 +18,7 @@ public abstract partial class Model
 
         public void Add(Template template)
         {
-            Model child = new Workbench(template).BuildTo(Parent.FullName);
+            View child = new Factory(template).BuildTo(Parent.FullName);
             child.Parent = Parent;
             Children.Add(child);
         }
@@ -27,25 +27,25 @@ public abstract partial class Model
         {
             foreach (Template template in templates)
             {
-                Children.Add(new Workbench(template).FillTo(Parent));
+                Children.Add(new Factory(template).FillTo(Parent));
             }
             foreach (Node node in Parent.Tree.Skip(1))
             {
-                if (!node.Model.IsMounted)
+                if (!node.View.IsMounted)
                 {
-                    node.Invoke(node.Model.Activities[ActivityOption.Mount]);
+                    node.Invoke(node.View.Activities[ActivityOption.Mount]);
                 }
             }
         }
 
-        private SortedSet<Model> Children { get; } = new(new Comparer());
+        private SortedSet<View> Children { get; } = new(new Comparer());
 
-        private DirectoryModel Parent { get; }
+        private DirectoryView Parent { get; }
     }
 
-    public partial class ChildrenSet : IEnumerable<Model>
+    public partial class ChildrenSet : IEnumerable<View>
     {
-        public IEnumerator<Model> GetEnumerator()
+        public IEnumerator<View> GetEnumerator()
         {
             return Children.GetEnumerator();
         }

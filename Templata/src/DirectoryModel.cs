@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Templata;
 
-public partial class DirectoryModel : Model
+public partial class DirectoryView : View
 {
     public ChildrenSet Children { get; }
 
@@ -16,17 +16,17 @@ public partial class DirectoryModel : Model
         Directory.CreateDirectory(FullName);
     }
 
-    protected DirectoryModel(Blueprint blueprint)
-        : base(blueprint)
+    protected DirectoryView(Context context)
+        : base(context)
     {
         if (Name.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
         {
-            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(blueprint));
+            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(context));
         }
 
         Children = new(this);
 
-        blueprint.Details.TryGetValue(DirectoryTemplate.DetailOption.Traversal, out object? traversalValue);
+        context.Details.TryGetValue(DirectoryTemplate.DetailOption.Traversal, out object? traversalValue);
         switch (traversalValue)
         {
             case TraversalOption.PreLevelOrder:

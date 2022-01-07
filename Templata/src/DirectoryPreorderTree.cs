@@ -6,9 +6,9 @@ public sealed class DirectoryPreorderTree : Tree
 {
     public override IEnumerator<Node> GetEnumerator()
     {
-        Node parentNode = new(Model);
+        Node parentNode = new(View);
         yield return parentNode;
-        foreach (Model child in Model.Children)
+        foreach (View child in View.Children)
         {
             foreach (Node childNode in child.Tree)
             {
@@ -18,10 +18,10 @@ public sealed class DirectoryPreorderTree : Tree
         parentNode.Dispose();
     }
 
-    internal DirectoryPreorderTree(DirectoryModel model)
+    internal DirectoryPreorderTree(DirectoryView view)
     {
-        Model = model;
+        View = view;
     }
 
-    protected override DirectoryModel Model { get; }
+    protected override DirectoryView View { get; }
 }

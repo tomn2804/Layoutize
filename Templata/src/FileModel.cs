@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Templata;
 
-public partial class FileModel : Model
+public partial class FileView : View
 {
     public override bool Exists => File.Exists(FullName);
 
@@ -14,12 +14,12 @@ public partial class FileModel : Model
         File.Create(FullName).Dispose();
     }
 
-    protected FileModel(Blueprint blueprint)
-        : base(blueprint)
+    protected FileView(Context context)
+        : base(context)
     {
         if (Name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
         {
-            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(blueprint));
+            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(context));
         }
         Tree = new(this);
     }

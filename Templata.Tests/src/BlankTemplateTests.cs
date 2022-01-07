@@ -14,13 +14,13 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
         Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(BlankTemplateTests) } };
         BlankTemplate template = new(details);
 
-        Blueprint result = template;
+        Context result = template;
 
-        PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(typeof(Model), result.ModelType);
+        Assert.Equal(typeof(View), result.ViewType);
     }
 
     [Fact]
@@ -30,27 +30,27 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
 
         string templateName = nameof(BlankTemplateTests);
 
-        Blueprint result = (Blueprint)terminal.AddScript($@"
+        Context result = (Context)terminal.AddScript($@"
             using module Templata
             using namespace Templata
             using namespace System.Collections
 
-            class {templateName} : Template[FileModel] {{
+            class {templateName} : Template[FileView] {{
                 {templateName}([IDictionary]$details) : base($details) {{}}
 
-                [Blueprint]ToBlueprint() {{
+                [Context]ToBlueprint() {{
                     return [BlankTemplate]$this.Details
                 }}
             }}
 
-            [Blueprint][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
+            [Context][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
-        PropertyInfo templatesInfo = typeof(Blueprint).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
         Assert.Equal(templateName, result.Details[Template.DetailOption.Name]);
-        Assert.Equal(typeof(FileModel), result.ModelType);
+        Assert.Equal(typeof(FileView), result.ViewType);
     }
 }

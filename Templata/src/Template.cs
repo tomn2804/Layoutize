@@ -10,9 +10,9 @@ public abstract partial class Template
 {
     public class DetailOption
     {
-        public const string Name = nameof(Model.Name);
-        public const string Path = nameof(Model.Path);
-        public const string Priority = nameof(Model.Priority);
+        public const string Name = nameof(View.Name);
+        public const string Path = nameof(View.Path);
+        public const string Priority = nameof(View.Priority);
 
         public const string OnCreating = nameof(OnCreating);
         public const string OnCreated = nameof(OnCreated);
@@ -36,14 +36,14 @@ public abstract partial class Template
         }
     }
 
-    public abstract Type ModelType { get; }
+    public abstract Type ViewType { get; }
 
-    public static implicit operator Blueprint(Template template)
+    public static implicit operator Context(Template template)
     {
-        Blueprint.Builder builder = template.ToBlueprint().ToBuilder();
-        if (!template.ModelType.IsAssignableTo(builder.ModelType))
+        Context.Builder builder = template.ToBlueprint().ToBuilder();
+        if (!template.ViewType.IsAssignableTo(builder.ViewType))
         {
-            throw new InvalidOperationException($"Template '{builder.Templates.Last().GetType().FullName}' requires a model that derives from '{builder.ModelType.FullName}'.");
+            throw new InvalidOperationException($"Template '{builder.Templates.Last().GetType().FullName}' requires a view that derives from '{builder.ViewType.FullName}'.");
         }
         builder.Templates.Add(template);
         return builder.ToBlueprint();
@@ -74,14 +74,14 @@ public abstract partial class Template
         DetailsUpdating?.Invoke(this, args);
     }
 
-    protected abstract Blueprint ToBlueprint();
+    protected abstract Context ToBlueprint();
 
     private readonly ImmutableDictionary<object, object> _details;
 }
 
-public abstract class Template<T> : Template where T : Model
+public abstract class Template<T> : Template where T : View
 {
-    public override Type ModelType => typeof(T);
+    public override Type ViewType => typeof(T);
 
     protected Template(IDictionary details)
         : base(details)

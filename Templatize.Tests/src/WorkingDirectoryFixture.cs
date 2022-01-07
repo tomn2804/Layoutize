@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Templata.Tests;
+namespace Templatize.Tests;
 
 public sealed class WorkingDirectoryFixture : IDisposable
 {
@@ -10,7 +10,7 @@ public sealed class WorkingDirectoryFixture : IDisposable
         Directory.CreateDirectory(Path);
     }
 
-    public static string Path => $"{System.IO.Path.GetTempPath()}Templata.Tests";
+    public static string Path => $"{System.IO.Path.GetTempPath()}Templatize.Tests";
 
     public void Dispose()
     {

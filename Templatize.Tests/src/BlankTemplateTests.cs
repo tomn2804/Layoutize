@@ -4,7 +4,7 @@ using System.Management.Automation;
 using System.Reflection;
 using Xunit;
 
-namespace Templata.Tests;
+namespace Templatize.Tests;
 
 public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
 {
@@ -31,8 +31,8 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
         string templateName = nameof(BlankTemplateTests);
 
         Context result = (Context)terminal.AddScript($@"
-            using module Templata
-            using namespace Templata
+            using module Templatize
+            using namespace Templatize
             using namespace System.Collections
 
             class {templateName} : Template[FileView] {{

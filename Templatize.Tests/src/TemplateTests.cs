@@ -1,4 +1,4 @@
-﻿namespace Templata.Tests;
+﻿namespace Templatize.Tests;
 
 public abstract class TemplateTests<T> where T : Template
 {

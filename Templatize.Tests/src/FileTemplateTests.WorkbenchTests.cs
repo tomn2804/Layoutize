@@ -6,7 +6,7 @@ using System.Management.Automation;
 using System.Reflection;
 using Xunit;
 
-namespace Templata.Tests;
+namespace Templatize.Tests;
 
 public sealed partial class FileTemplateTests
 {
@@ -68,8 +68,8 @@ public sealed partial class FileTemplateTests
             string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsView));
 
             IEnumerable<PSObject> results = instance.AddScript($@"
-                using module Templata
-                using namespace Templata
+                using module Templatize
+                using namespace Templatize
                 using namespace System.Collections
 
                 class {templateName} : Template[FileView] {{

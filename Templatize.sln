@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templatize", "Templatize\Templatize.csproj", "{0B40FFDD-102A-47B8-8A5C-B89B451F9AEF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Templatize.Tests", "Templatize.Tests\Templatize.Tests.csproj", "{0D1F663A-7A02-4623-A582-91A9D4A450B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B40FFDD-102A-47B8-8A5C-B89B451F9AEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B40FFDD-102A-47B8-8A5C-B89B451F9AEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B40FFDD-102A-47B8-8A5C-B89B451F9AEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B40FFDD-102A-47B8-8A5C-B89B451F9AEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D1F663A-7A02-4623-A582-91A9D4A450B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D1F663A-7A02-4623-A582-91A9D4A450B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D1F663A-7A02-4623-A582-91A9D4A450B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D1F663A-7A02-4623-A582-91A9D4A450B1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E50C865-B0FB-4104-ABE1-2C43F4EF8BFF}
+	EndGlobalSection
+EndGlobal

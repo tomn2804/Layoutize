@@ -6,7 +6,7 @@ using System.Management.Automation;
 using System.Reflection;
 using Xunit;
 
-namespace Templata.Tests;
+namespace Templatize.Tests;
 
 public sealed partial class DirectoryTemplateTests
 {
@@ -68,8 +68,8 @@ public sealed partial class DirectoryTemplateTests
             string workingDirectoryPath = GetWorkingDirectory(nameof(BuildTo_WorkingDirectoryFromDynamicComposition_ReturnsView));
 
             IEnumerable<PSObject> results = instance.AddScript($@"
-                using module Templata
-                using namespace Templata
+                using module Templatize
+                using namespace Templatize
                 using namespace System.Collections
 
                 class {templateName} : Template[DirectoryView] {{
@@ -110,8 +110,8 @@ public sealed partial class DirectoryTemplateTests
             childTemplateName = childViewName = nameof(childTemplateName);
 
             DirectoryView result = (DirectoryView)instance.AddScript($@"
-                using module Templata
-                using namespace Templata
+                using module Templatize
+                using namespace Templatize
                 using namespace System.Collections
 
                 class {parentTemplateName} : Template[DirectoryView] {{
@@ -158,8 +158,8 @@ public sealed partial class DirectoryTemplateTests
             string child3ViewName = nameof(child3ViewName);
 
             DirectoryView result = (DirectoryView)instance.AddScript($@"
-                using module Templata
-                using namespace Templata
+                using module Templatize
+                using namespace Templatize
                 using namespace System.Collections
 
                 class {parentTemplateName} : Template[DirectoryView] {{
@@ -218,8 +218,8 @@ public sealed partial class DirectoryTemplateTests
             string child3ViewName = nameof(child3ViewName);
 
             DirectoryView result = (DirectoryView)instance.AddScript($@"
-                using module Templata
-                using namespace Templata
+                using module Templatize
+                using namespace Templatize
                 using namespace System.Collections
 
                 class {rootTemplateName} : Template[DirectoryView] {{
@@ -311,8 +311,8 @@ public sealed partial class DirectoryTemplateTests
             string child3ViewName = nameof(child3ViewName);
 
             DirectoryView result = (DirectoryView)instance.AddScript($@"
-                using module Templata
-                using namespace Templata
+                using module Templatize
+                using namespace Templatize
                 using namespace System.Collections
 
                 class {rootTemplateName} : Template[DirectoryView] {{

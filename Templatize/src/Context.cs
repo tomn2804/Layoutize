@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Management.Automation;
 
-namespace Templata;
+namespace Templatize;
 
 public class Context
 {

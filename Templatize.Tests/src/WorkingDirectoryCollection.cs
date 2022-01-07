@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Templata.Tests;
+namespace Templatize.Tests;
 
 [CollectionDefinition("Working directory")]
 public sealed class WorkingDirectoryCollection : ICollectionFixture<WorkingDirectoryFixture>

@@ -6,23 +6,23 @@ using System.Management.Automation;
 using System.Reflection;
 using Xunit;
 
-namespace Templata.Tests;
+namespace Templatize.Tests;
 
-public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemplate>
+public sealed partial class FileTemplateTests : TemplateTests<FileTemplate>
 {
     [Fact]
     public override void ToBlueprint_BasicCase_ReturnsBlueprint()
     {
-        Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(DirectoryTemplateTests) } };
-        DirectoryTemplate template = new(details);
+        Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(FileTemplateTests) } };
+        FileTemplate template = new(details);
 
         Context result = template;
 
         PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
-        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
-        Assert.Equal(typeof(DirectoryView), result.ViewType);
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(typeof(FileView), result.ViewType);
     }
 
     [Fact]
@@ -30,18 +30,18 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
     {
         using PowerShell terminal = PowerShell.Create();
 
-        string templateName = nameof(DirectoryTemplateTests);
+        string templateName = nameof(FileTemplateTests);
 
         Context result = (Context)terminal.AddScript($@"
-            using module Templata
-            using namespace Templata
+            using module Templatize
+            using namespace Templatize
             using namespace System.Collections
 
-            class {templateName} : Template[DirectoryView] {{
+            class {templateName} : Template[FileView] {{
                 {templateName}([IDictionary]$details) : base($details) {{}}
 
                 [Context]ToBlueprint() {{
-                    return [DirectoryTemplate]$this.Details
+                    return [FileTemplate]$this.Details
                 }}
             }}
 
@@ -51,9 +51,9 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
         PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
-        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
+        Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(FileTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
         Assert.Equal(templateName, result.Details[Template.DetailOption.Name]);
-        Assert.Equal(typeof(DirectoryView), result.ViewType);
+        Assert.Equal(typeof(FileView), result.ViewType);
     }
 
     [Fact]
@@ -65,11 +65,11 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
     }
 }
 
-public sealed partial class DirectoryTemplateTests
+public sealed partial class FileTemplateTests
 {
     public sealed class InvalidData
     {
-        public class NonDerivedViewTypeTemplate : Template<FileView>
+        public class NonDerivedViewTypeTemplate : Template<DirectoryView>
         {
             public NonDerivedViewTypeTemplate(IDictionary details)
                 : base(details)
@@ -78,7 +78,7 @@ public sealed partial class DirectoryTemplateTests
 
             protected override Context ToBlueprint()
             {
-                return new DirectoryTemplate(Details);
+                return new FileTemplate(Details);
             }
         }
     }

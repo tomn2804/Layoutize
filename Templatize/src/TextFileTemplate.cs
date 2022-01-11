@@ -5,7 +5,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Linq;
 
-namespace Templata;
+namespace Templatize;
 
 public sealed partial class TextFileTemplate
 {
@@ -22,7 +22,7 @@ public sealed partial class TextFileTemplate : Template<FileView>
     {
     }
 
-    protected override Context ToBlueprint()
+    protected override Layout ToBlueprint()
     {
         return new FileTemplate(Details.SetItems(new[] { GetOnCreatedDetail() }));
     }

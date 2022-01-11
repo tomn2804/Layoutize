@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Immutable;
 
-namespace Templata;
+namespace Templatize;
 
 public abstract partial class Template
 {
-    public sealed class DetailsUpdatingEventArgs : EventArgs
+    public class DetailsUpdatingEventArgs : EventArgs
     {
         public IImmutableDictionary<object, object> Details { get; }
 
-        internal DetailsUpdatingEventArgs(IImmutableDictionary<object, object> details)
+        public DetailsUpdatingEventArgs(IImmutableDictionary<object, object> details)
         {
             Details = details;
         }

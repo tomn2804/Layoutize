@@ -4,23 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Templata;
-
-public abstract partial class Template
-{
-    public class DetailOption
-    {
-        public const string Name = nameof(View.Name);
-        public const string Path = nameof(View.Path);
-        public const string Priority = nameof(View.Priority);
-
-        public const string OnCreating = nameof(OnCreating);
-        public const string OnCreated = nameof(OnCreated);
-
-        public const string OnMounting = nameof(OnMounting);
-        public const string OnMounted = nameof(OnMounted);
-    }
-}
+namespace Templatize;
 
 public abstract partial class Template
 {
@@ -36,20 +20,14 @@ public abstract partial class Template
         }
     }
 
-    public abstract Type ViewType { get; }
-
-    public static implicit operator Context(Template template)
+    public static implicit operator Layout(Template template)
     {
-        Context.Builder builder = template.ToBlueprint().ToBuilder();
-        if (!template.ViewType.IsAssignableTo(builder.ViewType))
-        {
-            throw new InvalidOperationException($"Template '{builder.Templates.Last().GetType().FullName}' requires a view that derives from '{builder.ViewType.FullName}'.");
-        }
+        Layout.Builder builder = template.ToContext().ToBuilder();
         builder.Templates.Add(template);
-        return builder.ToBlueprint();
+        return builder.ToContext();
     }
 
-    internal event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
+    public event EventHandler<DetailsUpdatingEventArgs>? DetailsUpdating;
 
     protected Template(IDictionary details)
     {
@@ -74,17 +52,7 @@ public abstract partial class Template
         DetailsUpdating?.Invoke(this, args);
     }
 
-    protected abstract Context ToBlueprint();
+    protected abstract Layout ToContext();
 
     private readonly ImmutableDictionary<object, object> _details;
-}
-
-public abstract class Template<T> : Template where T : View
-{
-    public override Type ViewType => typeof(T);
-
-    protected Template(IDictionary details)
-        : base(details)
-    {
-    }
 }

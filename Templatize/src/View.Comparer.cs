@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Templata;
+namespace Templatize;
 
 public abstract partial class View
 {

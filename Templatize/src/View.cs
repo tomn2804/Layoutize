@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Management.Automation;
 
-namespace Templata;
+namespace Templatize;
 
 public abstract partial class View
 {
@@ -14,9 +14,9 @@ public abstract partial class View
     }
 }
 
-public abstract partial class View : Context.Owner
+public abstract partial class View : Layout.Owner
 {
-    public virtual IReadOnlyDictionary<object, Activity> Activities { get; protected set; } = ImmutableDictionary.Create<object, Activity>();
+    public virtual IReadOnlyDictionary<object, Activity> Activities { get; } = new();
 
     public abstract bool Exists { get; }
 
@@ -34,69 +34,55 @@ public abstract partial class View : Context.Owner
 
     public abstract IEnumerable<Node> Tree { get; }
 
-    protected View(Context context)
-        : base(context)
+    protected View(Layout layout)
+        : base(layout)
     {
-        Path = context.Path;
-
-        Name = (string)context.Details[Template.DetailOption.Name];
-        if (string.IsNullOrWhiteSpace(Name))
-        {
-            throw new ArgumentNullException(nameof(context), $"Details value property '{Template.DetailOption.Name}' cannot be null or containing only white spaces.");
-        }
-
-        if (context.Details.TryGetValue(Template.DetailOption.Priority, out object? priorityValue))
-        {
-            Priority = (int)priorityValue;
-        }
-
-        ImmutableDictionary<object, Activity>.Builder builder = ImmutableDictionary.CreateBuilder<object, Activity>();
-
-        builder[ActivityOption.Create] = CreateActivity(Template.DetailOption.OnCreating, Template.DetailOption.OnCreated);
-        builder[ActivityOption.Mount] = CreateActivity(Template.DetailOption.OnMounting, Template.DetailOption.OnMounted);
-
-        Activities = builder.ToImmutable();
+        Activities = layout.Activities;
+        Name = layout.Name;
+        Path = layout.Path;
+        Priority = layout.Priority;
     }
+
     private Activity CreateActivity(object processingOption, object processedOption)
     {
         Activity.Builder builder = new();
-        if (Context.Details.TryGetValue(processingOption, out object? processingValue))
+        if (Layout.Details.TryGetValue(processingOption, out object? processingValue))
         {
-            EventHandler<Activity.ProcessingEventArgs> handler;
+            EventHandler<Activity.InvokingEventArgs> handler;
             switch (processingValue)
             {
                 case ScriptBlock scriptBlock:
                     handler = (sender, args) => scriptBlock.Invoke(sender, args);
                     break;
 
-                case Action<object?, Activity.ProcessingEventArgs> action:
+                case Action<object?, Activity.InvokingEventArgs> action:
                     handler = new(action);
                     break;
 
                 default:
-                    handler = (EventHandler<Activity.ProcessingEventArgs>)processingValue;
+                    handler = (EventHandler<Activity.InvokingEventArgs>)processingValue;
                     break;
             }
-            builder.Processing.Push(handler);
+            builder.Invoking.Push(handler);
         }
-        if (Context.Details.TryGetValue(processedOption, out object? processedValue))
+        if (Layout.Details.TryGetValue(processedOption, out object? processedValue))
         {
-            EventHandler<Activity.ProcessedEventArgs> handler;
+            EventHandler<Activity.InvokedEventArgs> handler;
             switch (processedValue)
             {
                 case ScriptBlock scriptBlock:
                     handler = (sender, args) => scriptBlock.Invoke(sender, args);
                     break;
 
-                case Action<object?, Activity.ProcessedEventArgs> action:
+                case Action<object?, Activity.InvokedEventArgs> action:
                     handler = new(action);
                     break;
 
                 default:
-                    handler = (EventHandler<Activity.ProcessedEventArgs>)processedValue;
+                    handler = (EventHandler<Activity.InvokedEventArgs>)processedValue;
                     break;
             }
-            builder.Processed.Enqueue(handler);
+            builder.Invoked.Enqueue(handler);
         }
         return builder.ToActivity();
     }

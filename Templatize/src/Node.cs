@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Templata;
+namespace Templatize;
 
 public sealed partial class Node : Activity.Caller
 {

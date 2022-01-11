@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Templata;
+namespace Templatize;
 
 public partial class View
 {
     public static class Factory
     {
-        //public Factory(Context context)
+        //public Factory(Layout layout)
         //{
-        //    Context = context;
+        //    Layout = layout;
         //}
 
-        public static View Build(Context context)
+        public static View Build(Layout layout)
         {
-            View view = (View)Activator.CreateInstance(Context.ViewType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { Context }, null)!;
+            View view = (View)Activator.CreateInstance(Layout.ViewType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { Layout }, null)!;
             foreach (Node node in view.Tree)
             {
                 node.Invoke(node.View.Activities[ActivityOption.Mount]);
@@ -23,7 +23,7 @@ public partial class View
             return view;
         }
 
-        public static View BuildTo(Context context, string path)
+        public static View BuildTo(Layout layout, string path)
         {
             View view = FillTo(path);
             foreach (Node node in view.Tree)
@@ -44,9 +44,9 @@ public partial class View
         //    {
         //        throw new ArgumentException($"'{nameof(path)}' cannot contain invalid system characters.", nameof(path));
         //    }
-        //    Context.Builder builder = Context.ToBuilder();
+        //    Layout.Builder builder = Layout.ToBuilder();
         //    builder.Path = path;
-        //    View view = (View)Activator.CreateInstance(Context.ViewType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { builder.ToBlueprint() }, null)!;
+        //    View view = (View)Activator.CreateInstance(Layout.ViewType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { builder.ToBlueprint() }, null)!;
         //    return view;
         //}
 
@@ -57,6 +57,6 @@ public partial class View
         //    return child;
         //}
 
-        //private Context Context { get; }
+        //private Layout Layout { get; }
     }
 }

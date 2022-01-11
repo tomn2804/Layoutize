@@ -3,32 +3,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
 
-namespace Templata;
+namespace Templatize;
 
-public sealed partial class FileTemplate
-{
-    public new class DetailOption : Template.DetailOption
-    {
-    }
-}
-
-public sealed partial class FileTemplate : Template<FileView>
+public sealed partial class FileTemplate : Template
 {
     public FileTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Context ToBlueprint()
+    protected override Layout ToContext()
     {
-        return new BlankTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
+        return new FileSystemTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
     }
 
     private KeyValuePair<object, object> GetOnCreatingDetail()
     {
-        EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
+        EventHandler<Activity.InvokingEventArgs> handler = (object? sender, Activity.InvokingEventArgs args) =>
         {
-            if (Details.TryGetValue(DetailOption.OnCreating, out object? onCreatingValue))
+            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue))
             {
                 switch (onCreatingValue)
                 {
@@ -37,21 +30,21 @@ public sealed partial class FileTemplate : Template<FileView>
                         break;
 
                     default:
-                        ((EventHandler<Activity.ProcessingEventArgs>)onCreatingValue).Invoke(sender, args);
+                        ((EventHandler<Activity.InvokingEventArgs>)onCreatingValue).Invoke(sender, args);
                         break;
                 }
             }
             Node node = (Node)sender!;
             ((FileView)node.View).Create();
         };
-        return KeyValuePair.Create<object, object>(DetailOption.OnCreating, handler);
+        return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnCreating, handler);
     }
 
     private KeyValuePair<object, object> GetOnMountingDetail()
     {
-        EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
+        EventHandler<Activity.InvokingEventArgs> handler = (object? sender, Activity.InvokingEventArgs args) =>
         {
-            if (Details.TryGetValue(DetailOption.OnMounting, out object? onMountingValue))
+            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue))
             {
                 switch (onMountingValue)
                 {
@@ -60,7 +53,7 @@ public sealed partial class FileTemplate : Template<FileView>
                         break;
 
                     default:
-                        ((EventHandler<Activity.ProcessingEventArgs>)onMountingValue).Invoke(sender, args);
+                        ((EventHandler<Activity.InvokingEventArgs>)onMountingValue).Invoke(sender, args);
                         break;
                 }
             }
@@ -70,6 +63,6 @@ public sealed partial class FileTemplate : Template<FileView>
                 node.Invoke(node.View.Activities[View.ActivityOption.Create]);
             }
         };
-        return KeyValuePair.Create<object, object>(DetailOption.OnMounting, handler);
+        return KeyValuePair.Create<object, object>(FileSystemTemplate.DetailOption.OnMounting, handler);
     }
 }

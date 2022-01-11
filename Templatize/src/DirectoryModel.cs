@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Templata;
+namespace Templatize;
 
 public partial class DirectoryView : View
 {
@@ -16,17 +16,17 @@ public partial class DirectoryView : View
         Directory.CreateDirectory(FullName);
     }
 
-    protected DirectoryView(Context context)
-        : base(context)
+    protected DirectoryView(Layout layout)
+        : base(layout)
     {
         if (Name.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
         {
-            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(context));
+            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(layout));
         }
 
         Children = new(this);
 
-        context.Details.TryGetValue(DirectoryTemplate.DetailOption.Traversal, out object? traversalValue);
+        layout.Details.TryGetValue(DirectoryTemplate.DetailOption.Traversal, out object? traversalValue);
         switch (traversalValue)
         {
             case TraversalOption.PreLevelOrder:

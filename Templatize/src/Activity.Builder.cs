@@ -2,31 +2,31 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Templata;
+namespace Templatize;
 
-public sealed partial class Activity
+public partial class Activity
 {
-    internal sealed class Builder
+    public sealed class Builder
     {
-        internal Builder()
+        public Builder()
         {
-            Processed = new();
-            Processing = new();
+            Invoked = new();
+            Invoking = new();
         }
 
-        internal Builder(Activity activity)
+        public Builder(Activity activity)
         {
-            Processed = new(activity.Processed);
-            Processing = new(activity.Processing);
+            Invoked = new(activity.Invoked);
+            Invoking = new(activity.Invoking);
         }
 
-        internal Queue<EventHandler<ProcessedEventArgs>> Processed { get; }
+        public Queue<EventHandler<InvokedEventArgs>> Invoked { get; }
 
-        internal Stack<EventHandler<ProcessingEventArgs>> Processing { get; }
+        public Stack<EventHandler<InvokingEventArgs>> Invoking { get; }
 
-        internal Activity ToActivity()
+        public Activity ToActivity()
         {
-            return new() { Processed = Processed.ToImmutableList(), Processing = Processing.ToImmutableList() };
+            return new() { Invoked = Invoked.ToImmutableList(), Invoking = Invoking.ToImmutableList() };
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Templata;
+namespace Templatize;
 
 public sealed partial class BlankTemplate
 {
@@ -9,15 +9,15 @@ public sealed partial class BlankTemplate
     }
 }
 
-public sealed partial class BlankTemplate : Template<View>
+public sealed partial class BlankTemplate : Template
 {
     public BlankTemplate(IDictionary details)
         : base(details)
     {
     }
 
-    protected override Context ToBlueprint()
+    protected override View Build()
     {
-        return new Context.Builder().ToBlueprint();
+        return base.Build();
     }
 }

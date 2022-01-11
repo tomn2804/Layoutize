@@ -1,22 +1,22 @@
 ﻿using System;
 
-namespace Templata;
+namespace Templatize;
 
-public sealed partial class Activity
+public partial class Activity
 {
     public abstract class Caller
     {
-        protected void OnProcessed(ProcessedEventArgs args)
+        protected void OnProcessed(InvokedEventArgs args)
         {
-            foreach (EventHandler<ProcessedEventArgs> handler in args.Activity.Processed)
+            foreach (EventHandler<InvokedEventArgs> handler in args.Activity.Invoked)
             {
                 handler.Invoke(this, args);
             }
         }
 
-        protected void OnProcessing(ProcessingEventArgs args)
+        protected void OnProcessing(InvokingEventArgs args)
         {
-            foreach (EventHandler<ProcessingEventArgs> handler in args.Activity.Processing)
+            foreach (EventHandler<InvokingEventArgs> handler in args.Activity.Invoking)
             {
                 handler.Invoke(this, args);
             }

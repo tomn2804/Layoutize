@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Templata;
+namespace Templatize;
 
-public sealed partial class Activity
+public partial class Activity
 {
-    internal IEnumerable<EventHandler<ProcessedEventArgs>> Processed { get; init; } = null!;
+    internal IEnumerable<EventHandler<InvokedEventArgs>> Invoked { get; init; } = null!;
 
-    internal IEnumerable<EventHandler<ProcessingEventArgs>> Processing { get; init; } = null!;
+    internal IEnumerable<EventHandler<InvokingEventArgs>> Invoking { get; init; } = null!;
 
-    internal Builder ToBuilder()
+    public Builder ToBuilder()
     {
         return new(this);
     }

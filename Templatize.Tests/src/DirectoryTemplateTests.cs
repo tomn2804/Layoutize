@@ -16,9 +16,9 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
         Dictionary<object, object> details = new() { { Template.DetailOption.Name, nameof(DirectoryTemplateTests) } };
         DirectoryTemplate template = new(details);
 
-        Context result = template;
+        Layout result = template;
 
-        PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
@@ -32,7 +32,7 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
 
         string templateName = nameof(DirectoryTemplateTests);
 
-        Context result = (Context)terminal.AddScript($@"
+        Layout result = (Layout)terminal.AddScript($@"
             using module Templatize
             using namespace Templatize
             using namespace System.Collections
@@ -48,7 +48,7 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
             [Context][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
-        PropertyInfo templatesInfo = typeof(Context).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));
@@ -61,7 +61,7 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
     {
         Dictionary<object, object> details = new() { { Template.DetailOption.Name, "_" } };
         InvalidData.NonDerivedViewTypeTemplate template = new(details);
-        Assert.Throws<InvalidOperationException>(() => (Context)template);
+        Assert.Throws<InvalidOperationException>(() => (Layout)template);
     }
 }
 
@@ -76,7 +76,7 @@ public sealed partial class DirectoryTemplateTests
             {
             }
 
-            protected override Context ToBlueprint()
+            protected override Layout ToBlueprint()
             {
                 return new DirectoryTemplate(Details);
             }

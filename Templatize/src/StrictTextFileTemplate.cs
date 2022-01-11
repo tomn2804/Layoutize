@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 
-namespace Templata;
+namespace Templatize;
 
 public sealed partial class StrictTextFileTemplate
 {
@@ -20,7 +20,7 @@ public sealed partial class StrictTextFileTemplate : Template<FileView>
     {
     }
 
-    protected override Context ToBlueprint()
+    protected override Layout ToBlueprint()
     {
         return new TextFileTemplate(Details.SetItems(new[] { GetOnMountedDetail() }));
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Templata;
+namespace Templatize;
 
 public partial class FileView : View
 {
@@ -14,12 +14,12 @@ public partial class FileView : View
         File.Create(FullName).Dispose();
     }
 
-    protected FileView(Context context)
-        : base(context)
+    protected FileView(Layout layout)
+        : base(layout)
     {
         if (Name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
         {
-            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(context));
+            throw new ArgumentException($"Details value property '{Template.DetailOption.Name}' cannot contain invalid system characters.", nameof(layout));
         }
         Tree = new(this);
     }

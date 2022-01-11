@@ -1,4 +1,4 @@
-﻿namespace Templata;
+﻿namespace Templatize;
 
 public partial class DirectoryView
 {

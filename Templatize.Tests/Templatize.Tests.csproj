@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Templata\Templatize.csproj" />
+    <ProjectReference Include="..\Templatize\Templatize.csproj" />
   </ItemGroup>
 
 </Project>

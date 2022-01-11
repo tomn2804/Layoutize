@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 
-namespace Templata;
+namespace Templatize;
 
 public sealed partial class DirectoryTemplate
 {
@@ -22,7 +22,7 @@ public sealed partial class DirectoryTemplate : Template<DirectoryView>
     {
     }
 
-    protected override Context ToBlueprint()
+    protected override Layout ToBlueprint()
     {
         return new BlankTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountedDetail(), GetOnMountingDetail() }));
     }

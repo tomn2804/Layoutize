@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 
-namespace Templatize;
+namespace Templatize.Templates;
 
 public abstract partial class Template
 {

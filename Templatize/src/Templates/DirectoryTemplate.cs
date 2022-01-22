@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 
-namespace Templatize;
+namespace Templatize.Templates;
 
 public sealed partial class DirectoryTemplate
 {

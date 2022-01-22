@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Templatize;
+namespace Templatize.Views;
 
 public abstract class Tree : IEnumerable<Node>
 {

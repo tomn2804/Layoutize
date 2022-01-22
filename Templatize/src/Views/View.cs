@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Management.Automation;
 
-namespace Templatize;
+namespace Templatize.Views;
 
 public abstract partial class View
 {

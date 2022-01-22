@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Templatize;
+namespace Templatize.Views;
 
 public partial class FileView : View
 {

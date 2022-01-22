@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Templatize;
+namespace Templatize.Views;
 
 public partial class Activity
 {
-    public class InvokingEventArgs : EventArgs
+    public class InvokedEventArgs : EventArgs
     {
         public Activity Activity { get; }
 
-        public InvokingEventArgs(Activity activity)
+        public InvokedEventArgs(Activity activity)
         {
             Activity = activity;
         }

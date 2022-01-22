@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Templatize;
+namespace Templatize.Templates;
 
 public sealed partial class BlankTemplate
 {

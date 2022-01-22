@@ -1,4 +1,4 @@
-﻿namespace Templatize;
+﻿namespace Templatize.Views;
 
 public partial class DirectoryView
 {

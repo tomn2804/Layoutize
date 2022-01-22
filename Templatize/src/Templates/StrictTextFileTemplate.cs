@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 
-namespace Templatize;
+namespace Templatize.Templates;
 
 public sealed partial class StrictTextFileTemplate
 {

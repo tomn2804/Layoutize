@@ -2,7 +2,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Templatize;
+namespace Templatize.Templates;
 
 public partial class Layout
 {

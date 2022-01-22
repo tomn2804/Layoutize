@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Templatize;
+namespace Templatize.Views;
 
 public abstract partial class View
 {

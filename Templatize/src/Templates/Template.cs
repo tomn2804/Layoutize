@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Templatize;
+namespace Templatize.Templates;
 
 public abstract partial class Template
 {

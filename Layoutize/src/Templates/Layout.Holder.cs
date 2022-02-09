@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Templatize.Templates;
+namespace Layoutize.Templates;
 
 public sealed partial class Layout
 {

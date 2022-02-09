@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Templatize.Views;
+namespace Layoutize.Views;
 
 public class InvokingEventArgs : EventArgs
 {

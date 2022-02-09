@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Linq;
 using System.IO;
-using Templatize.Attributes;
+using Layoutize.Attributes;
 
-namespace Templatize.Templates;
+namespace Layoutize.Templates;
 
 [FileSystemBinding]
 public sealed class FileSystemTemplate : Template

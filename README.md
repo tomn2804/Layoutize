@@ -1,4 +1,4 @@
-﻿# Templatize
+﻿# Layoutize
 An object-oriented and schematic ways of building and managing Windows files/directories using PowerShell.
 
 # Current State
@@ -8,8 +8,8 @@ As of Jan. 5, 2022, this project is still in development with future release goa
 
 ## PowerShell Input
 ```PowerShell
-using module Templatize
-using namespace Templatize
+using module Layoutize
+using namespace Layoutize
 
 $template = [DirectoryTemplate]@{
     Name = 'Buzz'
@@ -40,8 +40,8 @@ D:\Buzz
 
 ## PowerShell Input
 ```PowerShell
-using module Templatize
-using namespace Templatize
+using module Layoutize
+using namespace Layoutize
 using namespace System.Collections
 
 class MyTextFileTemplate : Template[FileModel] {

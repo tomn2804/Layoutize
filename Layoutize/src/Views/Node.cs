@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Templatize.Views;
+namespace Layoutize.Views;
 
 public sealed partial class Node : Activity.Caller
 {

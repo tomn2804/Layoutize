@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Templatize.Views;
+namespace Layoutize.Views;
 
 public partial class View
 {

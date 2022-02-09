@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Templatize.Views;
+namespace Layoutize.Views;
 
 public sealed class DirectoryPreLevelOrderTree : Tree
 {

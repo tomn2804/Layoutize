@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Templatize.Views;
+namespace Layoutize.Views;
 
 public sealed class FileTree : Tree
 {

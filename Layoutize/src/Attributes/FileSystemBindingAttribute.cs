@@ -1,7 +1,7 @@
 ﻿using System;
-using Templatize.Views;
+using Layoutize.Views;
 
-namespace Templatize.Attributes;
+namespace Layoutize.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class FileSystemBindingAttribute : Attribute

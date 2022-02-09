@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Templatize.Templates;
+namespace Layoutize.Templates;
 
 public sealed partial class Layout
 {

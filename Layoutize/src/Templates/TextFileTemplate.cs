@@ -5,7 +5,7 @@ using System.IO;
 using System.Management.Automation;
 using System.Linq;
 
-namespace Templatize.Templates;
+namespace Layoutize.Templates;
 
 public sealed partial class TextFileTemplate
 {

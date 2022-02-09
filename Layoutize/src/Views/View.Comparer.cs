@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Templatize.Views;
+namespace Layoutize.Views;
 
 public abstract partial class View
 {

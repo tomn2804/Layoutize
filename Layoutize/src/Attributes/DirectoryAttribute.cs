@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Templatize.Attributes;
+namespace Layoutize.Attributes;
 
 public class DirectoryAttribute : FileSystemBindingAttribute
 {

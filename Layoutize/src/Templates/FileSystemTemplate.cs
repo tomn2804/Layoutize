@@ -4,38 +4,22 @@ using System.Collections.Generic;
 using System.Management.Automation;
 using System.Linq;
 using System.IO;
+using Templatize.Attributes;
 
 namespace Templatize.Templates;
 
-public sealed partial class FileSystemTemplate
+[FileSystemBinding]
+public sealed class FileSystemTemplate : Template
 {
-    public class DetailOption
-    {
-        public const string ViewType = nameof(ViewType);
-
-        public const string Name = nameof(Name);
-        public const string Path = nameof(Path);
-        public const string Priority = nameof(Priority);
-
-        public const string OnCreating = nameof(OnCreating);
-        public const string OnCreated = nameof(OnCreated);
-
-        public const string OnMounting = nameof(OnMounting);
-        public const string OnMounted = nameof(OnMounted);
-    }
-}
-
-public sealed partial class FileSystemTemplate : Template
-{
-    public FileSystemTemplate(IDictionary details)
-        : base(details)
+    public FileSystemTemplate(IDictionary attributes)
+        : base(attributes)
     {
     }
 
-    protected override Layout ToContext()
+    protected override Layout Build()
     {
         string name;
-        if (Details.TryGetValue(DetailOption.Name, out object? nameValue))
+        if (Attributes.TryGetValue(DetailOption.Name, out object? nameValue))
         {
             name = nameValue.ToString()!;
         }
@@ -45,7 +29,7 @@ public sealed partial class FileSystemTemplate : Template
         }
 
         Type viewType;
-        if (Details.TryGetValue(DetailOption.ViewType, out object? viewTypeValue))
+        if (Attributes.TryGetValue(DetailOption.ViewType, out object? viewTypeValue))
         {
             viewType = (Type)viewTypeValue;
         }
@@ -55,7 +39,7 @@ public sealed partial class FileSystemTemplate : Template
         }
 
         string path;
-        if (Details.TryGetValue(DetailOption.Path, out object? pathValue))
+        if (Attributes.TryGetValue(DetailOption.Path, out object? pathValue))
         {
             path = pathValue.ToString()!;
         }
@@ -67,7 +51,7 @@ public sealed partial class FileSystemTemplate : Template
         Layout.Builder builder = new(name, path, viewType);
 
         int priority = 0;
-        if (Details.TryGetValue(DetailOption.Priority, out object? priorityValue))
+        if (Attributes.TryGetValue(DetailOption.Priority, out object? priorityValue))
         {
             priority = priorityValue;
         }
@@ -83,7 +67,7 @@ public sealed partial class FileSystemTemplate : Template
     private Activity CreateActivity(object invokingOption, object invokedOption)
     {
         Activity.Builder builder = new();
-        if (Details.TryGetValue(invokingOption, out object? invokingValue))
+        if (Attributes.TryGetValue(invokingOption, out object? invokingValue))
         {
             EventHandler<Activity.InvokingEventArgs> handler;
             switch (invokingValue)
@@ -102,7 +86,7 @@ public sealed partial class FileSystemTemplate : Template
             }
             builder.Invoking.Push(handler);
         }
-        if (Details.TryGetValue(invokedOption, out object? invokedValue))
+        if (Attributes.TryGetValue(invokedOption, out object? invokedValue))
         {
             EventHandler<Activity.InvokedEventArgs> handler;
             switch (invokedValue)

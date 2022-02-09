@@ -17,8 +17,8 @@ public sealed partial class TextFileTemplate
 
 public sealed partial class TextFileTemplate : Template<FileView>
 {
-    public TextFileTemplate(IDictionary details)
-        : base(details)
+    public TextFileTemplate(IDictionary attributes)
+        : base(attributes)
     {
     }
 

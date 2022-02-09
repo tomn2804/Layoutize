@@ -5,16 +5,16 @@ namespace Templatize.Templates;
 
 public sealed partial class Layout
 {
-    public abstract partial class Owner
+    public abstract partial class Holder
     {
         public event EventHandler? LayoutUpdated;
 
-        protected Owner(Layout layout)
+        protected Holder(Layout layout)
         {
             _layout = layout;
             foreach (Template template in Layout.Templates)
             {
-                template.DetailsUpdating += UpdateLayout;
+                template.AttributesUpdating += UpdateLayout;
             }
         }
 
@@ -35,9 +35,9 @@ public sealed partial class Layout
 
         private Layout _layout;
 
-        private void UpdateLayout(object? sender, Template.DetailsUpdatingEventArgs args)
+        private void UpdateLayout(object? sender, Template.AttributesUpdatingEventArgs args)
         {
-            Layout newLayout = (Template)Activator.CreateInstance(sender!.GetType(), args.Details)!;
+            Layout newLayout = (Template)Activator.CreateInstance(sender!.GetType(), args.Attributes)!;
             Builder builder = newLayout.ToBuilder();
 
             Debug.Assert(Layout.Templates[builder.Templates.Count - 1] == sender);
@@ -49,8 +49,8 @@ public sealed partial class Layout
 
                 Debug.Assert(oldTemplate != newTemplate);
 
-                oldTemplate.DetailsUpdating -= UpdateLayout;
-                newTemplate.DetailsUpdating += UpdateLayout;
+                oldTemplate.AttributesUpdating -= UpdateLayout;
+                newTemplate.AttributesUpdating += UpdateLayout;
             }
 
             for (int i = builder.Templates.Count; i < Layout.Templates.Count; ++i)
@@ -58,11 +58,11 @@ public sealed partial class Layout
                 builder.Templates.Add(Layout.Templates[i]);
             }
 
-            Layout = builder.ToContext();
+            Layout = builder.ToLayout();
         }
     }
 
-    public abstract partial class Owner : IDisposable
+    public abstract partial class Holder : IDisposable
     {
         public void Dispose()
         {
@@ -74,7 +74,7 @@ public sealed partial class Layout
         {
             foreach (Template template in Layout.Templates)
             {
-                template.DetailsUpdating -= UpdateLayout;
+                template.AttributesUpdating -= UpdateLayout;
             }
         }
     }

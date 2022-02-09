@@ -11,8 +11,8 @@ public sealed partial class BlankTemplate
 
 public sealed partial class BlankTemplate : Template
 {
-    public BlankTemplate(IDictionary details)
-        : base(details)
+    public BlankTemplate(IDictionary attributes)
+        : base(attributes)
     {
     }
 

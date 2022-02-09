@@ -15,8 +15,8 @@ public sealed partial class StrictTextFileTemplate
 
 public sealed partial class StrictTextFileTemplate : Template<FileView>
 {
-    public StrictTextFileTemplate(IDictionary details)
-        : base(details)
+    public StrictTextFileTemplate(IDictionary attributes)
+        : base(attributes)
     {
     }
 

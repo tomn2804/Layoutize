@@ -7,21 +7,21 @@ namespace Templatize.Templates;
 
 public sealed partial class FileTemplate : Template
 {
-    public FileTemplate(IDictionary details)
-        : base(details)
+    public FileTemplate(IDictionary attributes)
+        : base(attributes)
     {
     }
 
-    protected override Layout ToContext()
+    protected override Layout Build()
     {
-        return new FileSystemTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
+        return new FileSystemTemplate(Attributes.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
     }
 
     private KeyValuePair<object, object> GetOnCreatingDetail()
     {
         EventHandler<Activity.InvokingEventArgs> handler = (object? sender, Activity.InvokingEventArgs args) =>
         {
-            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue))
+            if (Attributes.TryGetValue(FileSystemTemplate.DetailOption.OnCreating, out object? onCreatingValue))
             {
                 switch (onCreatingValue)
                 {
@@ -44,7 +44,7 @@ public sealed partial class FileTemplate : Template
     {
         EventHandler<Activity.InvokingEventArgs> handler = (object? sender, Activity.InvokingEventArgs args) =>
         {
-            if (Details.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue))
+            if (Attributes.TryGetValue(FileSystemTemplate.DetailOption.OnMounting, out object? onMountingValue))
             {
                 switch (onMountingValue)
                 {

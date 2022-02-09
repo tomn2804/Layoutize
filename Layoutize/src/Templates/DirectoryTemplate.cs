@@ -17,8 +17,8 @@ public sealed partial class DirectoryTemplate
 
 public sealed partial class DirectoryTemplate : Template<DirectoryView>
 {
-    public DirectoryTemplate(IDictionary details)
-        : base(details)
+    public DirectoryTemplate(IDictionary attributes)
+        : base(attributes)
     {
     }
 

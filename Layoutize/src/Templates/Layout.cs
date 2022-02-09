@@ -2,9 +2,9 @@
 
 namespace Templatize.Templates;
 
-public partial class Layout
+public sealed partial class Layout
 {
-    public IReadOnlyDictionary<object, object> Properties { get; init; } = null!;
+    public IReadOnlyDictionary<object, object> Attributes { get; init; } = null!;
 
     public Builder ToBuilder()
     {

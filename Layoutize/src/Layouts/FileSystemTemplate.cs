@@ -6,17 +6,17 @@ using System.Linq;
 using System.IO;
 using Layoutize.Attributes;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
 [FileSystemBinding]
-public sealed class FileSystemTemplate : Template
+public sealed class FileSystemTemplate : Layout
 {
     public FileSystemTemplate(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected override Layout Build()
+    protected override Element Build()
     {
         string name;
         if (Attributes.TryGetValue(DetailOption.Name, out object? nameValue))
@@ -48,7 +48,7 @@ public sealed class FileSystemTemplate : Template
             path = Directory.GetCurrentDirectory();
         }
 
-        Layout.Builder builder = new(name, path, viewType);
+        Element.Builder builder = new(name, path, viewType);
 
         int priority = 0;
         if (Attributes.TryGetValue(DetailOption.Priority, out object? priorityValue))
@@ -56,10 +56,10 @@ public sealed class FileSystemTemplate : Template
             priority = priorityValue;
         }
 
-        View view = (View)Activator.CreateInstance(viewType, new Layout() { Activities = activities, Name = name, Path = path, Priority = priority })!;
+        View view = (View)Activator.CreateInstance(viewType, new Element() { Activities = activities, Name = name, Path = path, Priority = priority })!;
 
-        view.Activities[View.ActivityOption.Create] = CreateActivity(Template.DetailOption.OnCreating, Template.DetailOption.OnCreated);
-        view.Activities[View.ActivityOption.Mount] = CreateActivity(Template.DetailOption.OnCreating, Template.DetailOption.OnCreated);
+        view.Activities[View.ActivityOption.Create] = CreateActivity(Layout.DetailOption.OnCreating, Layout.DetailOption.OnCreated);
+        view.Activities[View.ActivityOption.Mount] = CreateActivity(Layout.DetailOption.OnCreating, Layout.DetailOption.OnCreated);
 
         return view;
     }

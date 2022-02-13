@@ -2,19 +2,19 @@
 using System.Collections.Immutable;
 using System.Linq;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
-public sealed partial class Layout
+public sealed partial class Element
 {
     public class Builder
     {
         public Builder()
         {
             Attributes = ImmutableDictionary.CreateBuilder<object, object>();
-            Templates = ImmutableList.CreateBuilder<Template>();
+            Templates = ImmutableList.CreateBuilder<Layout>();
         }
 
-        public Builder(Layout layout)
+        public Builder(Element layout)
         {
             Attributes = layout.Attributes.ToDictionary(entry => entry.Key, entry => entry.Value);
             Templates = layout.Templates.ToList();
@@ -22,11 +22,11 @@ public sealed partial class Layout
 
         public IDictionary<object, object> Attributes { get; set; }
 
-        public Layout ToLayout()
+        public Element ToLayout()
         {
             return new() { Attributes = Attributes.ToImmutableDictionary(), Templates = Templates.ToImmutableList() };
         }
 
-        internal IList<Template> Templates { get; set; }
+        internal IList<Layout> Templates { get; set; }
     }
 }

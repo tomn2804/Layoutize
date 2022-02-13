@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Management.Automation;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
 public sealed partial class StrictTextFileTemplate
 {
@@ -13,14 +13,14 @@ public sealed partial class StrictTextFileTemplate
     }
 }
 
-public sealed partial class StrictTextFileTemplate : Template<FileView>
+public sealed partial class StrictTextFileTemplate : Layout<FileView>
 {
     public StrictTextFileTemplate(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected override Layout ToBlueprint()
+    protected override Element ToBlueprint()
     {
         return new TextFileTemplate(Details.SetItems(new[] { GetOnMountedDetail() }));
     }

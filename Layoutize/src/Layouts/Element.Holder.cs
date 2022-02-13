@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
-public sealed partial class Layout
+public sealed partial class Element
 {
     public abstract partial class Holder
     {
         public event EventHandler? LayoutUpdated;
 
-        protected Holder(Layout layout)
+        protected Holder(Element layout)
         {
             _layout = layout;
-            foreach (Template template in Layout.Templates)
+            foreach (Layout template in Layout.Templates)
             {
                 template.AttributesUpdating += UpdateLayout;
             }
         }
 
-        protected Layout Layout
+        protected Element Layout
         {
             get => _layout;
             private set
@@ -33,19 +33,19 @@ public sealed partial class Layout
             LayoutUpdated?.Invoke(this, args);
         }
 
-        private Layout _layout;
+        private Element _layout;
 
-        private void UpdateLayout(object? sender, Template.AttributesUpdatingEventArgs args)
+        private void UpdateLayout(object? sender, Layout.AttributesUpdatingEventArgs args)
         {
-            Layout newLayout = (Template)Activator.CreateInstance(sender!.GetType(), args.Attributes)!;
+            Element newLayout = (Layout)Activator.CreateInstance(sender!.GetType(), args.Attributes)!;
             Builder builder = newLayout.ToBuilder();
 
             Debug.Assert(Layout.Templates[builder.Templates.Count - 1] == sender);
 
             for (int i = 0; i < builder.Templates.Count; ++i)
             {
-                Template oldTemplate = Layout.Templates[i];
-                Template newTemplate = builder.Templates[i];
+                Layout oldTemplate = Layout.Templates[i];
+                Layout newTemplate = builder.Templates[i];
 
                 Debug.Assert(oldTemplate != newTemplate);
 
@@ -72,7 +72,7 @@ public sealed partial class Layout
 
         protected virtual void Dispose(bool _)
         {
-            foreach (Template template in Layout.Templates)
+            foreach (Layout template in Layout.Templates)
             {
                 template.AttributesUpdating -= UpdateLayout;
             }

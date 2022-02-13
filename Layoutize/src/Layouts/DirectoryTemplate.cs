@@ -4,25 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
 public sealed partial class DirectoryTemplate
 {
-    public new class DetailOption : Template.DetailOption
+    public new class DetailOption : Layout.DetailOption
     {
         public const string Children = nameof(Children);
         public const string Traversal = nameof(Traversal);
     }
 }
 
-public sealed partial class DirectoryTemplate : Template<DirectoryView>
+public sealed partial class DirectoryTemplate : Layout<DirectoryView>
 {
     public DirectoryTemplate(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected override Layout ToBlueprint()
+    protected override Element ToBlueprint()
     {
         return new BlankTemplate(Details.SetItems(new[] { GetOnCreatingDetail(), GetOnMountedDetail(), GetOnMountingDetail() }));
     }
@@ -31,7 +31,7 @@ public sealed partial class DirectoryTemplate : Template<DirectoryView>
     {
         EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            if (Details.TryGetValue(Template.DetailOption.OnCreating, out object? onCreatingValue))
+            if (Details.TryGetValue(Layout.DetailOption.OnCreating, out object? onCreatingValue))
             {
                 switch (onCreatingValue)
                 {
@@ -47,7 +47,7 @@ public sealed partial class DirectoryTemplate : Template<DirectoryView>
             Node node = (Node)sender!;
             ((DirectoryView)node.View).Create();
         };
-        return KeyValuePair.Create<object, object>(Template.DetailOption.OnCreating, handler);
+        return KeyValuePair.Create<object, object>(Layout.DetailOption.OnCreating, handler);
     }
 
     private KeyValuePair<object, object> GetOnMountedDetail()
@@ -62,9 +62,9 @@ public sealed partial class DirectoryTemplate : Template<DirectoryView>
                 {
                     children = new[] { childrenValue };
                 }
-                ((DirectoryView)node.View).Children.AddRange(children.Cast<Template>());
+                ((DirectoryView)node.View).Children.AddRange(children.Cast<Layout>());
             }
-            if (Details.TryGetValue(Template.DetailOption.OnMounted, out object? onMountedValue))
+            if (Details.TryGetValue(Layout.DetailOption.OnMounted, out object? onMountedValue))
             {
                 switch (onMountedValue)
                 {
@@ -78,14 +78,14 @@ public sealed partial class DirectoryTemplate : Template<DirectoryView>
                 }
             }
         };
-        return KeyValuePair.Create<object, object>(Template.DetailOption.OnMounted, handler);
+        return KeyValuePair.Create<object, object>(Layout.DetailOption.OnMounted, handler);
     }
 
     private KeyValuePair<object, object> GetOnMountingDetail()
     {
         EventHandler<Activity.ProcessingEventArgs> handler = (object? sender, Activity.ProcessingEventArgs args) =>
         {
-            if (Details.TryGetValue(Template.DetailOption.OnMounting, out object? onMountingValue))
+            if (Details.TryGetValue(Layout.DetailOption.OnMounting, out object? onMountingValue))
             {
                 switch (onMountingValue)
                 {
@@ -104,6 +104,6 @@ public sealed partial class DirectoryTemplate : Template<DirectoryView>
                 node.Invoke(node.View.Activities[View.ActivityOption.Create]);
             }
         };
-        return KeyValuePair.Create<object, object>(Template.DetailOption.OnMounting, handler);
+        return KeyValuePair.Create<object, object>(Layout.DetailOption.OnMounting, handler);
     }
 }

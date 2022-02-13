@@ -13,18 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\Attributes\DirectoryAttribute.cs" />
-    <Compile Include="src\Attributes\FileSystemBindingAttribute.cs" />
-    <Compile Include="src\Templates\DirectoryTemplate.cs" />
-    <Compile Include="src\Templates\FileSystemTemplate.cs" />
-    <Compile Include="src\Templates\FileTemplate.cs" />
-    <Compile Include="src\Templates\Layout.Builder.cs" />
-    <Compile Include="src\Templates\Layout.cs" />
-    <Compile Include="src\Templates\Layout.Holder.cs" />
-    <Compile Include="src\Templates\Template.cs" />
-    <Compile Include="src\Templates\Template.DetailsUpdatingEventArgs.cs" />
-    <Compile Include="src\Views\InvokedEventArgs.cs" />
-    <Compile Include="src\Views\InvokingEventArgs.cs" />
+    <Compile Include="src\Layouts\State.AttributesUpdatingEventArgs.cs" />
+    <Compile Include="src\Layouts\Layout.cs" />
   </ItemGroup>
 
   <ItemGroup>

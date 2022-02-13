@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Management.Automation;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
-public sealed partial class FileTemplate : Template
+public sealed partial class FileTemplate : Layout
 {
     public FileTemplate(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected override Layout Build()
+    protected override Element Build()
     {
         return new FileSystemTemplate(Attributes.SetItems(new[] { GetOnCreatingDetail(), GetOnMountingDetail() }));
     }

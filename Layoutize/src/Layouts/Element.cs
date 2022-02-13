@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
-public sealed partial class Layout
+public class Element
 {
     public IReadOnlyDictionary<object, object> Attributes { get; init; } = null!;
 
@@ -11,9 +11,9 @@ public sealed partial class Layout
         return new(this);
     }
 
-    private Layout()
+    public Element()
     {
     }
 
-    private IReadOnlyList<Template> Templates { get; init; } = null!;
+    private IReadOnlyList<Layout> Templates { get; init; } = null!;
 }

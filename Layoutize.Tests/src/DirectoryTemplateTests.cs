@@ -18,7 +18,7 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
 
         Layout result = template;
 
-        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Layouts", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
@@ -48,7 +48,7 @@ public sealed partial class DirectoryTemplateTests : TemplateTests<DirectoryTemp
             [Context][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
-        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Layouts", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, typeof(DirectoryTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));

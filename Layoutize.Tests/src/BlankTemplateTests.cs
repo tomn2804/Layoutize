@@ -16,7 +16,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
 
         Layout result = template;
 
-        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Layouts", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName }, actualTemplates.Select(t => t.GetType().FullName));
@@ -46,7 +46,7 @@ public sealed class BlankTemplateTests : TemplateTests<BlankTemplate>
             [Context][{templateName}]@{{ [Template+DetailOption]::Name = '{templateName}' }}
         ").Invoke().Last().BaseObject;
 
-        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Templates", BindingFlags.NonPublic | BindingFlags.Instance);
+        PropertyInfo templatesInfo = typeof(Layout).GetProperty("Layouts", BindingFlags.NonPublic | BindingFlags.Instance);
         ICollection<Template> actualTemplates = (ICollection<Template>)templatesInfo.GetValue(result);
 
         Assert.Equal(new string[] { typeof(BlankTemplate).FullName, templateName }, actualTemplates.Select(t => t.GetType().FullName));

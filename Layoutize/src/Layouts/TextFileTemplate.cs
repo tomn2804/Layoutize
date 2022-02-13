@@ -5,24 +5,24 @@ using System.IO;
 using System.Management.Automation;
 using System.Linq;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
 public sealed partial class TextFileTemplate
 {
-    public new class DetailOption : Template.DetailOption
+    public new class DetailOption : Layout.DetailOption
     {
         public const string Text = nameof(Text);
     }
 }
 
-public sealed partial class TextFileTemplate : Template<FileView>
+public sealed partial class TextFileTemplate : Layout<FileView>
 {
     public TextFileTemplate(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected override Layout ToBlueprint()
+    protected override Element ToBlueprint()
     {
         return new FileTemplate(Details.SetItems(new[] { GetOnCreatedDetail() }));
     }
@@ -41,7 +41,7 @@ public sealed partial class TextFileTemplate : Template<FileView>
                 }
                 File.WriteAllLines(node.View.FullName, texts.Cast<string>());
             }
-            if (Details.TryGetValue(Template.DetailOption.OnCreated, out object? onCreatedValue))
+            if (Details.TryGetValue(Layout.DetailOption.OnCreated, out object? onCreatedValue))
             {
                 switch (onCreatedValue)
                 {
@@ -55,6 +55,6 @@ public sealed partial class TextFileTemplate : Template<FileView>
                 }
             }
         };
-        return KeyValuePair.Create<object, object>(Template.DetailOption.OnCreated, handler);
+        return KeyValuePair.Create<object, object>(Layout.DetailOption.OnCreated, handler);
     }
 }

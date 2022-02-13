@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 
-namespace Layoutize.Templates;
+namespace Layoutize.Layouts;
 
 public sealed partial class BlankTemplate
 {
-    public new class DetailOption : Template.DetailOption
+    public new class DetailOption : Layout.DetailOption
     {
     }
 }
 
-public sealed partial class BlankTemplate : Template
+public sealed partial class BlankTemplate : Layout
 {
     public BlankTemplate(IDictionary attributes)
         : base(attributes)

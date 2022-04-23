@@ -13,8 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\Layouts\State.AttributesUpdatingEventArgs.cs" />
-    <Compile Include="src\Layouts\Layout.cs" />
+    <Compile Include="src\ComponentElement.cs" />
+    <Compile Include="src\Element.cs" />
+    <Compile Include="src\FileSystemView.cs" />
+    <Compile Include="src\IBuildContext.cs" />
+    <Compile Include="src\Layout.cs" />
+    <Compile Include="src\State.cs" />
+    <Compile Include="src\View.cs" />
+    <Compile Include="src\ViewElement.cs" />
   </ItemGroup>
 
   <ItemGroup>

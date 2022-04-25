@@ -19,6 +19,8 @@
     <Compile Include="src\IBuildContext.cs" />
     <Compile Include="src\Layout.cs" />
     <Compile Include="src\State.cs" />
+    <Compile Include="src\TextEditor.cs" />
+    <Compile Include="src\Tree.cs" />
     <Compile Include="src\View.cs" />
     <Compile Include="src\ViewElement.cs" />
   </ItemGroup>

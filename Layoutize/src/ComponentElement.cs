@@ -1,105 +1,122 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace Layoutize;
 
-public abstract partial class ComponentElement : Element
+internal abstract partial class ComponentElement : Element
 {
-    protected ComponentElement(Layout layout)
+    internal override bool IsMounted => base.IsMounted && Child.IsMounted;
+
+    private protected ComponentElement(Layout layout)
         : base(layout)
     {
+        _child = new(() => Build().CreateElement());
     }
 
-    protected abstract Layout Build();
+    private protected abstract Layout Build();
 
-    protected internal override void Mount(Element? parent)
+    internal override void MountTo(Element? parent)
     {
         Debug.Assert(!IsDisposed);
-        base.Mount(parent);
-        Child = Build().CreateElement();
-        Child.Mount(this);
+        base.MountTo(parent);
+        Child.MountTo(this);
+        Debug.Assert(Child.IsMounted);
+        Debug.Assert(Child.Parent == this);
     }
 
-    protected internal override void Unmount()
+    internal override void Unmount()
     {
         Debug.Assert(!IsDisposed);
-        Debug.Assert(Child != null);
-        Child.Unmount();
-        Child = null;
+        if (Child.IsMounted) Child.Unmount();
+        Debug.Assert(!Child.IsMounted);
+        Debug.Assert(Child.Parent == null);
+        base.Unmount();
     }
 
-    protected override void OnLayoutUpdated(EventArgs e)
+    private protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
-        Debug.Assert(Child != null);
+        Debug.Assert(IsMounted);
         Child.Layout = Build();
         base.OnLayoutUpdated(e);
     }
 
-    protected override void Dispose(bool disposing)
+    internal override void VisitChildren(Visitor visitor)
+    {
+        visitor(Child);
+    }
+
+    private protected override void Dispose(bool disposing)
     {
         if (!IsDisposed && disposing)
         {
-            Child?.Dispose();
+            Child.Dispose();
         }
         base.Dispose(disposing);
     }
 }
 
-public abstract partial class ComponentElement
+internal abstract partial class ComponentElement
 {
-    public event EventHandler? ChildUpdating;
+    internal event EventHandler? ChildUpdating;
 
-    public event EventHandler? ChildUpdated;
+    internal event EventHandler? ChildUpdated;
 
-    private Element? _child;
+    private Lazy<Element> _child;
 
-    public Element? Child
+    internal Element Child
     {
-        get => _child;
+        get => _child.Value;
         private protected set
         {
             Debug.Assert(!IsDisposed);
+            Debug.Assert(IsMounted);
             OnChildUpdating(EventArgs.Empty);
-            _child?.Dispose();
-            _child = value;
-            _child?.Mount(this);
+            Child.Unmount();
+            _child = new(() => value);
+            Child.MountTo(this);
             OnChildUpdated(EventArgs.Empty);
+            Debug.Assert(Child.IsMounted);
+            Debug.Assert(Child.Parent == this);
         }
     }
 
-    protected virtual void OnChildUpdating(EventArgs e)
+    private protected virtual void OnChildUpdating(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         ChildUpdating?.Invoke(this, e);
     }
 
-    protected virtual void OnChildUpdated(EventArgs e)
+    private protected virtual void OnChildUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         ChildUpdated?.Invoke(this, e);
     }
 }
 
-public sealed partial class StatelessElement : ComponentElement
+internal sealed partial class StatelessElement : ComponentElement
 {
+    private new StatelessLayout Layout => Layout;
+
     internal StatelessElement(StatelessLayout layout)
         : base(layout)
     {
     }
 
-    private new StatelessLayout Layout => Layout;
-
-    protected override Layout Build()
+    private protected override sealed Layout Build()
     {
+        Debug.Assert(!IsDisposed);
         return Layout.Build(this);
     }
 }
 
-public sealed partial class StatefulElement : ComponentElement
+internal sealed partial class StatefulElement : ComponentElement
 {
     private new StatefulLayout Layout => Layout;
+
+    private State State { get; }
 
     internal StatefulElement(StatefulLayout layout)
         : base(layout)
@@ -108,11 +125,10 @@ public sealed partial class StatefulElement : ComponentElement
         State.StateUpdating += UpdateChild;
     }
 
-    private State State { get; }
-
-    protected override void OnLayoutUpdated(EventArgs e)
+    private protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         State.Layout = Layout;
         base.OnLayoutUpdated(e);
     }
@@ -120,7 +136,7 @@ public sealed partial class StatefulElement : ComponentElement
     private void UpdateChild(object? sender, EventArgs e)
     {
         Debug.Assert(!IsDisposed);
-        Debug.Assert(Child != null);
+        Debug.Assert(IsMounted);
         Layout newChildLayout = Build();
         if (Child.Layout.GetType() == newChildLayout.GetType())
         {
@@ -132,34 +148,18 @@ public sealed partial class StatefulElement : ComponentElement
         }
     }
 
-    protected override Layout Build()
+    private protected override Layout Build()
     {
+        Debug.Assert(!IsDisposed);
         return State.Build(this);
     }
 
-    protected override void Dispose(bool disposing)
+    private protected override void Dispose(bool disposing)
     {
         if (!IsDisposed && disposing)
         {
             State.Dispose();
         }
         base.Dispose(disposing);
-    }
-}
-
-public class ScopeElement : ComponentElement
-{
-    private new ScopeLayout Layout => Layout;
-
-    public override ImmutableDictionary<object, object> Scope => Layout.Attributes.SetItems(base.Scope);
-
-    public ScopeElement(ScopeLayout layout)
-        : base(layout)
-    {
-    }
-
-    protected override Layout Build()
-    {
-        return (Layout)Layout.Attributes["Child"];
     }
 }

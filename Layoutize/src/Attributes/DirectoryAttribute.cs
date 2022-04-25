@@ -1,9 +1,0 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Layoutize.Attributes;
-
-public class DirectoryAttribute : FileSystemBindingAttribute
-{
-    public static readonly Type Children = typeof(IEnumerable<object>);
-}

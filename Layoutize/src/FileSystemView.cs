@@ -1,83 +1,74 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace Layoutize;
 
-public abstract class FileSystemView : View
+internal class FileView : View
 {
-    protected FileSystemView(FileSystemInfo fileSystemInfo)
+    internal FileView(FileInfo fileSystemInfo)
         : base(fileSystemInfo)
     {
     }
 
-    public abstract void Create();
-
-    public abstract void Delete();
-}
-
-public class DirectoryView : FileSystemView
-{
-    public DirectoryView(DirectoryInfo fileSystemInfo)
-        : base(fileSystemInfo)
+    internal override string Name
     {
-    }
-
-    public new string Name
-    {
-        get => base.Name;
+        get => FileSystemInfo.Name;
         set
         {
             Debug.Assert(Exists);
-            if (Parent == null) throw new InvalidOperationException();
-            FileSystemInfo.MoveTo(Path.Combine(Parent, value));
+            Debug.Assert(Parent != null);
+            FileSystemInfo.MoveTo(System.IO.Path.Combine(Parent, value));
         }
     }
 
-    protected new DirectoryInfo FileSystemInfo => FileSystemInfo;
+    private new FileInfo FileSystemInfo => FileSystemInfo;
 
-    public override void Create()
+    internal override void Create()
     {
         Debug.Assert(!Exists);
+        Debug.Assert(Parent != null);
         FileSystemInfo.Create();
     }
 
-    public override void Delete()
+    internal override void Delete()
     {
         Debug.Assert(Exists);
+        Debug.Assert(Parent != null);
         FileSystemInfo.Delete();
     }
 }
 
-public class FileView : FileSystemView
+internal class DirectoryView : View
 {
-    public FileView(FileInfo fileSystemInfo)
+    internal DirectoryView(DirectoryInfo fileSystemInfo)
         : base(fileSystemInfo)
     {
     }
 
-    public new string Name
+    internal override string Name
     {
-        get => base.Name;
+        get => FileSystemInfo.Name;
         set
         {
             Debug.Assert(Exists);
-            if (Parent == null) throw new InvalidOperationException();
-            FileSystemInfo.MoveTo(Path.Combine(Parent, value));
+            Debug.Assert(Parent != null);
+            FileSystemInfo.MoveTo(System.IO.Path.Combine(Parent, value));
         }
     }
 
-    protected new FileInfo FileSystemInfo => FileSystemInfo;
+    private new DirectoryInfo FileSystemInfo => FileSystemInfo;
 
-    public override void Create()
+    internal override void Create()
     {
         Debug.Assert(!Exists);
+        Debug.Assert(Parent != null);
         FileSystemInfo.Create();
     }
 
-    public override void Delete()
+    internal override void Delete()
     {
         Debug.Assert(Exists);
+        Debug.Assert(Parent != null);
         FileSystemInfo.Delete();
     }
 }

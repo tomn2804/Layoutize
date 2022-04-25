@@ -7,29 +7,39 @@ namespace Layoutize;
 
 public abstract class Layout
 {
-    protected Layout(IDictionary attributes)
+    private protected Layout(IEnumerable attributes)
     {
         Attributes = attributes switch
         {
-            ImmutableDictionary<object, object> dictionary => dictionary,
-            IDictionary<object, object> dictionary => dictionary.ToImmutableDictionary(),
-            _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!),
+            IImmutableDictionary<object, object> dictionary => dictionary,
+            IEnumerable<KeyValuePair<object, object>> entries => entries.ToImmutableDictionary(),
+            _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!)
         };
     }
 
-    public ImmutableDictionary<object, object> Attributes { get; }
+    public IImmutableDictionary<object, object> Attributes { get; }
 
-    protected internal abstract Element CreateElement();
+    internal abstract Element CreateElement();
 }
 
-public abstract class StatelessLayout : Layout
+public abstract class ComponentLayout : Layout
+{
+    private protected ComponentLayout(IDictionary attributes)
+        : base(attributes)
+    {
+    }
+
+    internal abstract override ComponentElement CreateElement();
+}
+
+public abstract class StatelessLayout : ComponentLayout
 {
     protected StatelessLayout(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected internal override sealed StatelessElement CreateElement()
+    internal override sealed StatelessElement CreateElement()
     {
         return new(this);
     }
@@ -37,14 +47,14 @@ public abstract class StatelessLayout : Layout
     protected internal abstract Layout Build(IBuildContext context);
 }
 
-public abstract class StatefulLayout : Layout
+public abstract class StatefulLayout : ComponentLayout
 {
     protected StatefulLayout(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected internal override sealed StatefulElement CreateElement()
+    internal override sealed StatefulElement CreateElement()
     {
         return new(this);
     }
@@ -54,37 +64,24 @@ public abstract class StatefulLayout : Layout
 
 public abstract class ViewLayout : Layout
 {
-    protected ViewLayout(IDictionary attributes)
+    private protected ViewLayout(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    protected internal abstract override ViewElement CreateElement();
+    internal abstract override ViewElement CreateElement();
 
-    protected internal abstract View CreateView(IBuildContext context);
+    internal abstract View CreateView(IBuildContext context);
 }
 
 public abstract class ViewGroupLayout : ViewLayout
 {
-    protected ViewGroupLayout(IDictionary attributes)
-        : base(attributes)
+    private protected ViewGroupLayout(IDictionary attributes)
+       : base(attributes)
     {
     }
 
-    protected internal abstract override ViewGroupElement CreateElement();
-}
-
-public sealed class ScopeLayout : Layout
-{
-    public ScopeLayout(IDictionary attributes)
-        : base(attributes)
-    {
-    }
-
-    protected internal override ScopeElement CreateElement()
-    {
-        return new(this);
-    }
+    internal abstract override ViewGroupElement CreateElement();
 }
 
 public sealed class FileLayout : ViewLayout
@@ -94,14 +91,14 @@ public sealed class FileLayout : ViewLayout
     {
     }
 
-    protected internal override FileElement CreateElement()
+    internal override sealed FileElement CreateElement()
     {
         return new(this);
     }
 
-    protected internal override FileView CreateView(IBuildContext context)
+    internal override sealed FileView CreateView(IBuildContext context)
     {
-        throw new System.NotImplementedException();
+        return new(new(System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"])));
     }
 }
 
@@ -112,13 +109,13 @@ public sealed class DirectoryLayout : ViewGroupLayout
     {
     }
 
-    protected internal override DirectoryElement CreateElement()
+    internal override sealed DirectoryElement CreateElement()
     {
         return new(this);
     }
 
-    protected internal override DirectoryView CreateView(IBuildContext context)
+    internal override sealed DirectoryView CreateView(IBuildContext context)
     {
-        throw new System.NotImplementedException();
+        return new(new(System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"])));
     }
 }

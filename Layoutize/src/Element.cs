@@ -1,79 +1,98 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Diagnostics;
 
 namespace Layoutize;
 
-public abstract partial class Element : IBuildContext
+internal abstract partial class Element : IBuildContext
 {
-    public Element? Parent { get; private set; }
+    internal delegate void Visitor(Element element);
 
-    public virtual ImmutableDictionary<object, object> Scope => Parent?.Scope ?? ImmutableDictionary<object, object>.Empty;
+    internal Element? Parent { get; private set; }
 
-    protected Element(Layout layout)
+    internal virtual bool IsMounted => Parent != null;
+
+    Element IBuildContext.Element => this;
+
+    private protected Element(Layout layout)
     {
         _layout = layout;
     }
 
-    protected internal virtual void Mount(Element? parent)
+    internal virtual void MountTo(Element? parent)
     {
         Debug.Assert(!IsDisposed);
+        if (IsMounted) Unmount();
         Parent = parent;
     }
 
-    protected internal virtual void Unmount()
+    internal virtual void Unmount()
     {
         Debug.Assert(!IsDisposed);
         Parent = null;
     }
+
+    internal virtual void VisitParent(Visitor visitor)
+    {
+        Debug.Assert(!IsDisposed);
+        if (Parent != null) visitor(Parent);
+    }
+
+    internal virtual void VisitChildren(Visitor visitor)
+    {
+        Debug.Assert(!IsDisposed);
+        return;
+    }
 }
 
-public abstract partial class Element
+internal abstract partial class Element
 {
-    public event EventHandler? LayoutUpdated;
+    internal event EventHandler? LayoutUpdating;
 
-    public event EventHandler? LayoutUpdating;
+    internal event EventHandler? LayoutUpdated;
 
     private Layout _layout;
 
-    public Layout Layout
+    internal Layout Layout
     {
         get => _layout;
-        internal set
+        set
         {
             Debug.Assert(!IsDisposed);
+            Debug.Assert(IsMounted);
             OnLayoutUpdating(EventArgs.Empty);
             _layout = value;
             OnLayoutUpdated(EventArgs.Empty);
         }
     }
 
-    protected virtual void OnLayoutUpdated(EventArgs e)
+    private protected virtual void OnLayoutUpdating(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
-        LayoutUpdated?.Invoke(this, e);
+        Debug.Assert(IsMounted);
+        LayoutUpdating?.Invoke(this, e);
     }
 
-    protected virtual void OnLayoutUpdating(EventArgs e)
+    private protected virtual void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
-        LayoutUpdating?.Invoke(this, e);
+        Debug.Assert(IsMounted);
+        LayoutUpdated?.Invoke(this, e);
     }
 }
 
-public abstract partial class Element : IDisposable
+internal abstract partial class Element : IDisposable
 {
-    public bool IsDisposed { get; private set; }
+    internal bool IsDisposed { get; private set; }
 
-    protected virtual void Dispose(bool disposing)
+    private protected virtual void Dispose(bool disposing)
     {
         if (!IsDisposed)
         {
             if (disposing)
             {
                 Unmount();
-                LayoutUpdated = null;
                 LayoutUpdating = null;
+                LayoutUpdated = null;
             }
             IsDisposed = true;
         }

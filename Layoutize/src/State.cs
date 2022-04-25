@@ -14,27 +14,27 @@ public abstract partial class State
         Layout = layout;
     }
 
-    public ImmutableDictionary<object, object> Attributes => Layout.Attributes;
+    public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
 
     protected internal abstract Layout Build(IBuildContext context);
 }
 
 public abstract partial class State
 {
-    internal event EventHandler? StateUpdated;
-
     internal event EventHandler? StateUpdating;
 
-    private protected virtual void OnStateUpdated(EventArgs e)
-    {
-        Debug.Assert(!IsDisposed);
-        StateUpdated?.Invoke(this, e);
-    }
+    internal event EventHandler? StateUpdated;
 
     private protected virtual void OnStateUpdating(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
         StateUpdating?.Invoke(this, e);
+    }
+
+    private protected virtual void OnStateUpdated(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        StateUpdated?.Invoke(this, e);
     }
 
     protected void SetState(IDictionary properties)
@@ -66,8 +66,8 @@ public abstract partial class State : IDisposable
         {
             if (disposing)
             {
-                StateUpdated = null;
                 StateUpdating = null;
+                StateUpdated = null;
             }
             IsDisposed = true;
         }

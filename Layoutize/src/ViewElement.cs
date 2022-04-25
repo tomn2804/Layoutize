@@ -2,135 +2,173 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Layoutize;
 
-public abstract class ViewElement : Element
+internal abstract class ViewElement : Element
 {
-    protected View? View { get; private set; }
+    private readonly Lazy<View> _view;
 
-    protected new ViewLayout Layout => Layout;
+    internal View View => _view.Value;
 
-    protected ViewElement(ViewLayout layout)
+    private new ViewLayout Layout => Layout;
+
+    private protected ViewElement(ViewLayout layout)
         : base(layout)
     {
+        _view = new(() => Layout.CreateView(this));
     }
 
-    protected internal override void Mount(Element? parent)
+    internal override void MountTo(Element? parent)
     {
         Debug.Assert(!IsDisposed);
-        base.Mount(parent);
-        View = Layout.CreateView(this);
-        //View.Mount();
+        base.MountTo(parent);
+        if (!View.Exists) View.Create();
     }
 
-    protected internal override void Unmount()
+    internal override void Unmount()
     {
         Debug.Assert(!IsDisposed);
-        //View.Unmount();
+        if (Layout.Attributes.TryGetValue("DeleteOnUnmount", out object? deleteOnUnmountObject) && deleteOnUnmountObject is bool deleteOnUnmount && deleteOnUnmount)
+        {
+            if (View.Exists) View.Delete();
+        }
         base.Unmount();
     }
 
-    protected override void OnLayoutUpdated(EventArgs e)
+    private protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
-        //Debug.Assert(View.IsMounted);
-        //View.Name = (string)Layout.Attributes["Name"];
+        Debug.Assert(IsMounted);
+        View.Name = (string)Layout.Attributes["Name"];
         base.OnLayoutUpdated(e);
     }
 }
 
-public abstract partial class ViewGroupElement : ViewElement
+internal abstract partial class ViewGroupElement : ViewElement
 {
-    protected ViewGroupElement(ViewGroupLayout layout)
+    internal override bool IsMounted => base.IsMounted && Children.All(child => child.IsMounted);
+
+    private protected ViewGroupElement(ViewGroupLayout layout)
         : base(layout)
     {
+        _children = new(() => GetChildrenAttribute());
+    }
+
+    private protected override void OnLayoutUpdated(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
+        Children = GetChildrenAttribute();
+        base.OnLayoutUpdated(e);
+    }
+
+    private IImmutableSet<Element> GetChildrenAttribute()
+    {
+        Debug.Assert(!IsDisposed);
+        if (Layout.Attributes.TryGetValue("Children", out object? childrenObject) && childrenObject is IEnumerable<Layout> children)
+        {
+            return children.Select(layout => layout.CreateElement()).ToImmutableHashSet();
+        }
+        return ImmutableHashSet<Element>.Empty;
+    }
+
+    internal override void VisitChildren(Visitor visitor)
+    {
+        foreach (Element child in Children)
+        {
+            visitor(child);
+        }
+    }
+
+    internal override void MountTo(Element? parent)
+    {
+        Debug.Assert(!IsDisposed);
+        base.MountTo(parent);
+        foreach (Element child in Children)
+        {
+            child.MountTo(this);
+        }
+        Debug.Assert(Children.All(child => child.IsMounted));
+        Debug.Assert(Children.All(child => child.Parent == this));
+    }
+
+    internal override void Unmount()
+    {
+        Debug.Assert(!IsDisposed);
+        foreach (Element child in Children)
+        {
+            child.Unmount();
+        }
+        Debug.Assert(Children.All(child => !child.IsMounted));
+        Debug.Assert(Children.All(child => child.Parent == null));
+        base.Unmount();
     }
 }
 
-public abstract partial class ViewGroupElement
+internal abstract partial class ViewGroupElement
 {
-    private ImmutableHashSet<Element> _children = ImmutableHashSet<Element>.Empty;
+    private Lazy<IImmutableSet<Element>> _children;
 
-    public ImmutableHashSet<Element> Children
+    internal IImmutableSet<Element> Children
     {
-        get => _children;
+        get => _children.Value;
         private protected set
         {
             Debug.Assert(!IsDisposed);
+            Debug.Assert(IsMounted);
             OnChildrenUpdating(EventArgs.Empty);
-            ImmutableHashSet<Element> enteringChildren = value.Except(_children);
-            ImmutableHashSet<Element> exitingChildren = _children.Except(value);
+            IImmutableSet<Element> enteringChildren = value.Except(Children);
+            IImmutableSet<Element> exitingChildren = Children.Except(value);
             foreach (Element exitingChild in exitingChildren)
             {
                 exitingChild.Unmount();
             }
-            _children = value;
+            Debug.Assert(exitingChildren.All(child => !child.IsMounted));
+            Debug.Assert(exitingChildren.All(child => child.Parent == null));
+            _children = new(() => value);
             foreach (Element enteringChild in enteringChildren)
             {
-                enteringChild.Mount(this);
+                enteringChild.MountTo(this);
             }
+            Debug.Assert(Children.All(child => child.IsMounted));
+            Debug.Assert(Children.All(child => child.Parent == this));
             OnChildrenUpdated(EventArgs.Empty);
         }
     }
 
-    public event EventHandler? ChildrenUpdating;
+    internal event EventHandler? ChildrenUpdating;
 
-    public event EventHandler? ChildrenUpdated;
+    internal event EventHandler? ChildrenUpdated;
 
-    protected virtual void OnChildrenUpdating(EventArgs e)
+    private protected virtual void OnChildrenUpdating(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         ChildrenUpdating?.Invoke(this, e);
     }
 
-    protected virtual void OnChildrenUpdated(EventArgs e)
+    private protected virtual void OnChildrenUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         ChildrenUpdated?.Invoke(this, e);
     }
 }
 
-public class FileElement : ViewElement
+internal class FileElement : ViewElement
 {
-    protected new FileLayout Layout => Layout;
-
-    protected new FileView? View => View;
-
-    protected FileElement(FileLayout layout)
+    internal FileElement(FileLayout layout)
         : base(layout)
     {
     }
 }
 
-public class DirectoryElement : ViewGroupElement
+internal class DirectoryElement : ViewGroupElement
 {
-    protected new DirectoryLayout Layout => Layout;
-
-    protected new DirectoryView? View => View;
-
-    protected DirectoryElement(DirectoryLayout layout)
+    internal DirectoryElement(DirectoryLayout layout)
         : base(layout)
     {
-    }
-
-    protected internal override void Mount(Element? parent)
-    {
-        Debug.Assert(!IsDisposed);
-        Debug.Assert(View != null);
-        if (Layout.Attributes.TryGetValue("Children", out object? childrenObject) && childrenObject is IEnumerable<Layout> children)
-        {
-            View.Mounted += (sender, e) =>
-            {
-                Children = Children.Union(children.Select(layout =>
-                {
-                    ImmutableDictionary<object, object>.Builder scope = ImmutableDictionary.CreateBuilder();
-                    scope.Add("Path", View.FullName);
-                    scope.Add("Child", layout);
-                    return new ScopeLayout(scope).CreateElement();
-                }));
-            };
-        }
-        base.Mount(parent);
     }
 }

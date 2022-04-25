@@ -2,20 +2,24 @@
 
 namespace Layoutize;
 
-public abstract class View
+internal abstract class View
 {
-    protected View(FileSystemInfo fileSystemInfo)
+    private protected View(FileSystemInfo fileSystemInfo)
     {
         FileSystemInfo = fileSystemInfo;
     }
 
-    public bool Exists => FileSystemInfo.Exists;
+    internal bool Exists => FileSystemInfo.Exists;
 
-    public string FullName => FileSystemInfo.FullName;
+    internal string FullName => FileSystemInfo.FullName;
 
-    public string? Parent => Path.GetDirectoryName(FullName);
+    internal string? Parent => System.IO.Path.GetDirectoryName(FullName);
 
-    public string Name => FileSystemInfo.Name;
+    internal abstract string Name { get; set; }
 
-    protected FileSystemInfo FileSystemInfo { get; }
+    private protected FileSystemInfo FileSystemInfo { get; }
+
+    internal abstract void Create();
+
+    internal abstract void Delete();
 }

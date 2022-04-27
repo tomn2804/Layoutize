@@ -70,7 +70,7 @@ internal abstract partial class ViewGroupElement : ViewElement
         Debug.Assert(!IsDisposed);
         if (Layout.Attributes.TryGetValue("Children", out object? childrenObject))
         {
-            IEnumerable<Layout> children = (IEnumerable<Layout>)childrenObject;
+            IEnumerable<Layout> children = ((IEnumerable<object>)childrenObject).Cast<Layout>();
             return children.Select(layout => layout.CreateElement()).ToImmutableHashSet();
         }
         return ImmutableHashSet<Element>.Empty;

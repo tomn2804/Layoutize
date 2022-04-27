@@ -5,8 +5,6 @@ namespace Layoutize;
 
 public class Tree
 {
-    private Element Root { get; }
-
     public Tree(Layout layout)
     {
         Root = layout.CreateElement();
@@ -27,4 +25,6 @@ public class Tree
     {
         Root.Unmount();
     }
+
+    private Element Root { get; }
 }

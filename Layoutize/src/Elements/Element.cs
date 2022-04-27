@@ -8,6 +8,7 @@ internal abstract partial class Element
     internal delegate void Visitor(Element element);
 
     internal virtual bool IsMounted => Parent != null;
+
     internal Element? Parent { get; private set; }
 
     internal virtual void MountTo(Element? parent)

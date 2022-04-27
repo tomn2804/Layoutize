@@ -22,6 +22,7 @@
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
+    <Compile Include="src\Tree.cs" />
     <Compile Include="src\Utils\Path.cs" />
     <Compile Include="src\FileLayout.cs" />
     <Compile Include="src\StatefulLayout.cs" />

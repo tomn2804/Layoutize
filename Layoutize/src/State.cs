@@ -9,6 +9,7 @@ namespace Layoutize;
 public abstract partial class State
 {
     public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
+
     internal StatefulLayout Layout { get; set; }
 
     protected internal abstract Layout Build(IBuildContext context);

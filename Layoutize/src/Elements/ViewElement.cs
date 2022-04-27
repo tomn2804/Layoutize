@@ -41,5 +41,6 @@ internal abstract class ViewElement : Element
     }
 
     private readonly Lazy<View> _view;
+
     private new ViewLayout Layout => Layout;
 }

@@ -17,7 +17,7 @@ internal sealed class FileView : View
         {
             Debug.Assert(Exists);
             Debug.Assert(Parent != null);
-            FileSystemInfo.MoveTo(Path.Combine(Parent, value));
+            FileInfo.MoveTo(Path.Combine(Parent, value));
         }
     }
 
@@ -25,15 +25,15 @@ internal sealed class FileView : View
     {
         Debug.Assert(!Exists);
         Debug.Assert(Parent != null);
-        FileSystemInfo.Create();
+        FileInfo.Create().Dispose();
     }
 
     internal override sealed void Delete()
     {
         Debug.Assert(Exists);
         Debug.Assert(Parent != null);
-        FileSystemInfo.Delete();
+        FileInfo.Delete();
     }
 
-    private new FileInfo FileSystemInfo => FileSystemInfo;
+    private FileInfo FileInfo => (FileInfo)FileSystemInfo;
 }

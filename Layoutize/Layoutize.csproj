@@ -13,16 +13,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\ComponentElement.cs" />
-    <Compile Include="src\Element.cs" />
-    <Compile Include="src\FileSystemView.cs" />
-    <Compile Include="src\IBuildContext.cs" />
+    <Compile Include="src\ComponentLayout.cs" />
+    <Compile Include="src\DirectoryLayout.cs" />
+    <Compile Include="src\Elements\ComponentElement.cs" />
+    <Compile Include="src\Elements\DirectoryElement.cs" />
+    <Compile Include="src\Elements\Element.cs" />
+    <Compile Include="src\Elements\FileElement.cs" />
+    <Compile Include="src\Elements\StatefulElement.cs" />
+    <Compile Include="src\Elements\StatelessElement.cs" />
+    <Compile Include="src\Elements\ViewGroupElement.cs" />
+    <Compile Include="src\Utils\Path.cs" />
+    <Compile Include="src\FileLayout.cs" />
+    <Compile Include="src\StatefulLayout.cs" />
+    <Compile Include="src\StatelessLayout.cs" />
+    <Compile Include="src\ViewGroupLayout.cs" />
+    <Compile Include="src\ViewLayout.cs" />
+    <Compile Include="src\Views\DirectoryView.cs" />
+    <Compile Include="src\Views\FileView.cs" />
+    <Compile Include="src\Elements\IBuildContext.cs" />
     <Compile Include="src\Layout.cs" />
     <Compile Include="src\State.cs" />
-    <Compile Include="src\TextEditor.cs" />
-    <Compile Include="src\Tree.cs" />
-    <Compile Include="src\View.cs" />
-    <Compile Include="src\ViewElement.cs" />
+    <Compile Include="src\Utils\TextEditor.cs" />
+    <Compile Include="src\Views\View.cs" />
+    <Compile Include="src\Elements\ViewElement.cs" />
   </ItemGroup>
 
   <ItemGroup>

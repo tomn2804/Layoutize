@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace Layoutize;
+namespace Layoutize.Elements;
 
-internal abstract partial class Element : IBuildContext
+internal abstract partial class Element
 {
     internal delegate void Visitor(Element element);
 
-    internal Element? Parent { get; private set; }
-
     internal virtual bool IsMounted => Parent != null;
-
-    Element IBuildContext.Element => this;
-
-    private protected Element(Layout layout)
-    {
-        _layout = layout;
-    }
+    internal Element? Parent { get; private set; }
 
     internal virtual void MountTo(Element? parent)
     {
@@ -31,26 +23,29 @@ internal abstract partial class Element : IBuildContext
         Parent = null;
     }
 
+    internal virtual void VisitChildren(Visitor visitor)
+    {
+        Debug.Assert(!IsDisposed);
+        return;
+    }
+
     internal virtual void VisitParent(Visitor visitor)
     {
         Debug.Assert(!IsDisposed);
         if (Parent != null) visitor(Parent);
     }
 
-    internal virtual void VisitChildren(Visitor visitor)
+    private protected Element(Layout layout)
     {
-        Debug.Assert(!IsDisposed);
-        return;
+        _layout = layout;
     }
 }
 
 internal abstract partial class Element
 {
-    internal event EventHandler? LayoutUpdating;
-
     internal event EventHandler? LayoutUpdated;
 
-    private Layout _layout;
+    internal event EventHandler? LayoutUpdating;
 
     internal Layout Layout
     {
@@ -65,6 +60,13 @@ internal abstract partial class Element
         }
     }
 
+    private protected virtual void OnLayoutUpdated(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
+        LayoutUpdated?.Invoke(this, e);
+    }
+
     private protected virtual void OnLayoutUpdating(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
@@ -72,16 +74,22 @@ internal abstract partial class Element
         LayoutUpdating?.Invoke(this, e);
     }
 
-    private protected virtual void OnLayoutUpdated(EventArgs e)
-    {
-        Debug.Assert(!IsDisposed);
-        Debug.Assert(IsMounted);
-        LayoutUpdated?.Invoke(this, e);
-    }
+    private Layout _layout;
+}
+
+internal abstract partial class Element : IBuildContext
+{
+    Element IBuildContext.Element => this;
 }
 
 internal abstract partial class Element : IDisposable
 {
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     internal bool IsDisposed { get; private set; }
 
     private protected virtual void Dispose(bool disposing)
@@ -96,11 +104,5 @@ internal abstract partial class Element : IDisposable
             }
             IsDisposed = true;
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

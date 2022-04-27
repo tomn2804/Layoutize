@@ -1,11 +1,7 @@
-﻿using System.IO;
+﻿using Layoutize.Elements;
+using System.IO;
 
-namespace Layoutize;
-
-public interface IBuildContext
-{
-    internal Element Element { get; }
-}
+namespace Layoutize.Utils;
 
 internal static class Path
 {

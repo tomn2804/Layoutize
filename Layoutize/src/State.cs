@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Layoutize.Elements;
+using System;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -7,34 +8,33 @@ namespace Layoutize;
 
 public abstract partial class State
 {
+    public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
     internal StatefulLayout Layout { get; set; }
+
+    protected internal abstract Layout Build(IBuildContext context);
 
     protected State(StatefulLayout layout)
     {
         Layout = layout;
     }
-
-    public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
-
-    protected internal abstract Layout Build(IBuildContext context);
 }
 
 public abstract partial class State
 {
-    internal event EventHandler? StateUpdating;
-
     internal event EventHandler? StateUpdated;
 
-    private protected virtual void OnStateUpdating(EventArgs e)
-    {
-        Debug.Assert(!IsDisposed);
-        StateUpdating?.Invoke(this, e);
-    }
+    internal event EventHandler? StateUpdating;
 
     private protected virtual void OnStateUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
         StateUpdated?.Invoke(this, e);
+    }
+
+    private protected virtual void OnStateUpdating(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        StateUpdating?.Invoke(this, e);
     }
 
     protected void SetState(IDictionary properties)

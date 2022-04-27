@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Layoutize;
+namespace Layoutize.Utils;
 
 public static class TextEditor
 {

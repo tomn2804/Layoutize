@@ -29,7 +29,7 @@ internal abstract class ViewElement : Element
     private protected ViewElement(ViewLayout layout)
         : base(layout)
     {
-        _view = new(() => layout.CreateView(this));
+        _view = new(() => ViewLayout.CreateView(this));
     }
 
     private protected override void OnLayoutUpdated(EventArgs e)
@@ -41,4 +41,6 @@ internal abstract class ViewElement : Element
     }
 
     private readonly Lazy<View> _view;
+
+    private ViewLayout ViewLayout => (ViewLayout)Layout;
 }

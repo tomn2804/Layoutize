@@ -10,11 +10,6 @@ public class Tree
         Root = layout.CreateElement();
     }
 
-    public void Mount()
-    {
-        Root.MountTo(null);
-    }
-
     public void MountTo(string path)
     {
         Directory.SetCurrentDirectory(path);

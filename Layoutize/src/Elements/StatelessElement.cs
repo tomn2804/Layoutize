@@ -12,8 +12,8 @@ internal sealed class StatelessElement : ComponentElement
     private protected override sealed Layout Build()
     {
         Debug.Assert(!IsDisposed);
-        return Layout.Build(this);
+        return StatelessLayout.Build(this);
     }
 
-    private new StatelessLayout Layout => Layout;
+    private StatelessLayout StatelessLayout => (StatelessLayout)Layout;
 }

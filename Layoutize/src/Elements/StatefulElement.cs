@@ -8,8 +8,8 @@ internal sealed class StatefulElement : ComponentElement
     internal StatefulElement(StatefulLayout layout)
         : base(layout)
     {
-        State = Layout.CreateState();
-        State.StateUpdating += UpdateChild;
+        State = StatefulLayout.CreateState();
+        State.StateUpdated += UpdateChild;
     }
 
     private protected override Layout Build()
@@ -31,13 +31,13 @@ internal sealed class StatefulElement : ComponentElement
     {
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
-        State.Layout = Layout;
+        State.Layout = StatefulLayout;
         base.OnLayoutUpdated(e);
     }
 
-    private new StatefulLayout Layout => Layout;
-
     private State State { get; }
+
+    private StatefulLayout StatefulLayout => (StatefulLayout)Layout;
 
     private void UpdateChild(object? sender, EventArgs e)
     {

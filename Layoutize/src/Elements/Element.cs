@@ -7,7 +7,7 @@ internal abstract partial class Element
 {
     internal delegate void Visitor(Element element);
 
-    internal virtual bool IsMounted => Parent != null;
+    internal virtual bool IsMounted { get; private set; }
 
     internal Element? Parent { get; private set; }
 
@@ -16,12 +16,14 @@ internal abstract partial class Element
         Debug.Assert(!IsDisposed);
         if (IsMounted) Unmount();
         Parent = parent;
+        IsMounted = true;
     }
 
     internal virtual void Unmount()
     {
         Debug.Assert(!IsDisposed);
         Parent = null;
+        IsMounted = false;
     }
 
     internal virtual void VisitChildren(Visitor visitor)

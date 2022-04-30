@@ -6,7 +6,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-    internal View View => _view.Value;
+    internal override View View => _view.Value;
 
     internal override void MountTo(Element? parent)
     {

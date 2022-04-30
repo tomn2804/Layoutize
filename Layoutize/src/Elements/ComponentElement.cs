@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Layoutize.Views;
+using System;
 using System.Diagnostics;
 
 namespace Layoutize.Elements;
@@ -19,6 +20,8 @@ internal abstract partial class ComponentElement : Element
         }
     }
 
+    internal override View View => Child.View;
+
     internal override void MountTo(Element? parent)
     {
         Debug.Assert(!IsDisposed);
@@ -35,11 +38,6 @@ internal abstract partial class ComponentElement : Element
         Debug.Assert(!Child.IsMounted);
         Debug.Assert(Child.Parent == null);
         base.Unmount();
-    }
-
-    internal override void VisitChildren(Visitor visitor)
-    {
-        visitor(Child);
     }
 
     private protected ComponentElement(Layout layout)

@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Layoutize.Views;
+using System;
 using System.Diagnostics;
 
 namespace Layoutize.Elements;
 
 internal abstract partial class Element
 {
-    internal delegate void Visitor(Element element);
-
     internal virtual bool IsMounted { get; private set; }
 
     internal Element? Parent { get; private set; }
+
+    internal abstract View View { get; }
 
     internal virtual void MountTo(Element? parent)
     {
@@ -24,18 +25,6 @@ internal abstract partial class Element
         Debug.Assert(!IsDisposed);
         Parent = null;
         IsMounted = false;
-    }
-
-    internal virtual void VisitChildren(Visitor visitor)
-    {
-        Debug.Assert(!IsDisposed);
-        return;
-    }
-
-    internal virtual void VisitParent(Visitor visitor)
-    {
-        Debug.Assert(!IsDisposed);
-        if (Parent != null) visitor(Parent);
     }
 
     private protected Element(Layout layout)

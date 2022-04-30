@@ -26,7 +26,10 @@ internal abstract partial class ViewGroupElement : ViewElement
     {
         Debug.Assert(!IsDisposed);
         base.MountTo(parent);
-        VisitChildren(child => child.MountTo(this));
+        foreach (Element child in Children)
+        {
+            child.MountTo(this);
+        }
         Debug.Assert(Children.All(child => child.IsMounted));
         Debug.Assert(Children.All(child => child.Parent == this));
     }
@@ -34,21 +37,13 @@ internal abstract partial class ViewGroupElement : ViewElement
     internal override void Unmount()
     {
         Debug.Assert(!IsDisposed);
-        VisitChildren(child =>
+        foreach (Element child in Children)
         {
             if (child.IsMounted) child.Unmount();
-        });
+        }
         Debug.Assert(Children.All(child => !child.IsMounted));
         Debug.Assert(Children.All(child => child.Parent == null));
         base.Unmount();
-    }
-
-    internal override void VisitChildren(Visitor visitor)
-    {
-        foreach (Element child in Children)
-        {
-            visitor(child);
-        }
     }
 
     private protected ViewGroupElement(ViewGroupLayout layout)

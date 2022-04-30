@@ -15,6 +15,7 @@
   <ItemGroup>
     <Compile Include="src\ComponentLayout.cs" />
     <Compile Include="src\DirectoryLayout.cs" />
+    <Compile Include="src\DismountLayoutCmdlet.cs" />
     <Compile Include="src\Elements\ComponentElement.cs" />
     <Compile Include="src\Elements\DirectoryElement.cs" />
     <Compile Include="src\Elements\Element.cs" />
@@ -22,6 +23,7 @@
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
+    <Compile Include="src\MountLayoutCmdlet.cs" />
     <Compile Include="src\Tree.cs" />
     <Compile Include="src\Utils\Path.cs" />
     <Compile Include="src\FileLayout.cs" />

@@ -8,15 +8,21 @@ internal static class Path
     internal static string Of(IBuildContext context)
     {
         string path = Directory.GetCurrentDirectory();
-        void visitParent(Element? element)
+        void visitParent(Element element)
         {
-            if (element is ViewElement parent)
+            Element? parent = element.Parent;
+            switch (parent)
             {
-                path = parent.View.FullName;
-            }
-            else
-            {
-                visitParent(element?.Parent);
+                case ViewElement:
+                    path = parent.View.FullName;
+                    return;
+
+                case Element:
+                    visitParent(parent);
+                    return;
+
+                default:
+                    return;
             }
         }
         visitParent(context.Element);

@@ -19,6 +19,8 @@
 
   <ItemGroup>
     <Compile Include="src\DirectoryLayoutTests.cs" />
+    <Compile Include="src\WorkingDirectoryCollection.cs" />
+    <Compile Include="src\WorkingDirectoryFixture.cs" />
   </ItemGroup>
 
   <ItemGroup>

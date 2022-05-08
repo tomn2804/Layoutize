@@ -5,8 +5,8 @@ namespace Layoutize.Views;
 
 internal sealed class FileView : View
 {
-    internal FileView(FileInfo fileSystemInfo)
-        : base(fileSystemInfo)
+    internal FileView(FileInfo fileInfo)
+        : base(fileInfo)
     {
     }
 

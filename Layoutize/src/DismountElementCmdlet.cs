@@ -1,10 +1,11 @@
 ﻿using Layoutize.Elements;
+using System.Diagnostics;
 using System.Management.Automation;
 
 namespace Layoutize;
 
-[Cmdlet(VerbsData.Dismount, "Layout")]
-public class DismountLayoutCmdlet : Cmdlet
+[Cmdlet(VerbsData.Dismount, "Element")]
+public class DismountElementCmdlet : Cmdlet
 {
     [Parameter(Mandatory = true)]
     [ValidateNotNull]
@@ -13,7 +14,10 @@ public class DismountLayoutCmdlet : Cmdlet
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
-        Context.Element.Unmount();
+        Element element = Context.Element;
+        element.Dispose();
+        Debug.Assert(element.IsDisposed);
+        Debug.Assert(!element.IsMounted);
         WriteObject(Context);
     }
 }

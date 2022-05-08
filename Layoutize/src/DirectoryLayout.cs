@@ -19,7 +19,9 @@ public sealed class DirectoryLayout : ViewGroupLayout
 
     internal override sealed DirectoryView CreateView(IBuildContext context)
     {
-        string fullName = System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
+        string fullName = Attributes.TryGetValue("FullName", out object? fullNameObject)
+            ? (string)fullNameObject!
+            : System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
         return new(new(fullName));
     }
 }

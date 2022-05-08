@@ -5,8 +5,8 @@ namespace Layoutize.Views;
 
 internal sealed class DirectoryView : View
 {
-    internal DirectoryView(DirectoryInfo fileSystemInfo)
-        : base(fileSystemInfo)
+    internal DirectoryView(DirectoryInfo directoryInfo)
+        : base(directoryInfo)
     {
     }
 
@@ -32,7 +32,7 @@ internal sealed class DirectoryView : View
     {
         Debug.Assert(Exists);
         Debug.Assert(Parent != null);
-        DirectoryInfo.Delete();
+        DirectoryInfo.Delete(true);
     }
 
     private DirectoryInfo DirectoryInfo => (DirectoryInfo)FileSystemInfo;

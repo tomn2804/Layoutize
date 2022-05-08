@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\TreeTests.cs" />
+    <Compile Include="src\DirectoryLayoutTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,8 @@
-﻿namespace Layoutize.Elements;
+﻿using System;
 
-public interface IBuildContext
+namespace Layoutize.Elements;
+
+public interface IBuildContext : IDisposable
 {
     internal Element Element { get; }
 }

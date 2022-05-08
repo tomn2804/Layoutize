@@ -1,5 +1,5 @@
 ﻿using Layoutize.Elements;
-using System.IO;
+using System.Diagnostics;
 
 namespace Layoutize.Utils;
 
@@ -7,7 +7,7 @@ internal static class Path
 {
     internal static string Of(IBuildContext context)
     {
-        string path = Directory.GetCurrentDirectory();
+        string path = null!;
         void visitParent(Element element)
         {
             Element? parent = element.Parent;
@@ -26,6 +26,7 @@ internal static class Path
             }
         }
         visitParent(context.Element);
+        Debug.Assert(path != null);
         return path;
     }
 }

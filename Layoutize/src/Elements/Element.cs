@@ -72,10 +72,7 @@ internal abstract partial class Element
 internal abstract partial class Element : IBuildContext
 {
     Element IBuildContext.Element => this;
-}
 
-internal abstract partial class Element : IDisposable
-{
     public void Dispose()
     {
         Dispose(true);

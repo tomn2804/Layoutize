@@ -5,8 +5,6 @@ namespace Layoutize.Elements;
 
 internal sealed class StatefulElement : ComponentElement
 {
-    private static UpdateComparer Comparer { get; } = new();
-
     internal StatefulElement(StatefulLayout layout)
         : base(layout)
     {
@@ -37,6 +35,8 @@ internal sealed class StatefulElement : ComponentElement
         base.OnLayoutUpdated(e);
     }
 
+    private static new UpdateComparer UpdateComparer { get; } = new();
+
     private State State { get; }
 
     private StatefulLayout StatefulLayout => (StatefulLayout)Layout;
@@ -46,7 +46,7 @@ internal sealed class StatefulElement : ComponentElement
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         Element newChild = Build().CreateElement();
-        if (Comparer.Equals(Child, newChild))
+        if (UpdateComparer.Equals(Child, newChild))
         {
             Child.Layout = newChild.Layout;
         }

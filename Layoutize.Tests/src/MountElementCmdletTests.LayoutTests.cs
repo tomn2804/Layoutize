@@ -26,5 +26,4 @@ public partial class MountElementCmdletTests
 
         private protected DirectoryInfo WorkingDirectory { get; }
     }
-
 }

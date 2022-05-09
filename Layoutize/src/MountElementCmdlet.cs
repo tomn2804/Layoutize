@@ -21,17 +21,17 @@ public class MountElementCmdlet : Cmdlet
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
-        DirectoryInfo directoryInfo = new(Path);
+        DirectoryInfo rootDirectory = Directory.CreateDirectory(Path);
         ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
         {
-            KeyValuePair.Create<object, object>("Name", directoryInfo.Name),
-            KeyValuePair.Create<object, object>("Path", directoryInfo.Parent?.FullName ?? string.Empty),
+            KeyValuePair.Create<object, object>("Name", rootDirectory.Name),
+            KeyValuePair.Create<object, object>("Path", rootDirectory.Parent?.FullName ?? string.Empty),
             KeyValuePair.Create<object, object>("Children", Layout)
         });
-        DirectoryElement element = new RootDirectoryLayout(attributes).CreateElement();
-        element.MountTo(null);
-        Debug.Assert(!element.IsDisposed);
-        Debug.Assert(element.IsMounted);
-        WriteObject(element);
+        DirectoryElement rootElement = new RootDirectoryLayout(attributes).CreateElement();
+        rootElement.Mount(null);
+        Debug.Assert(!rootElement.IsDisposed);
+        Debug.Assert(rootElement.IsMounted);
+        WriteObject(rootElement);
     }
 }

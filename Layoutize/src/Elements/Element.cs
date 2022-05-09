@@ -7,28 +7,13 @@ namespace Layoutize.Elements;
 
 internal abstract partial class Element
 {
-    internal string Name => (string)Layout.Attributes["Name"];
-
     internal virtual bool IsMounted { get; private set; }
+
+    internal string Name => (string)Layout.Attributes["Name"];
 
     internal Element? Parent { get; private set; }
 
     internal abstract View View { get; }
-
-    internal virtual void MountTo(Element? parent)
-    {
-        Debug.Assert(!IsDisposed);
-        if (IsMounted) Unmount();
-        Parent = parent;
-        IsMounted = true;
-    }
-
-    internal virtual void Unmount()
-    {
-        Debug.Assert(!IsDisposed);
-        Parent = null;
-        IsMounted = false;
-    }
 
     private protected Element(Layout layout)
     {
@@ -73,6 +58,67 @@ internal abstract partial class Element
     private Layout _layout;
 }
 
+internal abstract partial class Element
+{
+    internal event EventHandler? Mounted;
+
+    internal event EventHandler? Mounting;
+
+    internal void Mount(Element? parent)
+    {
+        Debug.Assert(!IsDisposed);
+        if (IsMounted) Unmount();
+        Parent = parent;
+        OnMounting(EventArgs.Empty);
+        IsMounted = true;
+        OnMounted(EventArgs.Empty);
+    }
+
+    private protected virtual void OnMounted(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
+        Mounted?.Invoke(this, e);
+    }
+
+    private protected virtual void OnMounting(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
+        Mounting?.Invoke(this, e);
+    }
+}
+
+internal abstract partial class Element
+{
+    internal event EventHandler? Unmounted;
+
+    internal event EventHandler? Unmounting;
+
+    internal void Unmount()
+    {
+        Debug.Assert(!IsDisposed);
+        OnUnmounting(EventArgs.Empty);
+        Parent = null;
+        IsMounted = false;
+        OnUnmounted(EventArgs.Empty);
+    }
+
+    private protected virtual void OnUnmounted(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
+        Unmounted?.Invoke(this, e);
+    }
+
+    private protected virtual void OnUnmounting(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
+        Unmounting?.Invoke(this, e);
+    }
+}
+
 internal abstract partial class Element : IBuildContext
 {
     Element IBuildContext.Element => this;
@@ -94,6 +140,10 @@ internal abstract partial class Element : IBuildContext
                 Unmount();
                 LayoutUpdating = null;
                 LayoutUpdated = null;
+                Mounting = null;
+                Mounted = null;
+                Unmounting = null;
+                Unmounted = null;
             }
             IsDisposed = true;
         }
@@ -110,7 +160,7 @@ internal abstract partial class Element : IComparable<Element>
 
 internal abstract partial class Element
 {
-    private protected sealed partial class UpdateComparer : IEqualityComparer<Element>
+    protected sealed partial class UpdateComparer : IEqualityComparer<Element>
     {
         public bool Equals(Element? x, Element? y)
         {

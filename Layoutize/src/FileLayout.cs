@@ -2,6 +2,7 @@
 using Layoutize.Utils;
 using Layoutize.Views;
 using System.Collections;
+using System.Diagnostics;
 
 namespace Layoutize;
 
@@ -19,6 +20,7 @@ public class FileLayout : ViewLayout
 
     internal override FileView CreateView(IBuildContext context)
     {
+        Debug.Assert(context.Element.Parent != null);
         string fullName = System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
         return new(new(fullName));
     }

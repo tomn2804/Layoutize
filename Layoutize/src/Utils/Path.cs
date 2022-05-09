@@ -11,17 +11,15 @@ internal static class Path
         void visitParent(Element element)
         {
             Element? parent = element.Parent;
+            Debug.Assert(parent != null);
             switch (parent)
             {
                 case ViewElement:
                     path = parent.View.FullName;
                     return;
 
-                case Element:
-                    visitParent(parent);
-                    return;
-
                 default:
+                    visitParent(parent);
                     return;
             }
         }

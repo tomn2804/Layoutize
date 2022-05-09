@@ -17,6 +17,7 @@ public abstract partial class State
     protected State(StatefulLayout layout)
     {
         Layout = layout;
+        Debug.Assert(Attributes.ContainsKey("Name"));
     }
 }
 

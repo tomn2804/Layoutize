@@ -22,24 +22,6 @@ internal abstract partial class ComponentElement : Element
 
     internal override View View => Child.View;
 
-    internal override void MountTo(Element? parent)
-    {
-        Debug.Assert(!IsDisposed);
-        base.MountTo(parent);
-        Child.MountTo(this);
-        Debug.Assert(Child.IsMounted);
-        Debug.Assert(Child.Parent == this);
-    }
-
-    internal override void Unmount()
-    {
-        Debug.Assert(!IsDisposed);
-        if (Child.IsMounted) Child.Unmount();
-        Debug.Assert(!Child.IsMounted);
-        Debug.Assert(Child.Parent == null);
-        base.Unmount();
-    }
-
     private protected ComponentElement(Layout layout)
         : base(layout)
     {
@@ -64,6 +46,24 @@ internal abstract partial class ComponentElement : Element
         Child.Layout = Build();
         base.OnLayoutUpdated(e);
     }
+
+    private protected override void OnMounting(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        base.OnMounting(e);
+        Child.Mount(this);
+        Debug.Assert(Child.IsMounted);
+        Debug.Assert(Child.Parent == this);
+    }
+
+    private protected override void OnUnmounting(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        base.OnUnmounting(e);
+        if (Child.IsMounted) Child.Unmount();
+        Debug.Assert(!Child.IsMounted);
+        Debug.Assert(Child.Parent == null);
+    }
 }
 
 internal abstract partial class ComponentElement
@@ -82,7 +82,7 @@ internal abstract partial class ComponentElement
             OnChildUpdating(EventArgs.Empty);
             Child.Unmount();
             _child = new(() => value);
-            Child.MountTo(this);
+            Child.Mount(this);
             OnChildUpdated(EventArgs.Empty);
             Debug.Assert(Child.IsMounted);
             Debug.Assert(Child.Parent == this);

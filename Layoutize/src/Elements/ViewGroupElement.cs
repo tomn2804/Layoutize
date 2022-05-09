@@ -8,8 +8,6 @@ namespace Layoutize.Elements;
 
 internal abstract partial class ViewGroupElement : ViewElement
 {
-    private static UpdateComparer Comparer { get; } = new();
-
     internal override bool IsMounted
     {
         get
@@ -22,30 +20,6 @@ internal abstract partial class ViewGroupElement : ViewElement
             }
             return false;
         }
-    }
-
-    internal override void MountTo(Element? parent)
-    {
-        Debug.Assert(!IsDisposed);
-        base.MountTo(parent);
-        foreach (Element child in Children)
-        {
-            child.MountTo(this);
-        }
-        Debug.Assert(Children.All(child => child.IsMounted));
-        Debug.Assert(Children.All(child => child.Parent == this));
-    }
-
-    internal override void Unmount()
-    {
-        Debug.Assert(!IsDisposed);
-        foreach (Element child in Children)
-        {
-            if (child.IsMounted) child.Unmount();
-        }
-        Debug.Assert(Children.All(child => !child.IsMounted));
-        Debug.Assert(Children.All(child => child.Parent == null));
-        base.Unmount();
     }
 
     private protected ViewGroupElement(ViewGroupLayout layout)
@@ -61,7 +35,7 @@ internal abstract partial class ViewGroupElement : ViewElement
         ImmutableSortedSet<Element>.Builder newChildrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
         foreach (Element newChild in GetChildrenAttribute())
         {
-            if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
+            if (Children.TryGetValue(newChild, out Element? currentChild) && UpdateComparer.Equals(currentChild, newChild))
             {
                 currentChild.Layout = newChild.Layout;
                 newChildrenBuilder.Add(currentChild);
@@ -77,6 +51,32 @@ internal abstract partial class ViewGroupElement : ViewElement
         }
         base.OnLayoutUpdated(e);
     }
+
+    private protected override void OnMounting(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        base.OnMounting(e);
+        foreach (Element child in Children)
+        {
+            child.Mount(this);
+        }
+        Debug.Assert(Children.All(child => child.IsMounted));
+        Debug.Assert(Children.All(child => child.Parent == this));
+    }
+
+    private protected override void OnUnmounting(EventArgs e)
+    {
+        Debug.Assert(!IsDisposed);
+        base.OnUnmounting(e);
+        foreach (Element child in Children)
+        {
+            if (child.IsMounted) child.Unmount();
+        }
+        Debug.Assert(Children.All(child => !child.IsMounted));
+        Debug.Assert(Children.All(child => child.Parent == null));
+    }
+
+    private static new UpdateComparer UpdateComparer { get; } = new();
 
     private ImmutableSortedSet<Element> GetChildrenAttribute()
     {
@@ -121,7 +121,7 @@ internal abstract partial class ViewGroupElement
             _children = new(() => value);
             foreach (Element enteringChild in enteringChildren)
             {
-                enteringChild.MountTo(this);
+                enteringChild.Mount(this);
             }
             Debug.Assert(Children.All(child => child.IsMounted));
             Debug.Assert(Children.All(child => child.Parent == this));

@@ -36,7 +36,6 @@
     <Compile Include="src\Elements\IBuildContext.cs" />
     <Compile Include="src\Layout.cs" />
     <Compile Include="src\State.cs" />
-    <Compile Include="src\Utils\TextEditor.cs" />
     <Compile Include="src\Views\View.cs" />
     <Compile Include="src\Elements\ViewElement.cs" />
   </ItemGroup>

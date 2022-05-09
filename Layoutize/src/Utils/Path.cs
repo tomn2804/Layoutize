@@ -7,6 +7,7 @@ internal static class Path
 {
     internal static string Of(IBuildContext context)
     {
+        Debug.Assert(context.Element.Parent != null);
         string path = null!;
         void visitParent(Element element)
         {

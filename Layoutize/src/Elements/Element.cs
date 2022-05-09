@@ -1,12 +1,17 @@
 ﻿using Layoutize.Views;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Layoutize.Elements;
 
 internal abstract partial class Element
 {
+    private protected Element(Layout layout)
+    {
+        Debug.Assert(layout.Attributes.ContainsKey("Name"));
+        _layout = layout;
+    }
+
     internal virtual bool IsMounted { get; private set; }
 
     internal string Name => (string)Layout.Attributes["Name"];
@@ -14,16 +19,12 @@ internal abstract partial class Element
     internal Element? Parent { get; private set; }
 
     internal abstract View View { get; }
-
-    private protected Element(Layout layout)
-    {
-        Debug.Assert(layout.Attributes.ContainsKey("Name"));
-        _layout = layout;
-    }
 }
 
 internal abstract partial class Element
 {
+    private Layout _layout;
+
     internal event EventHandler? LayoutUpdated;
 
     internal event EventHandler? LayoutUpdating;
@@ -54,8 +55,6 @@ internal abstract partial class Element
         Debug.Assert(IsMounted);
         LayoutUpdating?.Invoke(this, e);
     }
-
-    private Layout _layout;
 }
 
 internal abstract partial class Element
@@ -67,7 +66,11 @@ internal abstract partial class Element
     internal void Mount(Element? parent)
     {
         Debug.Assert(!IsDisposed);
-        if (IsMounted) Unmount();
+        Debug.Assert(!IsMounted);
+        if (IsMounted)
+        {
+            Unmount();
+        }
         Parent = parent;
         OnMounting(EventArgs.Empty);
         IsMounted = true;
@@ -123,13 +126,13 @@ internal abstract partial class Element : IBuildContext
 {
     Element IBuildContext.Element => this;
 
+    internal bool IsDisposed { get; private set; }
+
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
-    internal bool IsDisposed { get; private set; }
 
     private protected virtual void Dispose(bool disposing)
     {
@@ -155,25 +158,5 @@ internal abstract partial class Element : IComparable<Element>
     public int CompareTo(Element? other)
     {
         return Name.CompareTo(other?.Name);
-    }
-}
-
-internal abstract partial class Element
-{
-    protected sealed partial class UpdateComparer : IEqualityComparer<Element>
-    {
-        public bool Equals(Element? x, Element? y)
-        {
-            if (x == null || y == null)
-            {
-                return x == y;
-            }
-            return x.Layout.GetType().Equals(y.Layout.GetType()) && x.CompareTo(y).Equals(0);
-        }
-
-        public int GetHashCode(Element obj)
-        {
-            return obj.Name.GetHashCode();
-        }
     }
 }

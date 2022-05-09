@@ -10,12 +10,6 @@ public partial class MountElementCmdletTests
     [Collection(nameof(WorkingDirectoryCollection))]
     public abstract class LayoutTests : IDisposable
     {
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Shell.Dispose();
-        }
-
         private protected LayoutTests(WorkingDirectoryFixture fixture)
         {
             Shell = PowerShell.Create();
@@ -25,5 +19,11 @@ public partial class MountElementCmdletTests
         private protected PowerShell Shell { get; }
 
         private protected DirectoryInfo WorkingDirectory { get; }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            Shell.Dispose();
+        }
     }
 }

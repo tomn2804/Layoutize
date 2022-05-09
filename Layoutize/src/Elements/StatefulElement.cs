@@ -12,6 +12,12 @@ internal sealed class StatefulElement : ComponentElement
         State.StateUpdated += UpdateChild;
     }
 
+    private static new UpdateComparer UpdateComparer { get; } = new();
+
+    private State State { get; }
+
+    private StatefulLayout StatefulLayout => (StatefulLayout)Layout;
+
     private protected override Layout Build()
     {
         Debug.Assert(!IsDisposed);
@@ -34,12 +40,6 @@ internal sealed class StatefulElement : ComponentElement
         State.Layout = StatefulLayout;
         base.OnLayoutUpdated(e);
     }
-
-    private static new UpdateComparer UpdateComparer { get; } = new();
-
-    private State State { get; }
-
-    private StatefulLayout StatefulLayout => (StatefulLayout)Layout;
 
     private void UpdateChild(object? sender, EventArgs e)
     {

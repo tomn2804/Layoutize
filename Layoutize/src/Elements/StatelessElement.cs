@@ -9,11 +9,11 @@ internal sealed class StatelessElement : ComponentElement
     {
     }
 
+    private StatelessLayout StatelessLayout => (StatelessLayout)Layout;
+
     private protected override sealed Layout Build()
     {
         Debug.Assert(!IsDisposed);
         return StatelessLayout.Build(this);
     }
-
-    private StatelessLayout StatelessLayout => (StatelessLayout)Layout;
 }

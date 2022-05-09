@@ -8,17 +8,17 @@ namespace Layoutize;
 
 public abstract partial class State
 {
-    public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
-
-    internal StatefulLayout Layout { get; set; }
-
-    protected internal abstract Layout Build(IBuildContext context);
-
     protected State(StatefulLayout layout)
     {
         Layout = layout;
         Debug.Assert(Attributes.ContainsKey("Name"));
     }
+
+    public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
+
+    internal StatefulLayout Layout { get; set; }
+
+    protected internal abstract Layout Build(IBuildContext context);
 }
 
 public abstract partial class State

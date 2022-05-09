@@ -6,6 +6,10 @@ namespace Layoutize.Tests;
 
 public sealed class WorkingDirectoryFixture : IDisposable
 {
+    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), "LayoutizeTests"));
+
+    private int _id;
+
     public WorkingDirectoryFixture()
     {
         if (WorkingDirectory.Exists)
@@ -24,8 +28,4 @@ public sealed class WorkingDirectoryFixture : IDisposable
     {
         return WorkingDirectory.CreateSubdirectory(Interlocked.Increment(ref _id).ToString());
     }
-
-    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), "LayoutizeTests"));
-
-    private int _id;
 }

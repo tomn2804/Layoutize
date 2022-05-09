@@ -19,6 +19,7 @@
     <Compile Include="src\Elements\ComponentElement.cs" />
     <Compile Include="src\Elements\DirectoryElement.cs" />
     <Compile Include="src\Elements\Element.cs" />
+    <Compile Include="src\Elements\Element.UpdateComparer.cs" />
     <Compile Include="src\Elements\FileElement.cs" />
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />

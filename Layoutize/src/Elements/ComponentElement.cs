@@ -6,6 +6,12 @@ namespace Layoutize.Elements;
 
 internal abstract partial class ComponentElement : Element
 {
+    private protected ComponentElement(Layout layout)
+        : base(layout)
+    {
+        _child = new(() => Build().CreateElement());
+    }
+
     internal override bool IsMounted
     {
         get
@@ -21,12 +27,6 @@ internal abstract partial class ComponentElement : Element
     }
 
     internal override View View => Child.View;
-
-    private protected ComponentElement(Layout layout)
-        : base(layout)
-    {
-        _child = new(() => Build().CreateElement());
-    }
 
     private protected abstract Layout Build();
 
@@ -49,8 +49,9 @@ internal abstract partial class ComponentElement : Element
 
     private protected override void OnMounting(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         base.OnMounting(e);
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(Parent != null);
         Child.Mount(this);
         Debug.Assert(Child.IsMounted);
         Debug.Assert(Child.Parent == this);
@@ -58,9 +59,13 @@ internal abstract partial class ComponentElement : Element
 
     private protected override void OnUnmounting(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         base.OnUnmounting(e);
-        if (Child.IsMounted) Child.Unmount();
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(Parent != null);
+        if (Child.IsMounted)
+        {
+            Child.Unmount();
+        }
         Debug.Assert(!Child.IsMounted);
         Debug.Assert(Child.Parent == null);
     }
@@ -68,6 +73,8 @@ internal abstract partial class ComponentElement : Element
 
 internal abstract partial class ComponentElement
 {
+    private Lazy<Element> _child;
+
     internal event EventHandler? ChildUpdated;
 
     internal event EventHandler? ChildUpdating;
@@ -102,6 +109,4 @@ internal abstract partial class ComponentElement
         Debug.Assert(IsMounted);
         ChildUpdating?.Invoke(this, e);
     }
-
-    private Lazy<Element> _child;
 }

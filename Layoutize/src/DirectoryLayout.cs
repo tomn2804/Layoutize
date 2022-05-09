@@ -20,6 +20,7 @@ public class DirectoryLayout : ViewGroupLayout
 
     internal override DirectoryView CreateView(IBuildContext context)
     {
+        Debug.Assert(!context.Element.IsDisposed);
         Debug.Assert(context.Element.Parent != null);
         string fullName = System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
         return new(new(fullName));

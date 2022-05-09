@@ -8,6 +8,12 @@ namespace Layoutize.Elements;
 
 internal abstract partial class ViewGroupElement : ViewElement
 {
+    private protected ViewGroupElement(ViewGroupLayout layout)
+        : base(layout)
+    {
+        _children = new(() => GetChildrenAttribute());
+    }
+
     internal override bool IsMounted
     {
         get
@@ -22,11 +28,7 @@ internal abstract partial class ViewGroupElement : ViewElement
         }
     }
 
-    private protected ViewGroupElement(ViewGroupLayout layout)
-        : base(layout)
-    {
-        _children = new(() => GetChildrenAttribute());
-    }
+    private static new UpdateComparer UpdateComparer { get; } = new();
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
@@ -54,8 +56,8 @@ internal abstract partial class ViewGroupElement : ViewElement
 
     private protected override void OnMounting(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         base.OnMounting(e);
+        Debug.Assert(!IsDisposed);
         foreach (Element child in Children)
         {
             child.Mount(this);
@@ -66,17 +68,18 @@ internal abstract partial class ViewGroupElement : ViewElement
 
     private protected override void OnUnmounting(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         base.OnUnmounting(e);
+        Debug.Assert(!IsDisposed);
         foreach (Element child in Children)
         {
-            if (child.IsMounted) child.Unmount();
+            if (child.IsMounted)
+            {
+                child.Unmount();
+            }
         }
         Debug.Assert(Children.All(child => !child.IsMounted));
         Debug.Assert(Children.All(child => child.Parent == null));
     }
-
-    private static new UpdateComparer UpdateComparer { get; } = new();
 
     private ImmutableSortedSet<Element> GetChildrenAttribute()
     {
@@ -98,6 +101,8 @@ internal abstract partial class ViewGroupElement : ViewElement
 
 internal abstract partial class ViewGroupElement
 {
+    private Lazy<ImmutableSortedSet<Element>> _children;
+
     internal event EventHandler? ChildrenUpdated;
 
     internal event EventHandler? ChildrenUpdating;
@@ -142,6 +147,4 @@ internal abstract partial class ViewGroupElement
         Debug.Assert(IsMounted);
         ChildrenUpdating?.Invoke(this, e);
     }
-
-    private Lazy<ImmutableSortedSet<Element>> _children;
 }

@@ -10,6 +10,8 @@ internal sealed class FileView : View
     {
     }
 
+    private FileInfo FileInfo => (FileInfo)FileSystemInfo;
+
     internal override sealed void Create()
     {
         Debug.Assert(!Exists);
@@ -23,6 +25,4 @@ internal sealed class FileView : View
         Debug.Assert(Parent != null);
         FileInfo.Delete();
     }
-
-    private FileInfo FileInfo => (FileInfo)FileSystemInfo;
 }

@@ -9,10 +9,6 @@ namespace Layoutize;
 
 public abstract class Layout
 {
-    public IImmutableDictionary<object, object> Attributes { get; }
-
-    internal abstract Element CreateElement();
-
     private protected Layout(IEnumerable attributes)
     {
         Attributes = attributes switch
@@ -23,4 +19,8 @@ public abstract class Layout
         };
         Debug.Assert(Attributes.ContainsKey("Name"));
     }
+
+    public IImmutableDictionary<object, object> Attributes { get; }
+
+    internal abstract Element CreateElement();
 }

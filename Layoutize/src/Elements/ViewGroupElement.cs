@@ -8,6 +8,8 @@ namespace Layoutize.Elements;
 
 internal abstract partial class ViewGroupElement : ViewElement
 {
+    private static UpdateComparer Comparer { get; } = new();
+
     internal override bool IsMounted
     {
         get
@@ -56,11 +58,27 @@ internal abstract partial class ViewGroupElement : ViewElement
     {
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
-        Children = GetChildrenAttribute();
+        ImmutableSortedSet<Element>.Builder newChildrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
+        foreach (Element newChild in GetChildrenAttribute())
+        {
+            if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
+            {
+                currentChild.Layout = newChild.Layout;
+                newChildrenBuilder.Add(currentChild);
+            }
+            else
+            {
+                newChildrenBuilder.Add(newChild);
+            }
+        }
+        if (newChildrenBuilder.Any())
+        {
+            Children = newChildrenBuilder.ToImmutable();
+        }
         base.OnLayoutUpdated(e);
     }
 
-    private IImmutableSet<Element> GetChildrenAttribute()
+    private ImmutableSortedSet<Element> GetChildrenAttribute()
     {
         Debug.Assert(!IsDisposed);
         if (Layout.Attributes.TryGetValue("Children", out object? childrenObject))
@@ -68,13 +86,13 @@ internal abstract partial class ViewGroupElement : ViewElement
             switch (childrenObject)
             {
                 case IEnumerable<object> children:
-                    return children.Cast<Layout>().Select(layout => layout.CreateElement()).ToImmutableHashSet();
+                    return children.Cast<Layout>().Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
 
                 default:
-                    return ImmutableHashSet.Create(((Layout)childrenObject).CreateElement());
+                    return ImmutableSortedSet.Create(((Layout)childrenObject).CreateElement());
             }
         }
-        return ImmutableHashSet<Element>.Empty;
+        return ImmutableSortedSet<Element>.Empty;
     }
 }
 
@@ -84,7 +102,7 @@ internal abstract partial class ViewGroupElement
 
     internal event EventHandler? ChildrenUpdating;
 
-    internal IImmutableSet<Element> Children
+    internal ImmutableSortedSet<Element> Children
     {
         get => _children.Value;
         private protected set
@@ -92,8 +110,8 @@ internal abstract partial class ViewGroupElement
             Debug.Assert(!IsDisposed);
             Debug.Assert(IsMounted);
             OnChildrenUpdating(EventArgs.Empty);
-            IImmutableSet<Element> enteringChildren = value.Except(Children);
-            IImmutableSet<Element> exitingChildren = Children.Except(value);
+            IEnumerable<Element> enteringChildren = value.Except(Children);
+            IEnumerable<Element> exitingChildren = Children.Except(value);
             foreach (Element exitingChild in exitingChildren)
             {
                 exitingChild.Unmount();
@@ -125,5 +143,5 @@ internal abstract partial class ViewGroupElement
         ChildrenUpdating?.Invoke(this, e);
     }
 
-    private Lazy<IImmutableSet<Element>> _children;
+    private Lazy<ImmutableSortedSet<Element>> _children;
 }

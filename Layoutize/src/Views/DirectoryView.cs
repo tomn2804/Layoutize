@@ -10,17 +10,6 @@ internal sealed class DirectoryView : View
     {
     }
 
-    internal override sealed string Name
-    {
-        get => FileSystemInfo.Name;
-        set
-        {
-            Debug.Assert(Exists);
-            Debug.Assert(Parent != null);
-            DirectoryInfo.MoveTo(Path.Combine(Parent, value));
-        }
-    }
-
     internal override sealed void Create()
     {
         Debug.Assert(!Exists);

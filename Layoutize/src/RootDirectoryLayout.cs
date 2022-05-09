@@ -1,6 +1,7 @@
 ﻿using Layoutize.Elements;
 using Layoutize.Views;
 using System.Collections;
+using System.IO;
 
 namespace Layoutize;
 
@@ -13,7 +14,7 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
 
     internal override sealed DirectoryView CreateView(IBuildContext context)
     {
-        string fullName = (string)Attributes["FullName"];
+        string fullName = Path.Combine((string)Attributes["Path"], (string)Attributes["Name"]);
         return new(new(fullName));
     }
 }

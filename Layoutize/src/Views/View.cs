@@ -8,7 +8,7 @@ internal abstract class View
 
     internal string FullName => FileSystemInfo.FullName;
 
-    internal abstract string Name { get; set; }
+    internal string Name => FileSystemInfo.Name;
 
     internal string? Parent => Path.GetDirectoryName(FullName);
 

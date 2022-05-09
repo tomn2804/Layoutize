@@ -32,18 +32,6 @@ internal abstract class ViewElement : Element
         _view = new(() => ViewLayout.CreateView(this));
     }
 
-    private protected override void OnLayoutUpdated(EventArgs e)
-    {
-        Debug.Assert(!IsDisposed);
-        Debug.Assert(IsMounted);
-        string newName = (string)Layout.Attributes["Name"];
-        if (View.Name != newName)
-        {
-            View.Name = newName;
-        }
-        base.OnLayoutUpdated(e);
-    }
-
     private readonly Lazy<View> _view;
 
     private ViewLayout ViewLayout => (ViewLayout)Layout;

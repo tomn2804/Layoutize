@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Layoutize;
@@ -20,5 +21,6 @@ public abstract class Layout
             IEnumerable<KeyValuePair<object, object>> entries => entries.ToImmutableDictionary(),
             _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!)
         };
+        Debug.Assert(Attributes.ContainsKey("Name"));
     }
 }

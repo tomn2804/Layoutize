@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.IO;
 using System.Management.Automation;
 
 namespace Layoutize;
@@ -20,9 +21,11 @@ public class MountElementCmdlet : Cmdlet
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
+        DirectoryInfo directoryInfo = new(Path);
         ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
         {
-            KeyValuePair.Create<object, object>("FullName", Path),
+            KeyValuePair.Create<object, object>("Name", directoryInfo.Name),
+            KeyValuePair.Create<object, object>("Path", directoryInfo.Parent?.FullName ?? string.Empty),
             KeyValuePair.Create<object, object>("Children", Layout)
         });
         DirectoryElement element = new RootDirectoryLayout(attributes).CreateElement();

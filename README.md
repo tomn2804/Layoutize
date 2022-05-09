@@ -1,8 +1,8 @@
 ﻿# Layoutize
-An object-oriented and schematic ways of building and managing Windows files/directories using PowerShell.
+An object-oriented and schematic way of building Windows file & directory structures using PowerShell.
 
 # Current State
-As of Jan. 5, 2022, this project is still in development with future release goal of late June 2022.
+This project is currently in development.
 
 # Quick Preview
 
@@ -11,17 +11,17 @@ As of Jan. 5, 2022, this project is still in development with future release goa
 using module Layoutize
 using namespace Layoutize
 
-$template = [DirectoryTemplate]@{
+$layout = [DirectoryLayout]@{
     Name = 'Buzz'
     Children = @(
-        [DirectoryTemplate]@{ Name = 'Foo' },
-        [TextFileTemplate]@{ Name = 'Bar.txt' }
+        [DirectoryLayout]@{ Name = 'Foo' },
+        [TextFileLayout]@{ Name = 'Bar.txt' }
     )
     OnMounted = { 'Fizz' | Write-Host }
 }
 
-$model = [Model+Workbench]::new($template).BuildTo('D:\')
-$model.FullName | Write-Host
+$element = Mount-Element -Path 'D:\' -Layout $layout
+$element | Write-Host
 ```
 
 ## Console Output
@@ -42,26 +42,24 @@ D:\Buzz
 ```PowerShell
 using module Layoutize
 using namespace Layoutize
+using namespace Layoutize.Elements
 using namespace System.Collections
 
-class MyTextFileTemplate : Template[FileModel] {
-    MyTextFileTemplate([IDictionary]$details) : base($details) {}
+class MyTextFileLayout : StatelessLayout {
+    MyTextFileLayout([IEnumerable]$attributes) : base($attributes) {}
 
-    [Blueprint]ToBlueprint() {
-        $inputText = $this.Details['Text']
+    [Layout]Build([IBuildContext]$context) {
+        $inputText = $this.Attributes['Text']
         $wrappedText = "Hello, $inputText"
-        return [TextFileTemplate]@{ Name = $this.Details['Name']; Text = $wrappedText }
+        return [TextFileLayout]@{ Name = $this.Attributes['Name']; Text = $wrappedText }
     }
 }
 
-$path = 'D:\'
-
-$template = [MyTextFileTemplate]@{
-    Name = 'MyTextFileTemplate.txt'
+$layout = [MyTextFileLayout]@{
+    Name = 'MyTextFileLayout.txt'
     Text = 'World!'
 }
-
-$model = [Model+Workbench]::new($template).BuildTo($path)
+$element = Mount-Element -Path 'D:\' -Layout $layout
 ```
 
 ## Disk Output

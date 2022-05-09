@@ -1,70 +1,23 @@
 ﻿using Layoutize.Elements;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
 using System.Reflection;
 using Xunit;
 
-namespace Layoutize.Tests
+namespace Layoutize.Tests;
+
+public partial class MountElementCmdletTests
 {
-    [Collection(nameof(WorkingDirectoryCollection))]
-    public class DirectoryLayoutTests
+    public sealed class DirectoryLayoutTests : LayoutTests
     {
         public DirectoryLayoutTests(WorkingDirectoryFixture fixture)
+            : base(fixture)
         {
-            Fixture = fixture;
         }
 
         [Fact]
-        public void MountElement_CreateDirectoryWithMultiChild_ReturnsContext()
+        public void MountElement_CreateDirectoryWithMultiChildDirectory_ReturnsContext()
         {
-            using PowerShell shell = PowerShell.Create();
-
-            DirectoryInfo workingDirectory = Fixture.GetNewWorkingDirectory();
-            var attributes = new
-            {
-                Name = MethodBase.GetCurrentMethod().Name,
-                Children = new[]
-                {
-                    new { Name = "1" },
-                    new { Name = "2" },
-                    new { Name = "3" }
-                }
-            };
-
-            using IBuildContext context = (IBuildContext)shell.AddScript($@"
-                using module Layoutize
-                using namespace Layoutize
-
-                Mount-Element -Path '{workingDirectory.FullName}' -Layout (
-                    [DirectoryLayout]@{{
-                        Name = '{attributes.Name}'
-                        Children = @(
-                            [DirectoryLayout]@{{ Name = '{attributes.Children[0].Name}' }},
-                            [DirectoryLayout]@{{ Name = '{attributes.Children[1].Name}' }},
-                            [DirectoryLayout]@{{ Name = '{attributes.Children[2].Name}' }}
-                        )
-                    }}
-                )
-            ").Invoke().Last().BaseObject;
-
-            string parentFullName = Path.Combine(workingDirectory.FullName, attributes.Name);
-            Assert.True(Directory.Exists(parentFullName));
-            Assert.NotEmpty(Directory.GetFileSystemEntries(parentFullName));
-            Assert.All(attributes.Children, childAttributes =>
-            {
-                string childFullName = Path.Combine(parentFullName, childAttributes.Name);
-                Assert.True(Directory.Exists(childFullName));
-                Assert.Empty(Directory.GetFileSystemEntries(childFullName));
-            });
-        }
-
-        [Fact]
-        public void MountElement_CreateDirectoryWithMultiLevelDepth_ReturnsContext()
-        {
-            using PowerShell shell = PowerShell.Create();
-
-            DirectoryInfo workingDirectory = Fixture.GetNewWorkingDirectory();
             var attributes = new
             {
                 Name = MethodBase.GetCurrentMethod().Name,
@@ -76,11 +29,11 @@ namespace Layoutize.Tests
                 }
             };
 
-            using IBuildContext context = (IBuildContext)shell.AddScript($@"
+            using IBuildContext context = (IBuildContext)Shell.AddScript($@"
                 using module Layoutize
                 using namespace Layoutize
 
-                Mount-Element -Path '{workingDirectory.FullName}' -Layout (
+                Mount-Element -Path '{WorkingDirectory.FullName}' -Layout (
                     [DirectoryLayout]@{{
                         Name = '{attributes.Name}'
                         Children = @(
@@ -101,13 +54,16 @@ namespace Layoutize.Tests
                 )
             ").Invoke().Last().BaseObject;
 
-            string parentFullName = Path.Combine(workingDirectory.FullName, attributes.Name);
+            string parentFullName = Path.Combine(WorkingDirectory.FullName, attributes.Name);
             Assert.True(Directory.Exists(parentFullName));
+            Assert.Equal(attributes.Children.Length, Directory.GetFileSystemEntries(parentFullName).Length);
+
             Assert.All(attributes.Children, childAttributes =>
             {
                 string childFullName = Path.Combine(parentFullName, childAttributes.Name);
                 Assert.True(Directory.Exists(childFullName));
-                Assert.NotEmpty(Directory.GetFileSystemEntries(childFullName));
+                Assert.Equal(childAttributes.Children.Length, Directory.GetFileSystemEntries(childFullName).Length);
+
                 Assert.All(childAttributes.Children, grandChildAttributes =>
                 {
                     string grandChildFullName = Path.Combine(childFullName, grandChildAttributes.Name);
@@ -118,22 +74,19 @@ namespace Layoutize.Tests
         }
 
         [Fact]
-        public void MountElement_CreateDirectoryWithSingleChild_ReturnsContext()
+        public void MountElement_CreateDirectoryWithSingleChildDirectory_ReturnsContext()
         {
-            using PowerShell shell = PowerShell.Create();
-
-            DirectoryInfo workingDirectory = Fixture.GetNewWorkingDirectory();
             var attributes = new
             {
                 Name = MethodBase.GetCurrentMethod().Name,
                 Children = new[] { new { Name = "1" } }
             };
 
-            using IBuildContext context = (IBuildContext)shell.AddScript($@"
+            using IBuildContext context = (IBuildContext)Shell.AddScript($@"
                 using module Layoutize
                 using namespace Layoutize
 
-                Mount-Element -Path '{workingDirectory.FullName}' -Layout (
+                Mount-Element -Path '{WorkingDirectory.FullName}' -Layout (
                     [DirectoryLayout]@{{
                         Name = '{attributes.Name}'
                         Children = [DirectoryLayout]@{{ Name = '{attributes.Children[0].Name}' }}
@@ -141,37 +94,32 @@ namespace Layoutize.Tests
                 )
             ").Invoke().Last().BaseObject;
 
-            string parentFullName = Path.Combine(workingDirectory.FullName, attributes.Name);
-            string childFullName = Path.Combine(parentFullName, attributes.Children[0].Name);
-
+            string parentFullName = Path.Combine(WorkingDirectory.FullName, attributes.Name);
             Assert.True(Directory.Exists(parentFullName));
+            Assert.Equal(attributes.Children.Length, Directory.GetFileSystemEntries(parentFullName).Length);
+
+            string childFullName = Path.Combine(parentFullName, attributes.Children[0].Name);
             Assert.True(Directory.Exists(childFullName));
-            Assert.Single(Directory.GetFileSystemEntries(parentFullName));
+            Assert.Empty(Directory.GetFileSystemEntries(childFullName));
         }
 
         [Fact]
         public void MountElement_CreateEmptyDirectory_ReturnsContext()
         {
-            using PowerShell shell = PowerShell.Create();
-
-            DirectoryInfo workingDirectory = Fixture.GetNewWorkingDirectory();
             var attributes = new { Name = MethodBase.GetCurrentMethod().Name };
 
-            using IBuildContext context = (IBuildContext)shell.AddScript($@"
+            using IBuildContext context = (IBuildContext)Shell.AddScript($@"
                 using module Layoutize
                 using namespace Layoutize
 
-                Mount-Element -Path '{workingDirectory.FullName}' -Layout (
+                Mount-Element -Path '{WorkingDirectory.FullName}' -Layout (
                     [DirectoryLayout]@{{ Name = '{attributes.Name}' }}
                 )
             ").Invoke().Last().BaseObject;
 
-            string fullName = Path.Combine(workingDirectory.FullName, attributes.Name);
-
+            string fullName = Path.Combine(WorkingDirectory.FullName, attributes.Name);
             Assert.True(Directory.Exists(fullName));
             Assert.Empty(Directory.GetFileSystemEntries(fullName));
         }
-
-        private WorkingDirectoryFixture Fixture { get; }
     }
 }

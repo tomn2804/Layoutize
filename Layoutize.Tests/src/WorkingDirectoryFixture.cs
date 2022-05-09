@@ -2,25 +2,30 @@
 using System.IO;
 using System.Threading;
 
-namespace Layoutize.Tests
+namespace Layoutize.Tests;
+
+public sealed class WorkingDirectoryFixture : IDisposable
 {
-    public sealed class WorkingDirectoryFixture : IDisposable
+    public WorkingDirectoryFixture()
     {
-        public void Dispose()
+        if (WorkingDirectory.Exists)
         {
-            if (WorkingDirectory.Exists)
-            {
-                WorkingDirectory.Delete(true);
-            }
+            WorkingDirectory.Delete(true);
+            WorkingDirectory.Create();
         }
-
-        internal DirectoryInfo GetNewWorkingDirectory()
-        {
-            return WorkingDirectory.CreateSubdirectory(Interlocked.Increment(ref _id).ToString());
-        }
-
-        private readonly DirectoryInfo WorkingDirectory = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "LayoutizeTests"));
-
-        private int _id;
     }
+
+    public void Dispose()
+    {
+        WorkingDirectory.Delete(true);
+    }
+
+    internal DirectoryInfo GetNewWorkingDirectory()
+    {
+        return WorkingDirectory.CreateSubdirectory(Interlocked.Increment(ref _id).ToString());
+    }
+
+    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), "LayoutizeTests"));
+
+    private int _id;
 }

@@ -36,7 +36,11 @@ internal abstract class ViewElement : Element
     {
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
-        View.Name = (string)Layout.Attributes["Name"];
+        string newName = (string)Layout.Attributes["Name"];
+        if (View.Name != newName)
+        {
+            View.Name = newName;
+        }
         base.OnLayoutUpdated(e);
     }
 

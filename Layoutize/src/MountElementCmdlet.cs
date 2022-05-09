@@ -25,8 +25,7 @@ public class MountElementCmdlet : Cmdlet
             KeyValuePair.Create<object, object>("FullName", Path),
             KeyValuePair.Create<object, object>("Children", Layout)
         });
-        DirectoryLayout rootLayout = new(attributes);
-        DirectoryElement element = rootLayout.CreateElement();
+        DirectoryElement element = new RootDirectoryLayout(attributes).CreateElement();
         element.MountTo(null);
         Debug.Assert(!element.IsDisposed);
         Debug.Assert(element.IsMounted);

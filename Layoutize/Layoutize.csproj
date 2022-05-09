@@ -24,6 +24,7 @@
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
     <Compile Include="src\MountElementCmdlet.cs" />
+    <Compile Include="src\RootDirectoryLayout.cs" />
     <Compile Include="src\Utils\Path.cs" />
     <Compile Include="src\FileLayout.cs" />
     <Compile Include="src\StatefulLayout.cs" />

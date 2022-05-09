@@ -1,9 +1,8 @@
 ﻿using Xunit;
 
-namespace Layoutize.Tests
+namespace Layoutize.Tests;
+
+[CollectionDefinition(nameof(WorkingDirectoryCollection))]
+public sealed class WorkingDirectoryCollection : ICollectionFixture<WorkingDirectoryFixture>
 {
-    [CollectionDefinition(nameof(WorkingDirectoryCollection))]
-    public sealed class WorkingDirectoryCollection : ICollectionFixture<WorkingDirectoryFixture>
-    {
-    }
 }

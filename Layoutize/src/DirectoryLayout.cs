@@ -5,23 +5,21 @@ using System.Collections;
 
 namespace Layoutize;
 
-public sealed class DirectoryLayout : ViewGroupLayout
+public class DirectoryLayout : ViewGroupLayout
 {
     public DirectoryLayout(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    internal override sealed DirectoryElement CreateElement()
+    internal override DirectoryElement CreateElement()
     {
         return new(this);
     }
 
-    internal override sealed DirectoryView CreateView(IBuildContext context)
+    internal override DirectoryView CreateView(IBuildContext context)
     {
-        string fullName = Attributes.TryGetValue("FullName", out object? fullNameObject)
-            ? (string)fullNameObject!
-            : System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
+        string fullName = System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
         return new(new(fullName));
     }
 }

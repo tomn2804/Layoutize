@@ -5,19 +5,19 @@ using System.Collections;
 
 namespace Layoutize;
 
-public sealed class FileLayout : ViewLayout
+public class FileLayout : ViewLayout
 {
     public FileLayout(IDictionary attributes)
         : base(attributes)
     {
     }
 
-    internal override sealed FileElement CreateElement()
+    internal override FileElement CreateElement()
     {
         return new(this);
     }
 
-    internal override sealed FileView CreateView(IBuildContext context)
+    internal override FileView CreateView(IBuildContext context)
     {
         string fullName = System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
         return new(new(fullName));

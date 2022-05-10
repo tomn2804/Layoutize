@@ -11,14 +11,17 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
     internal RootDirectoryLayout(IDictionary attributes)
         : base(attributes)
     {
+        Debug.Assert(Attributes.ContainsKey("Path"));
+        Debug.Assert(Path.IsPathFullyQualified(FullName));
     }
+
+    private string FullName => Path.GetFullPath(Path.Combine((string)Attributes["Path"], (string)Attributes["Name"]));
 
     internal override sealed DirectoryView CreateView(IBuildContext context)
     {
         Debug.Assert(!context.Element.IsDisposed);
         Debug.Assert(context.Element.Parent == null);
-        string fullName = Path.Combine((string)Attributes["Path"], (string)Attributes["Name"]);
-        Debug.Assert(Path.IsPathFullyQualified(fullName));
-        return new(new(fullName));
+        Debug.Assert(Path.IsPathFullyQualified(FullName));
+        return new(new(FullName));
     }
 }

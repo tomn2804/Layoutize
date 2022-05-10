@@ -92,7 +92,8 @@ internal abstract partial class ViewGroupElement : ViewElement
                     return children.Cast<Layout>().Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
 
                 default:
-                    return ImmutableSortedSet.Create(((Layout)childrenObject).CreateElement());
+                    Layout child = (Layout)childrenObject;
+                    return ImmutableSortedSet.Create(child.CreateElement());
             }
         }
         return ImmutableSortedSet<Element>.Empty;

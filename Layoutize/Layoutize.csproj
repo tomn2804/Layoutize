@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\ComponentLayout.cs" />
     <Compile Include="src\DirectoryLayout.cs" />
     <Compile Include="src\DismountElementCmdlet.cs" />

@@ -6,7 +6,7 @@ namespace Layoutize.Tests;
 
 public sealed class WorkingDirectoryFixture : IDisposable
 {
-    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), "LayoutizeTests"));
+    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), nameof(MountElementCmdletTests.LayoutTests)));
 
     private int _id;
 

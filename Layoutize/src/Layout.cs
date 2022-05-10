@@ -17,7 +17,8 @@ public abstract class Layout
             IEnumerable<KeyValuePair<object, object>> entries => entries.ToImmutableDictionary(),
             _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!)
         };
-        Debug.Assert(Attributes.ContainsKey("Name"));
+        Debug.Assert(Attributes.TryGetValue("Name", out object? nameObject));
+        Debug.Assert(nameObject?.ToString() != null);
     }
 
     public IImmutableDictionary<object, object> Attributes { get; }

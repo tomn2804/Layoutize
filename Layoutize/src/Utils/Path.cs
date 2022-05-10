@@ -7,7 +7,8 @@ internal static class Path
 {
     internal static string Of(IBuildContext context)
     {
-        Debug.Assert(context.Element.Parent != null);
+        Element element = context.Element;
+        Debug.Assert(!element.IsDisposed);
         string path = null!;
         void visitParent(Element element)
         {
@@ -24,7 +25,7 @@ internal static class Path
                     return;
             }
         }
-        visitParent(context.Element);
+        visitParent(element);
         Debug.Assert(path != null);
         Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
         return System.IO.Path.GetFullPath(path);

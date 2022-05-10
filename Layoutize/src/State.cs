@@ -11,7 +11,8 @@ public abstract partial class State
     protected State(StatefulLayout layout)
     {
         Layout = layout;
-        Debug.Assert(Attributes.ContainsKey("Name"));
+        Debug.Assert(Attributes.TryGetValue("Name", out object? nameObject));
+        Debug.Assert(nameObject?.ToString() != null);
     }
 
     public IImmutableDictionary<object, object> Attributes => Layout.Attributes;

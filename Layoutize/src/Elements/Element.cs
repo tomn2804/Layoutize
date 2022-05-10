@@ -8,13 +8,14 @@ internal abstract partial class Element
 {
     private protected Element(Layout layout)
     {
-        Debug.Assert(layout.Attributes.ContainsKey("Name"));
         _layout = layout;
+        Debug.Assert(Layout.Attributes.TryGetValue("Name", out object? nameObject));
+        Debug.Assert(nameObject?.ToString() != null);
     }
 
     internal virtual bool IsMounted { get; private set; }
 
-    internal string Name => (string)Layout.Attributes["Name"];
+    internal string Name => Layout.Attributes["Name"].ToString()!;
 
     internal Element? Parent { get; private set; }
 

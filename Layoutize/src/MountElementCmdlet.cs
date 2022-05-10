@@ -8,7 +8,7 @@ using System.Management.Automation;
 namespace Layoutize;
 
 [Cmdlet(VerbsData.Mount, "Element")]
-public class MountElementCmdlet : Cmdlet
+public class MountElementCmdlet : PSCmdlet
 {
     [Parameter(Mandatory = true, Position = 1)]
     [ValidateNotNull]
@@ -18,10 +18,25 @@ public class MountElementCmdlet : Cmdlet
     [ValidateNotNullOrEmpty]
     public string Path { get; set; } = null!;
 
+    private string FullPath
+    {
+        get
+        {
+            string fullPath = Path;
+            if (!System.IO.Path.IsPathFullyQualified(fullPath))
+            {
+                fullPath = System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, fullPath);
+            }
+            return System.IO.Path.GetFullPath(fullPath);
+        }
+    }
+
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
-        DirectoryInfo rootDirectory = Directory.CreateDirectory(Path);
+        Debug.Assert(!Layout.GetType().Equals(typeof(RootDirectoryLayout)));
+        Debug.Assert(System.IO.Path.IsPathFullyQualified(FullPath));
+        DirectoryInfo rootDirectory = Directory.CreateDirectory(FullPath);
         ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
         {
             KeyValuePair.Create<object, object>("Name", rootDirectory.Name),

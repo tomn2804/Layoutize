@@ -23,6 +23,7 @@ public class FileLayout : ViewLayout
         Debug.Assert(!context.Element.IsDisposed);
         Debug.Assert(context.Element.Parent != null);
         string fullName = System.IO.Path.Combine(Path.Of(context), (string)Attributes["Name"]);
+        Debug.Assert(System.IO.Path.IsPathFullyQualified(fullName));
         return new(new(fullName));
     }
 }

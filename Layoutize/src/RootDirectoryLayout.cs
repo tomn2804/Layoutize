@@ -18,6 +18,7 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
         Debug.Assert(!context.Element.IsDisposed);
         Debug.Assert(context.Element.Parent == null);
         string fullName = Path.Combine((string)Attributes["Path"], (string)Attributes["Name"]);
+        Debug.Assert(Path.IsPathFullyQualified(fullName));
         return new(new(fullName));
     }
 }

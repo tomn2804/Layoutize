@@ -26,6 +26,7 @@ internal static class Path
         }
         visitParent(context.Element);
         Debug.Assert(path != null);
-        return path;
+        Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
+        return System.IO.Path.GetFullPath(path);
     }
 }

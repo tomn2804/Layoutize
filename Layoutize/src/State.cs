@@ -1,4 +1,5 @@
-﻿using Layoutize.Elements;
+﻿using Layoutize.Attributes;
+using Layoutize.Elements;
 using System;
 using System.Collections;
 using System.Collections.Immutable;
@@ -10,9 +11,8 @@ public abstract partial class State
 {
     protected State(StatefulLayout layout)
     {
+        Debug.Assert(Name.Of(layout) != null);
         Layout = layout;
-        Debug.Assert(Attributes.TryGetValue("Name", out object? nameObject));
-        Debug.Assert(nameObject?.ToString() != null);
     }
 
     public IImmutableDictionary<object, object> Attributes => Layout.Attributes;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Layoutize.Attributes;
+using System.Collections.Generic;
 
 namespace Layoutize.Elements;
 
@@ -17,7 +18,7 @@ internal abstract partial class Element
 
         public int GetHashCode(Element obj)
         {
-            return obj.Name.GetHashCode();
+            return Name.Of(obj).GetHashCode();
         }
     }
 }

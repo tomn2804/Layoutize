@@ -1,4 +1,5 @@
 ﻿using Layoutize.Elements;
+using Layoutize.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -15,10 +16,9 @@ public abstract class Layout
         {
             IImmutableDictionary<object, object> dictionary => dictionary,
             IEnumerable<KeyValuePair<object, object>> entries => entries.ToImmutableDictionary(),
-            _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!)
+            _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!),
         };
-        Debug.Assert(Attributes.TryGetValue("Name", out object? nameObject));
-        Debug.Assert(nameObject?.ToString() != null);
+        Debug.Assert(Name.Of(this) != null);
     }
 
     public IImmutableDictionary<object, object> Attributes { get; }

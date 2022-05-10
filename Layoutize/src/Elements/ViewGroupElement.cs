@@ -11,7 +11,7 @@ internal abstract partial class ViewGroupElement : ViewElement
     private protected ViewGroupElement(ViewGroupLayout layout)
         : base(layout)
     {
-        _children = new(() => GetChildrenAttribute());
+        _children = new(() => Attributes.Children.Of(this));
     }
 
     internal override bool IsMounted
@@ -28,16 +28,16 @@ internal abstract partial class ViewGroupElement : ViewElement
         }
     }
 
-    private static new UpdateComparer UpdateComparer { get; } = new();
+    internal ViewGroupLayout ViewGroupLayout => (ViewGroupLayout)Layout;
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         ImmutableSortedSet<Element>.Builder newChildrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Element newChild in GetChildrenAttribute())
+        foreach (Element newChild in Attributes.Children.Of(this))
         {
-            if (Children.TryGetValue(newChild, out Element? currentChild) && UpdateComparer.Equals(currentChild, newChild))
+            if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
             {
                 currentChild.Layout = newChild.Layout;
                 newChildrenBuilder.Add(currentChild);
@@ -79,24 +79,6 @@ internal abstract partial class ViewGroupElement : ViewElement
         }
         Debug.Assert(Children.All(child => !child.IsMounted));
         Debug.Assert(Children.All(child => child.Parent == null));
-    }
-
-    private ImmutableSortedSet<Element> GetChildrenAttribute()
-    {
-        Debug.Assert(!IsDisposed);
-        if (Layout.Attributes.TryGetValue("Children", out object? childrenObject))
-        {
-            switch (childrenObject)
-            {
-                case IEnumerable<object> children:
-                    return children.Cast<Layout>().Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
-
-                default:
-                    Layout child = (Layout)childrenObject;
-                    return ImmutableSortedSet.Create(child.CreateElement());
-            }
-        }
-        return ImmutableSortedSet<Element>.Empty;
     }
 }
 

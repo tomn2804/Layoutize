@@ -1,7 +1,7 @@
-﻿using Layoutize.Views;
+﻿using Layoutize.Attributes;
+using Layoutize.Views;
 using System;
 using System.Diagnostics;
-using System.Management.Automation;
 
 namespace Layoutize.Elements;
 
@@ -13,6 +13,14 @@ internal abstract partial class ViewElement : Element
         : base(layout)
     {
         _view = new(() => ViewLayout.CreateView(this));
+        Creating += (sender, e) => Attributes.OnCreating.Of(this)?.Invoke(sender, e);
+        Created += (sender, e) => Attributes.OnCreated.Of(this)?.Invoke(sender, e);
+        Deleting += (sender, e) => Attributes.OnDeleting.Of(this)?.Invoke(sender, e);
+        Deleted += (sender, e) => Attributes.OnDeleted.Of(this)?.Invoke(sender, e);
+        Mounting += (sender, e) => Attributes.OnMounting.Of(this)?.Invoke(sender, e);
+        Mounted += (sender, e) => Attributes.OnMounted.Of(this)?.Invoke(sender, e);
+        Unmounting += (sender, e) => Attributes.OnUnmounting.Of(this)?.Invoke(sender, e);
+        Unmounted += (sender, e) => Attributes.OnUnmounted.Of(this)?.Invoke(sender, e);
     }
 
     internal override View View => _view.Value;
@@ -23,43 +31,15 @@ internal abstract partial class ViewElement : Element
 
     private protected virtual Action? Build()
     {
-        EventHandler? CreatingHandler = GetEventHandlerAttribute("OnCreating");
-        EventHandler? CreatedHandler = GetEventHandlerAttribute("OnCreated");
-        EventHandler? DeletingHandler = GetEventHandlerAttribute("OnDeleting");
-        EventHandler? DeletedHandler = GetEventHandlerAttribute("OnDeleted");
-        EventHandler? MountingHandler = GetEventHandlerAttribute("OnMounting");
-        EventHandler? MountedHandler = GetEventHandlerAttribute("OnMounted");
-        EventHandler? UnmountingHandler = GetEventHandlerAttribute("OnUnmounting");
-        EventHandler? UnmountedHandler = GetEventHandlerAttribute("OnUnmounted");
-
-        Creating += CreatingHandler;
-        Created += CreatedHandler;
-        Deleting += DeletingHandler;
-        Deleted += DeletedHandler;
-        Mounting += MountingHandler;
-        Mounted += MountedHandler;
-        Unmounting += UnmountingHandler;
-        Unmounted += UnmountedHandler;
-
-        return () =>
-        {
-            Creating -= CreatingHandler;
-            Created -= CreatedHandler;
-            Deleting -= DeletingHandler;
-            Deleted -= DeletedHandler;
-            Mounting -= MountingHandler;
-            Mounted -= MountedHandler;
-            Unmounting -= UnmountingHandler;
-            Unmounted -= UnmountedHandler;
-        };
+        return null;
     }
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
-        base.OnLayoutUpdated(e);
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         Rebuild();
+        base.OnLayoutUpdated(e);
     }
 
     private protected override void OnMounting(EventArgs e)
@@ -75,24 +55,11 @@ internal abstract partial class ViewElement : Element
     {
         base.OnUnmounting(e);
         Debug.Assert(!IsDisposed);
-        if (Layout.Attributes.TryGetValue("DeleteOnUnmount", out object? deleteOnUnmountObject))
+        bool deleteOnUnmount = DeleteOnUnmount.Of(this) ?? false;
+        if (deleteOnUnmount && View.Exists)
         {
-            bool deleteOnUnmount = (bool)deleteOnUnmountObject;
-            if (deleteOnUnmount && View.Exists)
-            {
-                Delete();
-            }
+            Delete();
         }
-    }
-
-    private EventHandler? GetEventHandlerAttribute(string key)
-    {
-        if (Layout.Attributes.TryGetValue(key, out object? scriptBlockObject))
-        {
-            ScriptBlock scriptBlock = (ScriptBlock)scriptBlockObject;
-            return (sender, e) => scriptBlock.Invoke(sender, e);
-        }
-        return null;
     }
 
     private void Rebuild()

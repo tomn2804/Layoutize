@@ -1,7 +1,7 @@
 ﻿using Layoutize.Elements;
 using System.Diagnostics;
 
-namespace Layoutize.Utils;
+namespace Layoutize.Attributes;
 
 internal static class Path
 {
@@ -9,25 +9,36 @@ internal static class Path
     {
         Element element = context.Element;
         Debug.Assert(!element.IsDisposed);
-        string path = null!;
+        string? path = null;
         void visitParent(Element element)
         {
             Element? parent = element.Parent;
-            Debug.Assert(parent != null);
             switch (parent)
             {
                 case ViewElement:
                     path = parent.View.FullName;
                     return;
 
-                default:
+                case Element:
                     visitParent(parent);
+                    return;
+
+                default:
                     return;
             }
         }
         visitParent(element);
+        if (path == null)
+        {
+            path = Of(element.Layout);
+        }
         Debug.Assert(path != null);
         Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
         return System.IO.Path.GetFullPath(path);
+    }
+
+    internal static string Of(Layout layout)
+    {
+        return layout.RequireValue<string>(nameof(Path));
     }
 }

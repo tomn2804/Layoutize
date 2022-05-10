@@ -12,8 +12,6 @@ internal sealed class StatefulElement : ComponentElement
         State.StateUpdated += UpdateChild;
     }
 
-    private static new UpdateComparer UpdateComparer { get; } = new();
-
     private State State { get; }
 
     private StatefulLayout StatefulLayout => (StatefulLayout)Layout;
@@ -46,7 +44,7 @@ internal sealed class StatefulElement : ComponentElement
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         Element newChild = Build().CreateElement();
-        if (UpdateComparer.Equals(Child, newChild))
+        if (Comparer.Equals(Child, newChild))
         {
             Child.Layout = newChild.Layout;
         }

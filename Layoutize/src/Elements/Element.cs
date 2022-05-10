@@ -1,4 +1,5 @@
-﻿using Layoutize.Views;
+﻿using Layoutize.Attributes;
+using Layoutize.Views;
 using System;
 using System.Diagnostics;
 
@@ -8,18 +9,17 @@ internal abstract partial class Element
 {
     private protected Element(Layout layout)
     {
+        Debug.Assert(Name.Of(layout) != null);
         _layout = layout;
-        Debug.Assert(Layout.Attributes.TryGetValue("Name", out object? nameObject));
-        Debug.Assert(nameObject?.ToString() != null);
     }
 
     internal virtual bool IsMounted { get; private set; }
 
-    internal string Name => Layout.Attributes["Name"].ToString()!;
-
     internal Element? Parent { get; private set; }
 
     internal abstract View View { get; }
+
+    private protected static UpdateComparer Comparer { get; } = new();
 }
 
 internal abstract partial class Element
@@ -158,6 +158,10 @@ internal abstract partial class Element : IComparable<Element>
 {
     public int CompareTo(Element? other)
     {
-        return Name.CompareTo(other?.Name);
+        if (other == null)
+        {
+            return 1;
+        }
+        return Name.Of(this).CompareTo(Name.Of(other));
     }
 }

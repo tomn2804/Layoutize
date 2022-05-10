@@ -1,4 +1,5 @@
-﻿using Layoutize.Elements;
+﻿using Layoutize.Attributes;
+using Layoutize.Elements;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ using System.Management.Automation;
 
 namespace Layoutize;
 
-[Cmdlet(VerbsData.Mount, "Element")]
+[Cmdlet(VerbsData.Mount, nameof(Element))]
 public class MountElementCmdlet : PSCmdlet
 {
     [Parameter(Mandatory = true, Position = 1)]
@@ -39,9 +40,9 @@ public class MountElementCmdlet : PSCmdlet
         DirectoryInfo rootDirectory = Directory.CreateDirectory(FullPath);
         ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
         {
-            KeyValuePair.Create<object, object>("Name", rootDirectory.Name),
-            KeyValuePair.Create<object, object>("Path", rootDirectory.Parent?.FullName ?? string.Empty),
-            KeyValuePair.Create<object, object>("Children", Layout)
+            KeyValuePair.Create<object, object>(nameof(Name), rootDirectory.Name),
+            KeyValuePair.Create<object, object>(nameof(Attributes.Path), rootDirectory.Parent?.FullName ?? string.Empty),
+            KeyValuePair.Create<object, object>(nameof(Children), Layout),
         });
         DirectoryElement rootElement = new RootDirectoryLayout(attributes).CreateElement();
         rootElement.Mount(null);

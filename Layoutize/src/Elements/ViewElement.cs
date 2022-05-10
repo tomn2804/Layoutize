@@ -13,33 +13,60 @@ internal abstract partial class ViewElement : Element
         : base(layout)
     {
         _view = new(() => ViewLayout.CreateView(this));
-        HandleEventSubscription();
     }
 
     internal override View View => _view.Value;
 
+    private Action? Cleanup { get; set; }
+
     private ViewLayout ViewLayout => (ViewLayout)Layout;
+
+    private protected virtual Action? Build()
+    {
+        EventHandler? CreatingHandler = GetEventHandlerAttribute("OnCreating");
+        EventHandler? CreatedHandler = GetEventHandlerAttribute("OnCreated");
+        EventHandler? DeletingHandler = GetEventHandlerAttribute("OnDeleting");
+        EventHandler? DeletedHandler = GetEventHandlerAttribute("OnDeleted");
+        EventHandler? MountingHandler = GetEventHandlerAttribute("OnMounting");
+        EventHandler? MountedHandler = GetEventHandlerAttribute("OnMounted");
+        EventHandler? UnmountingHandler = GetEventHandlerAttribute("OnUnmounting");
+        EventHandler? UnmountedHandler = GetEventHandlerAttribute("OnUnmounted");
+
+        Creating += CreatingHandler;
+        Created += CreatedHandler;
+        Deleting += DeletingHandler;
+        Deleted += DeletedHandler;
+        Mounting += MountingHandler;
+        Mounted += MountedHandler;
+        Unmounting += UnmountingHandler;
+        Unmounted += UnmountedHandler;
+
+        return () =>
+        {
+            Creating -= CreatingHandler;
+            Created -= CreatedHandler;
+            Deleting -= DeletingHandler;
+            Deleted -= DeletedHandler;
+            Mounting -= MountingHandler;
+            Mounted -= MountedHandler;
+            Unmounting -= UnmountingHandler;
+            Unmounted -= UnmountedHandler;
+        };
+    }
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
         base.OnLayoutUpdated(e);
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
-        HandleEventSubscription();
-    }
-
-    private protected override void OnLayoutUpdating(EventArgs e)
-    {
-        base.OnLayoutUpdating(e);
-        Debug.Assert(!IsDisposed);
-        Debug.Assert(IsMounted);
-        HandleEventUnsubsciption();
+        Rebuild();
     }
 
     private protected override void OnMounting(EventArgs e)
     {
         base.OnMounting(e);
         Debug.Assert(!IsDisposed);
+        Cleanup = Build();
         Create();
         Debug.Assert(View.Exists);
     }
@@ -68,28 +95,12 @@ internal abstract partial class ViewElement : Element
         return null;
     }
 
-    private void HandleEventSubscription()
+    private void Rebuild()
     {
-        Creating += GetEventHandlerAttribute("OnCreating");
-        Created += GetEventHandlerAttribute("OnCreated");
-        Deleting += GetEventHandlerAttribute("OnDeleting");
-        Deleted += GetEventHandlerAttribute("OnDeleted");
-        Mounting += GetEventHandlerAttribute("OnMounting");
-        Mounted += GetEventHandlerAttribute("OnMounted");
-        Unmounting += GetEventHandlerAttribute("OnUnmounting");
-        Unmounted += GetEventHandlerAttribute("OnUnmounted");
-    }
-
-    private void HandleEventUnsubsciption()
-    {
-        Creating -= GetEventHandlerAttribute("OnCreating");
-        Created -= GetEventHandlerAttribute("OnCreated");
-        Deleting -= GetEventHandlerAttribute("OnDeleting");
-        Deleted -= GetEventHandlerAttribute("OnDeleted");
-        Mounting -= GetEventHandlerAttribute("OnMounting");
-        Mounted -= GetEventHandlerAttribute("OnMounted");
-        Unmounting -= GetEventHandlerAttribute("OnUnmounting");
-        Unmounted -= GetEventHandlerAttribute("OnUnmounted");
+        Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
+        Cleanup?.Invoke();
+        Cleanup = Build();
     }
 }
 

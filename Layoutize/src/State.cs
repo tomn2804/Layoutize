@@ -11,7 +11,7 @@ public abstract partial class State
 {
     protected State(StatefulLayout layout)
     {
-        Debug.Assert(Name.Of(layout) != null);
+        Name.RequireOf(layout);
         Layout = layout;
     }
 

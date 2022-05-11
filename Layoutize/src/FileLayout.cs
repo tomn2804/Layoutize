@@ -8,7 +8,7 @@ namespace Layoutize;
 
 public class FileLayout : ViewLayout
 {
-    public FileLayout(IDictionary attributes)
+    public FileLayout(IEnumerable attributes)
         : base(attributes)
     {
     }
@@ -20,7 +20,7 @@ public class FileLayout : ViewLayout
 
     internal override FileView CreateView(IBuildContext context)
     {
-        string fullName = System.IO.Path.Combine(Path.Of(context), Name.Of(context));
+        string fullName = System.IO.Path.Combine(Path.RequireOf(context), Name.RequireOf(context));
         Debug.Assert(System.IO.Path.IsPathFullyQualified(fullName));
         return new(new(fullName));
     }

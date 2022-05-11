@@ -8,7 +8,7 @@ namespace Layoutize;
 
 public class DirectoryLayout : ViewGroupLayout
 {
-    public DirectoryLayout(IDictionary attributes)
+    public DirectoryLayout(IEnumerable attributes)
         : base(attributes)
     {
     }
@@ -20,7 +20,7 @@ public class DirectoryLayout : ViewGroupLayout
 
     internal override DirectoryView CreateView(IBuildContext context)
     {
-        string fullName = System.IO.Path.Combine(Path.Of(context), Name.Of(context));
+        string fullName = System.IO.Path.Combine(Path.RequireOf(context), Name.RequireOf(context));
         Debug.Assert(System.IO.Path.IsPathFullyQualified(fullName));
         return new(new(fullName));
     }

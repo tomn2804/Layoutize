@@ -9,7 +9,7 @@ internal abstract partial class Element
 {
     private protected Element(Layout layout)
     {
-        Debug.Assert(Name.Of(layout) != null);
+        Name.RequireOf(layout);
         _layout = layout;
     }
 
@@ -162,6 +162,6 @@ internal abstract partial class Element : IComparable<Element>
         {
             return 1;
         }
-        return Name.Of(this).CompareTo(Name.Of(other));
+        return Name.RequireOf(this).CompareTo(Name.RequireOf(other));
     }
 }

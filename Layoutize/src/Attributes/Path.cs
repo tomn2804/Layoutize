@@ -5,7 +5,7 @@ namespace Layoutize.Attributes;
 
 internal static class Path
 {
-    internal static string Of(IBuildContext context)
+    internal static string? Of(IBuildContext context)
     {
         Element element = context.Element;
         Debug.Assert(!element.IsDisposed);
@@ -32,13 +32,33 @@ internal static class Path
         {
             path = Of(element.Layout);
         }
-        Debug.Assert(path != null);
-        Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
-        return System.IO.Path.GetFullPath(path);
+        if (path != null)
+        {
+            Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
+            path = System.IO.Path.GetFullPath(path);
+        }
+        return path;
     }
 
-    internal static string Of(Layout layout)
+    internal static string? Of(Layout layout)
     {
-        return layout.RequireValue<string>(nameof(Path));
+        return layout.GetValue<object>(nameof(Path))?.ToString();
+    }
+
+    internal static string RequireOf(IBuildContext context)
+    {
+        Element element = context.Element;
+        Debug.Assert(!element.IsDisposed);
+        string? path = Of(context);
+        if (path == null)
+        {
+            path = RequireOf(element.Layout);
+        }
+        return path;
+    }
+
+    internal static string RequireOf(Layout layout)
+    {
+        return layout.RequireValue<object>(nameof(Path)).ToString()!;
     }
 }

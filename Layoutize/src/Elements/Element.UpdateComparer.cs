@@ -18,7 +18,7 @@ internal abstract partial class Element
 
         public int GetHashCode(Element obj)
         {
-            return Name.Of(obj).GetHashCode();
+            return Name.RequireOf(obj).GetHashCode();
         }
     }
 }

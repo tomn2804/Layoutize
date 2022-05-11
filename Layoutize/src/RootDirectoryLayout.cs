@@ -6,9 +6,9 @@ namespace Layoutize;
 
 internal sealed class RootDirectoryLayout : DirectoryLayout
 {
-    internal RootDirectoryLayout(IDictionary attributes)
+    internal RootDirectoryLayout(IEnumerable attributes)
         : base(attributes)
     {
-        Debug.Assert(Path.Of(this) != null);
+        Debug.Assert(Path.RequireOf(this) != null);
     }
 }

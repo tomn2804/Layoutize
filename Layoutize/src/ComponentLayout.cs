@@ -5,7 +5,7 @@ namespace Layoutize;
 
 public abstract class ComponentLayout : Layout
 {
-    private protected ComponentLayout(IDictionary attributes)
+    private protected ComponentLayout(IEnumerable attributes)
         : base(attributes)
     {
     }

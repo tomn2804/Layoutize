@@ -3,7 +3,6 @@ using Layoutize.Elements;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Layoutize;
@@ -18,7 +17,7 @@ public abstract class Layout
             IEnumerable<KeyValuePair<object, object>> entries => entries.ToImmutableDictionary(),
             _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value!),
         };
-        Debug.Assert(Name.Of(this) != null);
+        Name.RequireOf(this);
     }
 
     public IImmutableDictionary<object, object> Attributes { get; }

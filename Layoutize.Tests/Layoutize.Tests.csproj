@@ -18,11 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\MountElementCmdletTests.DirectoryLayoutTests.cs" />
-    <Compile Include="src\MountElementCmdletTests.FileLayoutTests.cs" />
-    <Compile Include="src\MountElementCmdletTests.LayoutTests.cs" />
-    <Compile Include="src\MountElementCmdletTests.StatefulLayoutTests.cs" />
-    <Compile Include="src\MountElementCmdletTests.StatelessLayoutTests.cs" />
+    <Compile Include="src\LayoutTests.cs" />
+    <Compile Include="src\FileLayoutTests.cs" />
     <Compile Include="src\WorkingDirectoryCollection.cs" />
     <Compile Include="src\WorkingDirectoryFixture.cs" />
   </ItemGroup>

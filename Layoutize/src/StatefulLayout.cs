@@ -5,7 +5,7 @@ namespace Layoutize;
 
 public abstract class StatefulLayout : ComponentLayout
 {
-    protected StatefulLayout(IEnumerable attributes)
+    protected StatefulLayout(IDictionary attributes)
         : base(attributes)
     {
     }

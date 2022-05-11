@@ -5,7 +5,7 @@ namespace Layoutize;
 
 public abstract class ViewGroupLayout : ViewLayout
 {
-    private protected ViewGroupLayout(IEnumerable attributes)
+    private protected ViewGroupLayout(IDictionary attributes)
         : base(attributes)
     {
     }

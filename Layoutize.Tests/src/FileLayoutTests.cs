@@ -9,31 +9,32 @@ namespace Layoutize.Tests;
 
 public sealed class FileLayoutTests : LayoutTests
 {
-    public FileLayoutTests(WorkingDirectoryFixture fixture)
-        : base(fixture)
-    {
-    }
+    /*    public FileLayoutTests(WorkingDirectoryFixture fixture)
+            : base(fixture)
+        {
+        }
 
-    [Fact]
-    public void MountElement_CreateEmptyFile_ReturnsContext()
-    {
-        var attributes = new { Name = $"{MethodBase.GetCurrentMethod().Name}.txt" };
+        [Fact]
+        public void MountElement_CreateEmptyFile_ReturnsContext()
+        {
+            var attributes = new { Name = $"{MethodBase.GetCurrentMethod().Name}.txt" };
 
-        using IBuildContext context = (IBuildContext)Shell.AddScript($@"
-                using module Layoutize
-                using namespace Layoutize
+            using IBuildContext context = (IBuildContext)Shell.AddScript($@"
+                    using module Layoutize
+                    using namespace Layoutize
 
-                Mount-Element -Path '{WorkingDirectory.FullName}' -Layout (
-                    [FileLayout]@{{ Name = '{attributes.Name}' }}
-                )
-            ").Invoke().Last().BaseObject;
+                    Mount-Element -Path '{WorkingDirectory.FullName}' -Layout (
+                        [FileLayout]@{{ Name = '{attributes.Name}' }}
+                    )
+                ").Invoke().Last().BaseObject;
 
-        string fullName = Path.Combine(WorkingDirectory.FullName, attributes.Name);
-        Assert.True(File.Exists(fullName));
-        Assert.Empty(File.ReadLines(fullName));
-    }
+            string fullName = Path.Combine(WorkingDirectory.FullName, attributes.Name);
+            Assert.True(File.Exists(fullName));
+            Assert.Empty(File.ReadLines(fullName));
+        }
+    */
 
-    private protected override Layout CreateLayout(IEnumerable attributes)
+    private protected override Layout CreateLayout(IDictionary attributes)
     {
         return new FileLayout(attributes);
     }

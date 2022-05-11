@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include="src\LayoutTests.cs" />
     <Compile Include="src\FileLayoutTests.cs" />
+    <Compile Include="src\MountElementTests.cs" />
     <Compile Include="src\WorkingDirectoryCollection.cs" />
     <Compile Include="src\WorkingDirectoryFixture.cs" />
   </ItemGroup>

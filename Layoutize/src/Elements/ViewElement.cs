@@ -13,14 +13,14 @@ internal abstract partial class ViewElement : Element
         : base(layout)
     {
         _view = new(() => ViewLayout.CreateView(this));
-        Creating += (sender, e) => Attributes.OnCreating.Of(this)?.Invoke(sender, e);
-        Created += (sender, e) => Attributes.OnCreated.Of(this)?.Invoke(sender, e);
-        Deleting += (sender, e) => Attributes.OnDeleting.Of(this)?.Invoke(sender, e);
-        Deleted += (sender, e) => Attributes.OnDeleted.Of(this)?.Invoke(sender, e);
-        Mounting += (sender, e) => Attributes.OnMounting.Of(this)?.Invoke(sender, e);
-        Mounted += (sender, e) => Attributes.OnMounted.Of(this)?.Invoke(sender, e);
-        Unmounting += (sender, e) => Attributes.OnUnmounting.Of(this)?.Invoke(sender, e);
-        Unmounted += (sender, e) => Attributes.OnUnmounted.Of(this)?.Invoke(sender, e);
+        Creating += Attributes.OnCreating.Of(this);
+        Created += Attributes.OnCreated.Of(this);
+        Deleting += Attributes.OnDeleting.Of(this);
+        Deleted += Attributes.OnDeleted.Of(this);
+        Mounting += Attributes.OnMounting.Of(this);
+        Mounted += Attributes.OnMounted.Of(this);
+        Unmounting += Attributes.OnUnmounting.Of(this);
+        Unmounted += Attributes.OnUnmounted.Of(this);
     }
 
     internal override View View => _view.Value;

@@ -6,7 +6,7 @@ namespace Layoutize;
 
 public abstract class ViewLayout : Layout
 {
-    private protected ViewLayout(IEnumerable attributes)
+    private protected ViewLayout(IDictionary attributes)
         : base(attributes)
     {
     }

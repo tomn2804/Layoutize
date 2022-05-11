@@ -14,10 +14,17 @@ public class DismountElementCmdlet : Cmdlet
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
-        Element element = Context.Element;
-        element.Dispose();
-        Debug.Assert(element.IsDisposed);
-        Debug.Assert(!element.IsMounted);
+        Element rootElement = Context.Element;
+        Debug.Assert(rootElement.Layout is RootDirectoryLayout);
+        if (rootElement.IsDisposed)
+        {
+            throw new PSObjectDisposedException(nameof(Context));
+        }
+        if (!rootElement.IsMounted)
+        {
+            rootElement.Unmount();
+        }
+        Debug.Assert(!rootElement.IsMounted);
         WriteObject(Context);
     }
 }

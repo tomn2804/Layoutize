@@ -1,46 +1,40 @@
 ﻿using Layoutize.Elements;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Layoutize.Attributes;
 
 internal static class Children
 {
-    internal static IEnumerable<Layout>? Of(IBuildContext context)
+    internal static ImmutableSortedSet<Element>? Of(IBuildContext context)
     {
-        Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
-        return Of(element.Layout);
+        object? value = context.GetValue(nameof(Children));
+        return value != null ? Cast(value) : null;
     }
 
-    internal static IEnumerable<Layout>? Of(Layout layout)
+    internal static ImmutableSortedSet<Element>? Of(Layout layout)
     {
-        return layout.GetValue<object?>(nameof(Children)) switch
+        object? value = layout.GetValue(nameof(Children));
+        return value != null ? Cast(value) : null;
+    }
+
+    internal static ImmutableSortedSet<Element> RequireOf(IBuildContext context)
+    {
+        return Cast(context.RequireValue(nameof(Children)));
+    }
+
+    internal static ImmutableSortedSet<Element> RequireOf(Layout layout)
+    {
+        return Cast(layout.RequireValue(nameof(Children)));
+    }
+
+    private static ImmutableSortedSet<Element> Cast(object value)
+    {
+        return value switch
         {
-            Layout child => new[] { child },
-            IEnumerable<object> children => children.Cast<Layout>(),
-            _ => null,
+            IEnumerable<object> children => children.Cast<Layout>().Select(child => child.CreateElement()).ToImmutableSortedSet(),
+            _ => ImmutableSortedSet.Create(((Layout)value).CreateElement()),
         };
-    }
-
-    internal static ImmutableSortedSet<Element> Of(ViewGroupElement element)
-    {
-        Debug.Assert(!element.IsDisposed);
-        IEnumerable<Layout> children = Of(element.Layout) ?? ImmutableSortedSet<Layout>.Empty;
-        return children.Select(layout => layout.CreateElement()).ToImmutableSortedSet();
-    }
-
-    internal static string RequireOf(IBuildContext context)
-    {
-        Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
-        return RequireOf(element.Layout);
-    }
-
-    internal static string RequireOf(Layout layout)
-    {
-        return layout.RequireValue<object>(nameof(Children)).ToString()!;
     }
 }

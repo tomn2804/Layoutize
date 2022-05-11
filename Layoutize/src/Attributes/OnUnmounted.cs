@@ -1,32 +1,36 @@
 ﻿using Layoutize.Elements;
-using System.Diagnostics;
+using System;
 using System.Management.Automation;
 
 namespace Layoutize.Attributes;
 
 internal static class OnUnmounted
 {
-    internal static ScriptBlock? Of(IBuildContext context)
+    internal static EventHandler? Of(IBuildContext context)
     {
-        Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
-        return Of(element.Layout);
+        object? value = context.GetValue(nameof(OnUnmounted));
+        return value != null ? Cast(value) : null;
     }
 
-    internal static ScriptBlock? Of(Layout layout)
+    internal static EventHandler? Of(Layout layout)
     {
-        return layout.GetValue<ScriptBlock?>(nameof(OnUnmounted));
+        object? value = layout.GetValue(nameof(OnUnmounted));
+        return value != null ? Cast(value) : null;
     }
 
-    internal static ScriptBlock RequireOf(IBuildContext context)
+    internal static EventHandler RequireOf(IBuildContext context)
     {
-        Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
-        return RequireOf(element.Layout);
+        return Cast(context.RequireValue(nameof(OnUnmounted)));
     }
 
-    internal static ScriptBlock RequireOf(Layout layout)
+    internal static EventHandler RequireOf(Layout layout)
     {
-        return layout.RequireValue<ScriptBlock>(nameof(OnUnmounted));
+        return Cast(layout.RequireValue(nameof(OnUnmounted)));
+    }
+
+    private static EventHandler Cast(object value)
+    {
+        ScriptBlock scriptBlock = (ScriptBlock)value;
+        return (sender, e) => scriptBlock.Invoke(sender, e);
     }
 }

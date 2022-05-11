@@ -1,14 +1,28 @@
 ﻿using Layoutize.Elements;
+using System;
 using System.Diagnostics;
 
 namespace Layoutize.Attributes;
 
 internal static class Path
 {
+    internal static bool ContainsInvalidChars(string path)
+    {
+        return path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1;
+    }
+
+    internal static bool IsValid(string path)
+    {
+        return !ContainsInvalidChars(path) && System.IO.Path.IsPathFullyQualified(path);
+    }
+
     internal static string? Of(IBuildContext context)
     {
         Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
+        if (element.IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(IBuildContext));
+        }
         string? path = null;
         void visitParent(Element element)
         {
@@ -32,33 +46,43 @@ internal static class Path
         {
             path = Of(element.Layout);
         }
-        if (path != null)
+        else
         {
-            Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
-            path = System.IO.Path.GetFullPath(path);
+            Debug.Assert(IsValid(path));
         }
         return path;
     }
 
     internal static string? Of(Layout layout)
     {
-        return layout.GetValue<object>(nameof(Path))?.ToString();
+        object? value = layout.GetValue(nameof(Path));
+        return value != null ? Cast(value) : null;
     }
 
     internal static string RequireOf(IBuildContext context)
     {
-        Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
         string? path = Of(context);
         if (path == null)
         {
-            path = RequireOf(element.Layout);
+            return RequireOf(context.Element.Layout);
         }
+        Debug.Assert(IsValid(path));
         return path;
     }
 
     internal static string RequireOf(Layout layout)
     {
-        return layout.RequireValue<object>(nameof(Path)).ToString()!;
+        return Cast(layout.RequireValue(nameof(Path)));
+    }
+
+    private static string Cast(object value)
+    {
+        string path = value.ToString()!;
+        if (!IsValid(path))
+        {
+            throw new ArgumentException($"Value of '{nameof(Path)}' attribute is invalid.", nameof(value));
+        }
+        Debug.Assert(System.IO.Path.IsPathFullyQualified(path));
+        return System.IO.Path.GetFullPath(path);
     }
 }

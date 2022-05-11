@@ -23,20 +23,27 @@ public class MountElementCmdlet : PSCmdlet
     {
         get
         {
+            Debug.Assert(!Attributes.Path.ContainsInvalidChars(Path));
             string fullPath = Path;
             if (!System.IO.Path.IsPathFullyQualified(fullPath))
             {
                 fullPath = System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, fullPath);
             }
-            return System.IO.Path.GetFullPath(fullPath);
+            fullPath = System.IO.Path.GetFullPath(fullPath);
+            Debug.Assert(Attributes.Path.IsValid(fullPath));
+            return fullPath;
         }
     }
 
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
-        Debug.Assert(!Layout.GetType().Equals(typeof(RootDirectoryLayout)));
-        Debug.Assert(System.IO.Path.IsPathFullyQualified(FullPath));
+        Debug.Assert(Layout is not RootDirectoryLayout);
+        if (Attributes.Path.ContainsInvalidChars(Path))
+        {
+            throw new PSArgumentException("Path contains invalid characters.", nameof(Path));
+        }
+        Debug.Assert(Attributes.Path.IsValid(FullPath));
         DirectoryInfo rootDirectory = Directory.CreateDirectory(FullPath);
         ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
         {

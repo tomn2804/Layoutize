@@ -1,26 +1,46 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Layoutize.Elements;
+using System;
+using System.Collections.Generic;
 
 namespace Layoutize.Attributes;
 
 internal static class Attribute
 {
-    internal static T? GetValue<T>(this Layout layout, string key)
+    internal static object? GetValue(this IBuildContext context, string key)
     {
-        if (layout.Attributes.TryGetValue(key, out object? value))
+        Element element = context.Element;
+        if (element.IsDisposed)
         {
-            Debug.Assert(value != null);
-            return (T)value;
+            throw new ObjectDisposedException(nameof(IBuildContext));
         }
-        return default;
+        return element.Layout.GetValue(key);
     }
 
-    internal static T RequireValue<T>(this Layout layout, string key)
+    internal static object? GetValue(this Layout layout, string key)
     {
-        T? value = layout.GetValue<T>(key);
+        layout.Attributes.TryGetValue(key, out object? value);
+        return value;
+    }
+
+    internal static object RequireValue(this IBuildContext context, string key)
+    {
+        Element element = context.Element;
+        if (element.IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(IBuildContext));
+        }
+        return element.Layout.RequireValue(key);
+    }
+
+    internal static object RequireValue(this Layout layout, string key)
+    {
+        if (!layout.Attributes.TryGetValue(key, out object? value))
+        {
+            throw new KeyNotFoundException($"'{key}' attribute was not found.");
+        }
         if (value == null)
         {
-            throw new KeyNotFoundException($"Layout does not contain attribute '{key}'.");
+            throw new ArgumentNullException(nameof(layout), $"'{key}' attribute value is null.");
         }
         return value;
     }

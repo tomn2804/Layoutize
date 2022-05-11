@@ -15,7 +15,7 @@ public abstract partial class State
         Layout = layout;
     }
 
-    public IImmutableDictionary<object, object> Attributes => Layout.Attributes;
+    public IImmutableDictionary<object, object?> Attributes => Layout.Attributes;
 
     internal StatefulLayout Layout { get; set; }
 

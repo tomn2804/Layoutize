@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace Layoutize.Views;
 
@@ -6,6 +7,8 @@ internal abstract class View
 {
     private protected View(FileSystemInfo fileSystemInfo)
     {
+        Debug.Assert(!Attributes.Name.IsValid(fileSystemInfo.Name));
+        Debug.Assert(Attributes.Path.IsValid(fileSystemInfo.FullName));
         FileSystemInfo = fileSystemInfo;
     }
 

@@ -7,6 +7,19 @@ namespace Layoutize.Attributes;
 
 public static class Path
 {
+    public static bool IsValid(string path)
+    {
+        try
+        {
+            Validate(path);
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
+    }
+
     public static string? Of(IBuildContext context)
     {
         Element element = context.Element;
@@ -37,7 +50,8 @@ public static class Path
         {
             path = Of(element.Layout.Attributes);
         }
-        Debug.Assert(path != null && TryValidate(path));
+        Debug.Assert(path != null);
+        Debug.Assert(IsValid(path));
         return path;
     }
 
@@ -47,7 +61,7 @@ public static class Path
         if (value != null)
         {
             string path = Cast(value);
-            Debug.Assert(TryValidate(path));
+            Debug.Assert(IsValid(path));
             return path;
         }
         return null;
@@ -56,35 +70,22 @@ public static class Path
     public static string RequireOf(IBuildContext context)
     {
         string path = Of(context) ?? Of(context.Element)!;
-        Debug.Assert(TryValidate(path));
+        Debug.Assert(IsValid(path));
         return path;
     }
 
     public static string RequireOf(IImmutableDictionary<object, object?> attributes)
     {
         string path = Cast(attributes.RequireValue(nameof(Path)));
-        Debug.Assert(TryValidate(path));
+        Debug.Assert(IsValid(path));
         return path;
-    }
-
-    public static bool TryValidate(string path)
-    {
-        try
-        {
-            Validate(path);
-        }
-        catch
-        {
-            return false;
-        }
-        return true;
     }
 
     public static void Validate(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new ArgumentException($"Attribute value '{nameof(Path)}' cannot be null or contains only white spaces.", nameof(path));
+            throw new ArgumentException($"Attribute value '{nameof(Path)}' is null or only white spaces.", nameof(path));
         }
         if (path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
         {

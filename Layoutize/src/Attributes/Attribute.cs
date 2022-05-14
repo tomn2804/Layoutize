@@ -32,7 +32,7 @@ public static class Attribute
     {
         if (!attributes.TryGetValue(key, out object? value))
         {
-            throw new KeyNotFoundException($"Attribute key '{key}' is not found.");
+            throw new KeyNotFoundException($"Attribute key '{key}' not found.");
         }
         if (value == null)
         {

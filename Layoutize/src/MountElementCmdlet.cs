@@ -30,7 +30,7 @@ public class MountElementCmdlet : PSCmdlet
             }
             Attributes.Path.Validate(fullPath);
             fullPath = System.IO.Path.GetFullPath(fullPath);
-            Debug.Assert(Attributes.Path.TryValidate(fullPath));
+            Debug.Assert(Attributes.Path.IsValid(fullPath));
             return fullPath;
         }
     }
@@ -39,7 +39,7 @@ public class MountElementCmdlet : PSCmdlet
     {
         base.ProcessRecord();
         Debug.Assert(Layout is not RootDirectoryLayout);
-        Debug.Assert(Attributes.Path.TryValidate(FullPath));
+        Debug.Assert(Attributes.Path.IsValid(FullPath));
         DirectoryInfo rootDirectory = Directory.CreateDirectory(FullPath);
         ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
         {

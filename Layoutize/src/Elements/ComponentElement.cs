@@ -34,8 +34,12 @@ internal abstract partial class ComponentElement : Element
     {
         if (!IsDisposed && disposing)
         {
+            Debug.Assert(!Child.IsDisposed);
+            Debug.Assert(Child.IsMounted);
             Child.Dispose();
         }
+        Debug.Assert(Child.IsDisposed);
+        Debug.Assert(!Child.IsMounted);
         base.Dispose(disposing);
     }
 
@@ -51,6 +55,7 @@ internal abstract partial class ComponentElement : Element
     {
         base.OnMounting(e);
         Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
         Debug.Assert(Parent != null);
         Child.Mount(this);
         Debug.Assert(Child.IsMounted);
@@ -61,11 +66,9 @@ internal abstract partial class ComponentElement : Element
     {
         base.OnUnmounting(e);
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         Debug.Assert(Parent != null);
-        if (Child.IsMounted)
-        {
-            Child.Unmount();
-        }
+        Child.Unmount();
         Debug.Assert(!Child.IsMounted);
         Debug.Assert(Child.Parent == null);
     }

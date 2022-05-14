@@ -67,10 +67,6 @@ internal abstract partial class Element
     {
         Debug.Assert(!IsDisposed);
         Debug.Assert(!IsMounted);
-        if (IsMounted)
-        {
-            Unmount();
-        }
         Parent = parent;
         OnMounting(EventArgs.Empty);
         IsMounted = true;
@@ -101,6 +97,7 @@ internal abstract partial class Element
     internal void Unmount()
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         OnUnmounting(EventArgs.Empty);
         Parent = null;
         IsMounted = false;
@@ -157,7 +154,10 @@ internal abstract partial class Element : IDisposable
         {
             if (disposing)
             {
-                Unmount();
+                if (!IsMounted)
+                {
+                    Unmount();
+                }
                 LayoutUpdating = null;
                 LayoutUpdated = null;
                 Mounting = null;

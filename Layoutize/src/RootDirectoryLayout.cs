@@ -8,6 +8,6 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
     internal RootDirectoryLayout(IDictionary attributes)
         : base(attributes)
     {
-        Path.RequireOf(this);
+        Path.RequireOf(Attributes);
     }
 }

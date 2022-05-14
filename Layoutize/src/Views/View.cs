@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
+using System.Diagnostics;
 
 namespace Layoutize.Views;
 
@@ -7,9 +7,9 @@ internal abstract class View
 {
     private protected View(FileSystemInfo fileSystemInfo)
     {
-        Debug.Assert(!Attributes.Name.IsValid(fileSystemInfo.Name));
-        Debug.Assert(Attributes.Path.IsValid(fileSystemInfo.FullName));
         FileSystemInfo = fileSystemInfo;
+        Debug.Assert(Attributes.Name.TryValidate(Name));
+        Debug.Assert(Attributes.Name.TryValidate(FullName));
     }
 
     internal bool Exists => FileSystemInfo.Exists;

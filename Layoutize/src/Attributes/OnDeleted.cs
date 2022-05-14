@@ -1,31 +1,32 @@
 ﻿using Layoutize.Elements;
 using System;
+using System.Collections.Immutable;
 using System.Management.Automation;
 
 namespace Layoutize.Attributes;
 
-internal static class OnDeleted
+public static class OnDeleted
 {
-    internal static EventHandler? Of(IBuildContext context)
+    public static EventHandler? Of(IBuildContext context)
     {
         object? value = context.GetValue(nameof(OnDeleted));
         return value != null ? Cast(value) : null;
     }
 
-    internal static EventHandler? Of(Layout layout)
+    public static EventHandler? Of(IImmutableDictionary<object, object?> attributes)
     {
-        object? value = layout.GetValue(nameof(OnDeleted));
+        object? value = attributes.GetValue(nameof(OnDeleted));
         return value != null ? Cast(value) : null;
     }
 
-    internal static EventHandler RequireOf(IBuildContext context)
+    public static EventHandler RequireOf(IBuildContext context)
     {
         return Cast(context.RequireValue(nameof(OnDeleted)));
     }
 
-    internal static EventHandler RequireOf(Layout layout)
+    public static EventHandler RequireOf(IImmutableDictionary<object, object?> attributes)
     {
-        return Cast(layout.RequireValue(nameof(OnDeleted)));
+        return Cast(attributes.RequireValue(nameof(OnDeleted)));
     }
 
     private static EventHandler Cast(object value)

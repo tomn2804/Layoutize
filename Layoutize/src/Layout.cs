@@ -17,7 +17,7 @@ public abstract class Layout
             IDictionary<object, object?> dictionary => dictionary.ToImmutableDictionary(),
             _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value),
         };
-        Name.RequireOf(this);
+        Name.RequireOf(Attributes);
     }
 
     public IImmutableDictionary<object, object?> Attributes { get; }

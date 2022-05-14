@@ -1,29 +1,30 @@
 ﻿using Layoutize.Elements;
+using System.Collections.Immutable;
 
 namespace Layoutize.Attributes;
 
-internal static class DeleteOnUnmount
+public static class DeleteOnUnmount
 {
-    internal static bool? Of(IBuildContext context)
+    public static bool? Of(IBuildContext context)
     {
         object? value = context.GetValue(nameof(DeleteOnUnmount));
         return value != null ? Cast(value) : null;
     }
 
-    internal static bool? Of(Layout layout)
+    public static bool? Of(IImmutableDictionary<object, object?> attributes)
     {
-        object? value = layout.GetValue(nameof(DeleteOnUnmount));
+        object? value = attributes.GetValue(nameof(DeleteOnUnmount));
         return value != null ? Cast(value) : null;
     }
 
-    internal static bool RequireOf(IBuildContext context)
+    public static bool RequireOf(IBuildContext context)
     {
         return Cast(context.RequireValue(nameof(DeleteOnUnmount)));
     }
 
-    internal static bool RequireOf(Layout layout)
+    public static bool RequireOf(IImmutableDictionary<object, object?> attributes)
     {
-        return Cast(layout.RequireValue(nameof(DeleteOnUnmount)));
+        return Cast(attributes.RequireValue(nameof(DeleteOnUnmount)));
     }
 
     private static bool Cast(object value)

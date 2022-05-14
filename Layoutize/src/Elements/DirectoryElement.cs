@@ -1,6 +1,6 @@
 ﻿namespace Layoutize.Elements;
 
-internal sealed class DirectoryElement : ViewGroupElement
+internal class DirectoryElement : ViewGroupElement
 {
     internal DirectoryElement(DirectoryLayout layout)
         : base(layout)

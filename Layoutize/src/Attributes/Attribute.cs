@@ -1,46 +1,42 @@
 ﻿using Layoutize.Elements;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 
 namespace Layoutize.Attributes;
 
-internal static class Attribute
+public static class Attribute
 {
-    internal static object? GetValue(this IBuildContext context, string key)
+    public static object? GetValue(this IBuildContext context, string key)
     {
         Element element = context.Element;
-        if (element.IsDisposed)
-        {
-            throw new ObjectDisposedException(nameof(IBuildContext));
-        }
-        return element.Layout.GetValue(key);
+        Debug.Assert(!element.IsDisposed);
+        return element.Layout.Attributes.GetValue(key);
     }
 
-    internal static object? GetValue(this Layout layout, string key)
+    public static object? GetValue(this IImmutableDictionary<object, object?> attributes, string key)
     {
-        layout.Attributes.TryGetValue(key, out object? value);
+        attributes.TryGetValue(key, out object? value);
         return value;
     }
 
-    internal static object RequireValue(this IBuildContext context, string key)
+    public static object RequireValue(this IBuildContext context, string key)
     {
         Element element = context.Element;
-        if (element.IsDisposed)
-        {
-            throw new ObjectDisposedException(nameof(IBuildContext));
-        }
-        return element.Layout.RequireValue(key);
+        Debug.Assert(!element.IsDisposed);
+        return element.Layout.Attributes.RequireValue(key);
     }
 
-    internal static object RequireValue(this Layout layout, string key)
+    public static object RequireValue(this IImmutableDictionary<object, object?> attributes, string key)
     {
-        if (!layout.Attributes.TryGetValue(key, out object? value))
+        if (!attributes.TryGetValue(key, out object? value))
         {
-            throw new KeyNotFoundException($"'{key}' attribute was not found.");
+            throw new KeyNotFoundException($"Attribute key '{key}' is not found.");
         }
         if (value == null)
         {
-            throw new ArgumentNullException(nameof(layout), $"'{key}' attribute value is null.");
+            throw new ArgumentNullException(nameof(attributes), $"Attribute value '{key}' is null.");
         }
         return value;
     }

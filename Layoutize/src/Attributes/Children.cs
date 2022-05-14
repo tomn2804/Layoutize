@@ -5,36 +5,36 @@ using System.Linq;
 
 namespace Layoutize.Attributes;
 
-internal static class Children
+public static class Children
 {
-    internal static ImmutableSortedSet<Element>? Of(IBuildContext context)
+    public static IEnumerable<Layout>? Of(IBuildContext context)
     {
         object? value = context.GetValue(nameof(Children));
         return value != null ? Cast(value) : null;
     }
 
-    internal static ImmutableSortedSet<Element>? Of(Layout layout)
+    public static IEnumerable<Layout>? Of(IImmutableDictionary<object, object?> attributes)
     {
-        object? value = layout.GetValue(nameof(Children));
+        object? value = attributes.GetValue(nameof(Children));
         return value != null ? Cast(value) : null;
     }
 
-    internal static ImmutableSortedSet<Element> RequireOf(IBuildContext context)
+    public static IEnumerable<Layout> RequireOf(IBuildContext context)
     {
         return Cast(context.RequireValue(nameof(Children)));
     }
 
-    internal static ImmutableSortedSet<Element> RequireOf(Layout layout)
+    public static IEnumerable<Layout> RequireOf(IImmutableDictionary<object, object?> attributes)
     {
-        return Cast(layout.RequireValue(nameof(Children)));
+        return Cast(attributes.RequireValue(nameof(Children)));
     }
 
-    private static ImmutableSortedSet<Element> Cast(object value)
+    private static IEnumerable<Layout> Cast(object value)
     {
         return value switch
         {
-            IEnumerable<object> children => children.Cast<Layout>().Select(child => child.CreateElement()).ToImmutableSortedSet(),
-            _ => ImmutableSortedSet.Create(((Layout)value).CreateElement()),
+            IEnumerable<object> children => children.Cast<Layout>(),
+            _ => new[] { (Layout)value },
         };
     }
 }

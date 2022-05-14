@@ -15,11 +15,8 @@ public class DismountElementCmdlet : Cmdlet
     {
         base.ProcessRecord();
         Element rootElement = Context.Element;
+        Debug.Assert(!!rootElement.IsDisposed);
         Debug.Assert(rootElement.Layout is RootDirectoryLayout);
-        if (rootElement.IsDisposed)
-        {
-            throw new PSObjectDisposedException(nameof(Context));
-        }
         if (!rootElement.IsMounted)
         {
             rootElement.Unmount();

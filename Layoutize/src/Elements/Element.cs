@@ -9,7 +9,6 @@ internal abstract partial class Element
 {
     private protected Element(Layout layout)
     {
-        Name.RequireOf(layout);
         _layout = layout;
     }
 
@@ -126,7 +125,24 @@ internal abstract partial class Element
 internal abstract partial class Element : IBuildContext
 {
     Element IBuildContext.Element => this;
+}
 
+internal abstract partial class Element : IComparable<Element>
+{
+    public int CompareTo(Element? other)
+    {
+        Debug.Assert(!IsDisposed);
+        if (other == null)
+        {
+            return 1;
+        }
+        Debug.Assert(!other.IsDisposed);
+        return Name.RequireOf(this).CompareTo(Name.RequireOf(other));
+    }
+}
+
+internal abstract partial class Element : IDisposable
+{
     internal bool IsDisposed { get; private set; }
 
     public void Dispose()
@@ -151,17 +167,5 @@ internal abstract partial class Element : IBuildContext
             }
             IsDisposed = true;
         }
-    }
-}
-
-internal abstract partial class Element : IComparable<Element>
-{
-    public int CompareTo(Element? other)
-    {
-        if (other == null)
-        {
-            return 1;
-        }
-        return Name.RequireOf(this).CompareTo(Name.RequireOf(other));
     }
 }

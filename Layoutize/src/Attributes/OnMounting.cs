@@ -1,31 +1,32 @@
 ﻿using Layoutize.Elements;
 using System;
+using System.Collections.Immutable;
 using System.Management.Automation;
 
 namespace Layoutize.Attributes;
 
-internal static class OnMounting
+public static class OnMounting
 {
-    internal static EventHandler? Of(IBuildContext context)
+    public static EventHandler? Of(IBuildContext context)
     {
         object? value = context.GetValue(nameof(OnMounting));
         return value != null ? Cast(value) : null;
     }
 
-    internal static EventHandler? Of(Layout layout)
+    public static EventHandler? Of(IImmutableDictionary<object, object?> attributes)
     {
-        object? value = layout.GetValue(nameof(OnMounting));
+        object? value = attributes.GetValue(nameof(OnMounting));
         return value != null ? Cast(value) : null;
     }
 
-    internal static EventHandler RequireOf(IBuildContext context)
+    public static EventHandler RequireOf(IBuildContext context)
     {
         return Cast(context.RequireValue(nameof(OnMounting)));
     }
 
-    internal static EventHandler RequireOf(Layout layout)
+    public static EventHandler RequireOf(IImmutableDictionary<object, object?> attributes)
     {
-        return Cast(layout.RequireValue(nameof(OnMounting)));
+        return Cast(attributes.RequireValue(nameof(OnMounting)));
     }
 
     private static EventHandler Cast(object value)

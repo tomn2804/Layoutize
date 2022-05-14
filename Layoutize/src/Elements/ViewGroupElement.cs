@@ -11,7 +11,7 @@ internal abstract partial class ViewGroupElement : ViewElement
     private protected ViewGroupElement(ViewGroupLayout layout)
         : base(layout)
     {
-        _children = new(() => Attributes.Children.Of(this) ?? ImmutableSortedSet<Element>.Empty);
+        _children = new(() => Attributes.Children.Of(this)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty);
     }
 
     internal override bool IsMounted
@@ -35,7 +35,7 @@ internal abstract partial class ViewGroupElement : ViewElement
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         ImmutableSortedSet<Element>.Builder newChildrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Element newChild in Attributes.Children.Of(this) ?? ImmutableSortedSet<Element>.Empty)
+        foreach (Element newChild in Attributes.Children.Of(this)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty)
         {
             if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
             {

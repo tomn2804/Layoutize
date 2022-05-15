@@ -20,7 +20,7 @@ public class FileLayout : ViewLayout
 
     internal override FileView CreateView(IBuildContext context)
     {
-        string fullName = System.IO.Path.Combine(Path.RequireOf(context), Name.RequireOf(context));
+        string fullName = System.IO.Path.Combine(Path.RequireOf(context), Name.RequireOf(Attributes));
         Debug.Assert(Path.IsValid(fullName));
         return new(new(fullName));
     }

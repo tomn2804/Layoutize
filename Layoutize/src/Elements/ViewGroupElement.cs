@@ -11,19 +11,23 @@ internal abstract partial class ViewGroupElement : ViewElement
     private protected ViewGroupElement(ViewGroupLayout layout)
         : base(layout)
     {
-        _children = new(() => Attributes.Children.Of(this)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty);
+        _children = new(() => GetChildren());
     }
 
     internal override bool IsMounted
     {
         get
         {
+            Debug.Assert(!IsDisposed);
+            Debug.Assert(Children.All(child => !child.IsDisposed));
             if (base.IsMounted)
             {
                 Debug.Assert(Children.All(child => child.IsMounted));
                 Debug.Assert(Children.All(child => child.Parent == this));
                 return true;
             }
+            Debug.Assert(Children.All(child => !child.IsMounted));
+            Debug.Assert(Children.All(child => child.Parent == null));
             return false;
         }
     }
@@ -35,7 +39,7 @@ internal abstract partial class ViewGroupElement : ViewElement
         Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         ImmutableSortedSet<Element>.Builder newChildrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Element newChild in Attributes.Children.Of(this)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty)
+        foreach (Element newChild in GetChildren())
         {
             if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
             {
@@ -72,13 +76,15 @@ internal abstract partial class ViewGroupElement : ViewElement
         Debug.Assert(!IsDisposed);
         foreach (Element child in Children)
         {
-            if (child.IsMounted)
-            {
-                child.Unmount();
-            }
+            child.Unmount();
         }
         Debug.Assert(Children.All(child => !child.IsMounted));
         Debug.Assert(Children.All(child => child.Parent == null));
+    }
+
+    private ImmutableSortedSet<Element> GetChildren()
+    {
+        return Attributes.Children.Of(Layout.Attributes)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty;
     }
 }
 

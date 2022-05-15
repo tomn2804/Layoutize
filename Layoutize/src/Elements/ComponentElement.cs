@@ -16,12 +16,16 @@ internal abstract partial class ComponentElement : Element
     {
         get
         {
+            Debug.Assert(!IsDisposed);
+            Debug.Assert(!Child.IsDisposed);
             if (base.IsMounted)
             {
                 Debug.Assert(Child.IsMounted);
                 Debug.Assert(Child.Parent == this);
                 return true;
             }
+            Debug.Assert(!Child.IsMounted);
+            Debug.Assert(Child.Parent == null);
             return false;
         }
     }
@@ -35,11 +39,11 @@ internal abstract partial class ComponentElement : Element
         if (!IsDisposed && disposing)
         {
             Debug.Assert(!Child.IsDisposed);
-            Debug.Assert(Child.IsMounted);
+            Debug.Assert(Child.Parent == this);
             Child.Dispose();
         }
         Debug.Assert(Child.IsDisposed);
-        Debug.Assert(!Child.IsMounted);
+        Debug.Assert(Child.Parent == null);
         base.Dispose(disposing);
     }
 

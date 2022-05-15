@@ -13,40 +13,25 @@ internal abstract partial class ViewElement : Element
         : base(layout)
     {
         _view = new(() => ViewLayout.CreateView(this));
-        Creating += Attributes.OnCreating.Of(this);
-        Created += Attributes.OnCreated.Of(this);
-        Deleting += Attributes.OnDeleting.Of(this);
-        Deleted += Attributes.OnDeleted.Of(this);
-        Mounting += Attributes.OnMounting.Of(this);
-        Mounted += Attributes.OnMounted.Of(this);
-        Unmounting += Attributes.OnUnmounting.Of(this);
-        Unmounted += Attributes.OnUnmounted.Of(this);
+        Creating += Attributes.OnCreating.Of(Layout.Attributes);
+        Created += Attributes.OnCreated.Of(Layout.Attributes);
+        Deleting += Attributes.OnDeleting.Of(Layout.Attributes);
+        Deleted += Attributes.OnDeleted.Of(Layout.Attributes);
+        Mounting += Attributes.OnMounting.Of(Layout.Attributes);
+        Mounted += Attributes.OnMounted.Of(Layout.Attributes);
+        Unmounting += Attributes.OnUnmounting.Of(Layout.Attributes);
+        Unmounted += Attributes.OnUnmounted.Of(Layout.Attributes);
     }
 
     internal override View View => _view.Value;
 
-    private Action? Cleanup { get; set; }
-
     private ViewLayout ViewLayout => (ViewLayout)Layout;
-
-    private protected virtual Action? Build()
-    {
-        return null;
-    }
-
-    private protected override void OnLayoutUpdated(EventArgs e)
-    {
-        Debug.Assert(!IsDisposed);
-        Debug.Assert(IsMounted);
-        Rebuild();
-        base.OnLayoutUpdated(e);
-    }
 
     private protected override void OnMounting(EventArgs e)
     {
         base.OnMounting(e);
         Debug.Assert(!IsDisposed);
-        Cleanup = Build();
+        Debug.Assert(!IsMounted);
         Create();
         Debug.Assert(View.Exists);
     }
@@ -55,19 +40,12 @@ internal abstract partial class ViewElement : Element
     {
         base.OnUnmounting(e);
         Debug.Assert(!IsDisposed);
-        bool deleteOnUnmount = DeleteOnUnmount.Of(this) ?? false;
-        if (deleteOnUnmount && View.Exists)
+        Debug.Assert(IsMounted);
+        bool deleteOnUnmount = DeleteOnUnmount.Of(Layout.Attributes) ?? false;
+        if (deleteOnUnmount)
         {
             Delete();
         }
-    }
-
-    private void Rebuild()
-    {
-        Debug.Assert(!IsDisposed);
-        Debug.Assert(IsMounted);
-        Cleanup?.Invoke();
-        Cleanup = Build();
     }
 }
 
@@ -80,6 +58,7 @@ internal abstract partial class ViewElement
     private protected virtual void OnCreated(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
         Debug.Assert(View.Exists);
         Created?.Invoke(this, e);
     }
@@ -87,6 +66,7 @@ internal abstract partial class ViewElement
     private protected virtual void OnCreating(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
         Debug.Assert(!View.Exists);
         Creating?.Invoke(this, e);
     }
@@ -94,6 +74,7 @@ internal abstract partial class ViewElement
     private void Create()
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
         if (!View.Exists)
         {
             OnCreating(EventArgs.Empty);
@@ -112,6 +93,7 @@ internal abstract partial class ViewElement
     private protected virtual void OnDeleted(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         Debug.Assert(!View.Exists);
         Deleted?.Invoke(this, e);
     }
@@ -119,6 +101,7 @@ internal abstract partial class ViewElement
     private protected virtual void OnDeleting(EventArgs e)
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         Debug.Assert(View.Exists);
         Deleting?.Invoke(this, e);
     }
@@ -126,6 +109,7 @@ internal abstract partial class ViewElement
     private void Delete()
     {
         Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         if (View.Exists)
         {
             OnDeleting(EventArgs.Empty);

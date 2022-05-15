@@ -20,41 +20,6 @@ public static class Path
         return true;
     }
 
-    public static string? Of(IBuildContext context)
-    {
-        Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
-        string? path = null;
-        void visitParent(Element element)
-        {
-            Debug.Assert(!element.IsDisposed);
-            Element? parent = element.Parent;
-            if (parent != null)
-            {
-                Debug.Assert(!parent.IsDisposed);
-                Debug.Assert(parent.IsMounted);
-                switch (parent)
-                {
-                    case ViewElement:
-                        path = parent.View.FullName;
-                        return;
-
-                    default:
-                        visitParent(parent);
-                        return;
-                }
-            }
-        }
-        visitParent(element);
-        if (path == null)
-        {
-            path = Of(element.Layout.Attributes);
-        }
-        Debug.Assert(path != null);
-        Debug.Assert(IsValid(path));
-        return path;
-    }
-
     public static string? Of(IImmutableDictionary<object, object?> attributes)
     {
         object? value = attributes.GetValue(nameof(Path));
@@ -69,7 +34,27 @@ public static class Path
 
     public static string RequireOf(IBuildContext context)
     {
-        string path = Of(context) ?? Of(context.Element)!;
+        Element element = context.Element;
+        Debug.Assert(!element.IsDisposed);
+        string? path = null;
+        void visitParent(Element element)
+        {
+            Element? parent = element.Parent;
+            Debug.Assert(parent != null);
+            Debug.Assert(!parent.IsDisposed);
+            switch (parent)
+            {
+                case ViewElement:
+                    path = parent.View.FullName;
+                    return;
+
+                default:
+                    visitParent(parent);
+                    return;
+            }
+        }
+        visitParent(element);
+        Debug.Assert(path != null);
         Debug.Assert(IsValid(path));
         return path;
     }
@@ -85,7 +70,7 @@ public static class Path
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new ArgumentException($"Attribute value '{nameof(Path)}' is null or only white spaces.", nameof(path));
+            throw new ArgumentException($"Attribute value '{nameof(Path)}' is null or contains only white spaces.", nameof(path));
         }
         if (path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
         {

@@ -26,8 +26,10 @@ internal sealed class StatefulElement : ComponentElement
     {
         if (!IsDisposed && disposing)
         {
+            Debug.Assert(!State.IsDisposed);
             State.Dispose();
         }
+        Debug.Assert(State.IsDisposed);
         base.Dispose(disposing);
     }
 

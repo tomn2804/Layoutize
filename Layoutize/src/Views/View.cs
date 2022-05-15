@@ -18,8 +18,6 @@ internal abstract class View
 
     internal string Name => FileSystemInfo.Name;
 
-    internal string? Parent => Path.GetDirectoryName(FullName);
-
     private protected FileSystemInfo FileSystemInfo { get; }
 
     internal abstract void Create();

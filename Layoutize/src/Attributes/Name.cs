@@ -20,18 +20,6 @@ public static class Name
         return true;
     }
 
-    public static string? Of(IBuildContext context)
-    {
-        object? value = context.GetValue(nameof(Name));
-        if (value != null)
-        {
-            string name = Cast(value);
-            Debug.Assert(IsValid(name));
-            return name;
-        }
-        return null;
-    }
-
     public static string? Of(IImmutableDictionary<object, object?> attributes)
     {
         object? value = attributes.GetValue(nameof(Name));
@@ -46,14 +34,14 @@ public static class Name
 
     public static string RequireOf(IBuildContext context)
     {
-        string name = Cast(context.RequireValue(nameof(Path)));
+        string name = context.Element.View.Name;
         Debug.Assert(IsValid(name));
         return name;
     }
 
     public static string RequireOf(IImmutableDictionary<object, object?> attributes)
     {
-        string name = Cast(attributes.RequireValue(nameof(Path)));
+        string name = Cast(attributes.RequireValue(nameof(Name)));
         Debug.Assert(IsValid(name));
         return name;
     }
@@ -62,7 +50,7 @@ public static class Name
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            throw new ArgumentException($"Attribute value '{nameof(Name)}' is null or only white spaces.", nameof(name));
+            throw new ArgumentException($"Attribute value '{nameof(Name)}' is null or contains only white spaces.", nameof(name));
         }
         if (name.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
         {

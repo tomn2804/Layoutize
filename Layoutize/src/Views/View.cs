@@ -8,15 +8,29 @@ internal abstract class View
     private protected View(FileSystemInfo fileSystemInfo)
     {
         FileSystemInfo = fileSystemInfo;
-        Debug.Assert(Attributes.Name.IsValid(Name));
-        Debug.Assert(Attributes.Path.IsValid(FullName));
     }
 
     internal bool Exists => FileSystemInfo.Exists;
 
-    internal string FullName => FileSystemInfo.FullName;
+    internal string FullName
+    {
+        get
+        {
+            string fullName = FileSystemInfo.FullName;
+            Debug.Assert(Attributes.Path.IsValid(fullName));
+            return fullName;
+        }
+    }
 
-    internal string Name => FileSystemInfo.Name;
+    internal string Name
+    {
+        get
+        {
+            string name = FileSystemInfo.Name;
+            Debug.Assert(Attributes.Name.IsValid(name));
+            return name;
+        }
+    }
 
     private protected FileSystemInfo FileSystemInfo { get; }
 

@@ -35,13 +35,11 @@ public static class Path
     public static string RequireOf(IBuildContext context)
     {
         Element element = context.Element;
-        Debug.Assert(!element.IsDisposed);
         string? path = null;
         void visitParent(Element element)
         {
             Element? parent = element.Parent;
             Debug.Assert(parent != null);
-            Debug.Assert(!parent.IsDisposed);
             switch (parent)
             {
                 case ViewElement:

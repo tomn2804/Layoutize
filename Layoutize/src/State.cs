@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Immutable;
-using System.Diagnostics;
 
 namespace Layoutize;
 
@@ -28,49 +27,21 @@ public abstract partial class State
 
     private protected virtual void OnStateUpdated(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         StateUpdated?.Invoke(this, e);
     }
 
     private protected virtual void OnStateUpdating(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         StateUpdating?.Invoke(this, e);
     }
 
     protected void SetState(IDictionary properties)
     {
-        Debug.Assert(!IsDisposed);
         OnStateUpdating(EventArgs.Empty);
-        Type @this = GetType();
         foreach (DictionaryEntry property in properties)
         {
-            @this.GetProperty((string)property.Key)!.SetValue(this, property.Value);
+            GetType().GetProperty((string)property.Key)!.SetValue(this, property.Value);
         }
         OnStateUpdated(EventArgs.Empty);
-    }
-}
-
-public abstract partial class State : IDisposable
-{
-    public bool IsDisposed { get; private set; }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!IsDisposed)
-        {
-            if (disposing)
-            {
-                StateUpdating = null;
-                StateUpdated = null;
-            }
-            IsDisposed = true;
-        }
     }
 }

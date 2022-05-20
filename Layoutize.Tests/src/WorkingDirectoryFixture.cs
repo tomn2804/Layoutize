@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -6,7 +7,7 @@ namespace Layoutize.Tests;
 
 public sealed class WorkingDirectoryFixture : IDisposable
 {
-    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), nameof(LayoutTests)));
+    private readonly DirectoryInfo WorkingDirectory = new(Path.Combine(Path.GetTempPath(), nameof(WorkingDirectoryFixture)));
 
     private int _id;
 
@@ -21,6 +22,7 @@ public sealed class WorkingDirectoryFixture : IDisposable
 
     public void Dispose()
     {
+        Debug.Assert(WorkingDirectory.Exists);
         WorkingDirectory.Delete(true);
     }
 

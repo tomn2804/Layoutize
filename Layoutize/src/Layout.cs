@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Layoutize;
 
-public abstract class Layout
+public abstract partial class Layout
 {
     private protected Layout(IDictionary attributes)
     {

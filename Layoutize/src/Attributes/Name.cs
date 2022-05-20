@@ -34,7 +34,8 @@ public static class Name
 
     public static string RequireOf(IBuildContext context)
     {
-        string name = context.Element.View.Name;
+        Element element = context.Element;
+        string name = element.View.Name;
         Debug.Assert(IsValid(name));
         return name;
     }

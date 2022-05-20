@@ -18,24 +18,11 @@ internal sealed class StatefulElement : ComponentElement
 
     private protected override Layout Build()
     {
-        Debug.Assert(!IsDisposed);
         return State.Build(this);
-    }
-
-    private protected override void Dispose(bool disposing)
-    {
-        if (!IsDisposed && disposing)
-        {
-            Debug.Assert(!State.IsDisposed);
-            State.Dispose();
-        }
-        Debug.Assert(State.IsDisposed);
-        base.Dispose(disposing);
     }
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         State.Layout = StatefulLayout;
         base.OnLayoutUpdated(e);
@@ -43,7 +30,6 @@ internal sealed class StatefulElement : ComponentElement
 
     private void UpdateChild(object? sender, EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         Element newChild = Build().CreateElement();
         if (Comparer.Equals(Child, newChild))
@@ -54,5 +40,6 @@ internal sealed class StatefulElement : ComponentElement
         {
             Child = newChild;
         }
+        Debug.Assert(IsMounted);
     }
 }

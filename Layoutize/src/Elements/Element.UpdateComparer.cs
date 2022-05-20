@@ -5,7 +5,7 @@ namespace Layoutize.Elements;
 
 internal abstract partial class Element
 {
-    private protected sealed partial class UpdateComparer : IEqualityComparer<Element>
+    private protected sealed class UpdateComparer : IEqualityComparer<Element>
     {
         public bool Equals(Element? x, Element? y)
         {

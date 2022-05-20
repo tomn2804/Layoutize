@@ -11,15 +11,13 @@ internal abstract partial class ViewGroupElement : ViewElement
     private protected ViewGroupElement(ViewGroupLayout layout)
         : base(layout)
     {
-        _children = new(() => GetChildren());
+        _children = new(() => GetAttributeChildren());
     }
 
-    internal override bool IsMounted
+    internal new bool IsMounted
     {
         get
         {
-            Debug.Assert(!IsDisposed);
-            Debug.Assert(Children.All(child => !child.IsDisposed));
             if (base.IsMounted)
             {
                 Debug.Assert(Children.All(child => child.IsMounted));
@@ -36,53 +34,51 @@ internal abstract partial class ViewGroupElement : ViewElement
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
-        ImmutableSortedSet<Element>.Builder newChildrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Element newChild in GetChildren())
+        ImmutableSortedSet<Element>.Builder childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
+        foreach (Element newChild in GetAttributeChildren())
         {
             if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
             {
                 currentChild.Layout = newChild.Layout;
-                newChildrenBuilder.Add(currentChild);
+                childrenBuilder.Add(currentChild);
             }
             else
             {
-                newChildrenBuilder.Add(newChild);
+                childrenBuilder.Add(newChild);
             }
         }
-        if (newChildrenBuilder.Any())
+        if (childrenBuilder.Any())
         {
-            Children = newChildrenBuilder.ToImmutable();
+            Children = childrenBuilder.ToImmutable();
         }
+        Debug.Assert(IsMounted);
         base.OnLayoutUpdated(e);
     }
 
     private protected override void OnMounting(EventArgs e)
     {
         base.OnMounting(e);
-        Debug.Assert(!IsDisposed);
+        Debug.Assert(!IsMounted);
         foreach (Element child in Children)
         {
             child.Mount(this);
         }
-        Debug.Assert(Children.All(child => child.IsMounted));
-        Debug.Assert(Children.All(child => child.Parent == this));
+        Debug.Assert(IsMounted);
     }
 
     private protected override void OnUnmounting(EventArgs e)
     {
         base.OnUnmounting(e);
-        Debug.Assert(!IsDisposed);
+        Debug.Assert(IsMounted);
         foreach (Element child in Children)
         {
             child.Unmount();
         }
-        Debug.Assert(Children.All(child => !child.IsMounted));
-        Debug.Assert(Children.All(child => child.Parent == null));
+        Debug.Assert(!IsMounted);
     }
 
-    private ImmutableSortedSet<Element> GetChildren()
+    private ImmutableSortedSet<Element> GetAttributeChildren()
     {
         return Attributes.Children.Of(Layout.Attributes)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty;
     }
@@ -101,7 +97,6 @@ internal abstract partial class ViewGroupElement
         get => _children.Value;
         private protected set
         {
-            Debug.Assert(!IsDisposed);
             Debug.Assert(IsMounted);
             OnChildrenUpdating(EventArgs.Empty);
             IEnumerable<Element> enteringChildren = value.Except(Children);
@@ -117,22 +112,19 @@ internal abstract partial class ViewGroupElement
             {
                 enteringChild.Mount(this);
             }
-            Debug.Assert(Children.All(child => child.IsMounted));
-            Debug.Assert(Children.All(child => child.Parent == this));
             OnChildrenUpdated(EventArgs.Empty);
+            Debug.Assert(IsMounted);
         }
     }
 
     private protected virtual void OnChildrenUpdated(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         ChildrenUpdated?.Invoke(this, e);
     }
 
     private protected virtual void OnChildrenUpdating(EventArgs e)
     {
-        Debug.Assert(!IsDisposed);
         Debug.Assert(IsMounted);
         ChildrenUpdating?.Invoke(this, e);
     }

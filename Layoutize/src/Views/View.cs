@@ -1,38 +1,12 @@
-﻿using System.IO;
-using System.Diagnostics;
-
-namespace Layoutize.Views;
+﻿namespace Layoutize.Views;
 
 internal abstract class View
 {
-    private protected View(FileSystemInfo fileSystemInfo)
-    {
-        FileSystemInfo = fileSystemInfo;
-    }
+    internal abstract bool Exists { get; }
 
-    internal bool Exists => FileSystemInfo.Exists;
+    internal abstract string FullName { get; }
 
-    internal string FullName
-    {
-        get
-        {
-            string fullName = FileSystemInfo.FullName;
-            Debug.Assert(Attributes.Path.IsValid(fullName));
-            return fullName;
-        }
-    }
-
-    internal string Name
-    {
-        get
-        {
-            string name = FileSystemInfo.Name;
-            Debug.Assert(Attributes.Name.IsValid(name));
-            return name;
-        }
-    }
-
-    private protected FileSystemInfo FileSystemInfo { get; }
+    internal abstract string Name { get; }
 
     internal abstract void Create();
 

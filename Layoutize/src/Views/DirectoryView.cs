@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal sealed class DirectoryView : View
+internal sealed class DirectoryView : FileSystemView
 {
     internal DirectoryView(DirectoryInfo directoryInfo)
         : base(directoryInfo)
@@ -16,11 +16,6 @@ internal sealed class DirectoryView : View
     {
         Debug.Assert(!Exists);
         DirectoryInfo.Create();
-    }
-
-    internal override sealed void Delete()
-    {
         Debug.Assert(Exists);
-        DirectoryInfo.Delete(true);
     }
 }

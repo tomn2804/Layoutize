@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal sealed class FileView : View
+internal sealed class FileView : FileSystemView
 {
     internal FileView(FileInfo fileInfo)
         : base(fileInfo)
@@ -16,11 +16,6 @@ internal sealed class FileView : View
     {
         Debug.Assert(!Exists);
         FileInfo.Create().Dispose();
-    }
-
-    internal override sealed void Delete()
-    {
         Debug.Assert(Exists);
-        FileInfo.Delete();
     }
 }

@@ -1,5 +1,4 @@
-﻿using Layoutize.Attributes;
-using Layoutize.Elements;
+﻿using Layoutize.Elements;
 using Layoutize.Views;
 using System.Collections;
 using System.Diagnostics;
@@ -20,7 +19,7 @@ public class FileLayout : ViewLayout
 
     internal override FileView CreateView(IBuildContext context)
     {
-        string fullName = System.IO.Path.Combine(Path.RequireOf(context), Name.RequireOf(Attributes));
+        string fullName = System.IO.Path.Combine(Path.RequireOf(context), Name);
         Debug.Assert(Path.IsValid(fullName));
         return new(new(fullName));
     }

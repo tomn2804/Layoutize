@@ -12,20 +12,46 @@ internal abstract partial class ViewElement : Element
     private protected ViewElement(ViewLayout layout)
         : base(layout)
     {
-        _view = new(() => ViewLayout.CreateView(this));
-        Creating += Attributes.OnCreating.Of(Layout.Attributes);
-        Created += Attributes.OnCreated.Of(Layout.Attributes);
-        Deleting += Attributes.OnDeleting.Of(Layout.Attributes);
-        Deleted += Attributes.OnDeleted.Of(Layout.Attributes);
-        Mounting += Attributes.OnMounting.Of(Layout.Attributes);
-        Mounted += Attributes.OnMounted.Of(Layout.Attributes);
-        Unmounting += Attributes.OnUnmounting.Of(Layout.Attributes);
-        Unmounted += Attributes.OnUnmounted.Of(Layout.Attributes);
+        _view = new(() => Layout.CreateView(this));
+        Creating += Layout.OnCreating;
+        Created += Layout.OnCreated;
+        Deleting += Layout.OnDeleting;
+        Deleted += Layout.OnDeleted;
+        Mounting += Layout.OnMounting;
+        Mounted += Layout.OnUnmounted;
+        Unmounting += Layout.OnUnmounting;
+        Unmounted += Layout.OnUnmounted;
     }
 
     internal override View View => _view.Value;
 
-    private ViewLayout ViewLayout => (ViewLayout)Layout;
+    private new ViewLayout Layout => (ViewLayout)base.Layout;
+
+    private protected override void OnLayoutUpdated(EventArgs e)
+    {
+        Creating += Layout.OnCreating;
+        Created += Layout.OnCreated;
+        Deleting += Layout.OnDeleting;
+        Deleted += Layout.OnDeleted;
+        Mounting += Layout.OnMounting;
+        Mounted += Layout.OnUnmounted;
+        Unmounting += Layout.OnUnmounting;
+        Unmounted += Layout.OnUnmounted;
+        base.OnLayoutUpdated(e);
+    }
+
+    private protected override void OnLayoutUpdating(EventArgs e)
+    {
+        base.OnLayoutUpdating(e);
+        Creating -= Layout.OnCreating;
+        Created -= Layout.OnCreated;
+        Deleting -= Layout.OnDeleting;
+        Deleted -= Layout.OnDeleted;
+        Mounting -= Layout.OnMounting;
+        Mounted -= Layout.OnUnmounted;
+        Unmounting -= Layout.OnUnmounting;
+        Unmounted -= Layout.OnUnmounted;
+    }
 
     private protected override void OnMounting(EventArgs e)
     {
@@ -42,8 +68,7 @@ internal abstract partial class ViewElement : Element
     {
         base.OnUnmounting(e);
         Debug.Assert(IsMounted);
-        bool deleteOnUnmount = DeleteOnUnmount.Of(Layout.Attributes) ?? false;
-        if (deleteOnUnmount && View.Exists)
+        if (Layout.DeleteOnUnmount && View.Exists)
         {
             Delete();
         }

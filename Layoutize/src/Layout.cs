@@ -1,8 +1,8 @@
 ﻿using Layoutize.Elements;
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace Layoutize;
 
@@ -10,15 +10,21 @@ public abstract class Layout
 {
     private protected Layout(IDictionary attributes)
     {
-        Attributes = attributes switch
+        Type thisType = GetType();
+        foreach (DictionaryEntry attribute in attributes)
         {
-            IImmutableDictionary<object, object?> dictionary => dictionary,
-            IDictionary<object, object?> dictionary => dictionary.ToImmutableDictionary(),
-            _ => attributes.Cast<DictionaryEntry>().ToImmutableDictionary(entry => entry.Key, entry => entry.Value),
-        };
+            PropertyInfo property = thisType.GetProperty((string)attribute.Key)!;
+            PropertyDescriptor? descriptor = TypeDescriptor.GetProperties(this)[property.Name];
+            if (descriptor != null)
+            {
+                property.SetValue(this, descriptor.Converter.ConvertFrom(attribute.Value!));
+            }
+            else
+            {
+                property.SetValue(this, attribute.Value);
+            }
+        }
     }
-
-    public IImmutableDictionary<object, object?> Attributes { get; }
 
     internal abstract Element CreateElement();
 }

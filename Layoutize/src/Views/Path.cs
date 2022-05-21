@@ -1,9 +1,8 @@
 ﻿using Layoutize.Elements;
 using System;
-using System.Collections.Immutable;
 using System.Diagnostics;
 
-namespace Layoutize.Attributes;
+namespace Layoutize.Views;
 
 public static class Path
 {
@@ -18,18 +17,6 @@ public static class Path
             return false;
         }
         return true;
-    }
-
-    public static string? Of(IImmutableDictionary<object, object?> attributes)
-    {
-        object? value = attributes.GetValue(nameof(Path));
-        if (value != null)
-        {
-            string path = Cast(value);
-            Debug.Assert(IsValid(path));
-            return path;
-        }
-        return null;
     }
 
     public static string RequireOf(IBuildContext context)
@@ -53,13 +40,6 @@ public static class Path
         }
         visitParent(element);
         Debug.Assert(path != null);
-        Debug.Assert(IsValid(path));
-        return path;
-    }
-
-    public static string RequireOf(IImmutableDictionary<object, object?> attributes)
-    {
-        string path = Cast(attributes.RequireValue(nameof(Path)));
         Debug.Assert(IsValid(path));
         return path;
     }

@@ -1,5 +1,4 @@
-﻿using Layoutize.Attributes;
-using Layoutize.Views;
+﻿using Layoutize.Views;
 using System;
 using System.Diagnostics;
 
@@ -7,6 +6,8 @@ namespace Layoutize.Elements;
 
 internal abstract partial class Element
 {
+    private protected static UpdateComparer Comparer = new();
+
     private bool _isMounted;
 
     private protected Element(Layout layout)
@@ -30,8 +31,6 @@ internal abstract partial class Element
     internal Element? Parent { get; private set; }
 
     internal abstract View View { get; }
-
-    private protected static UpdateComparer Comparer { get; } = new();
 }
 
 internal abstract partial class Element
@@ -138,6 +137,6 @@ internal abstract partial class Element : IComparable<Element>
         {
             return 1;
         }
-        return Name.RequireOf(this).CompareTo(Name.RequireOf(other));
+        return View.Name.CompareTo(other.View.Name);
     }
 }

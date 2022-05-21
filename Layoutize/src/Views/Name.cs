@@ -1,9 +1,8 @@
 ﻿using Layoutize.Elements;
 using System;
-using System.Collections.Immutable;
 using System.Diagnostics;
 
-namespace Layoutize.Attributes;
+namespace Layoutize.Views;
 
 public static class Name
 {
@@ -20,29 +19,10 @@ public static class Name
         return true;
     }
 
-    public static string? Of(IImmutableDictionary<object, object?> attributes)
-    {
-        object? value = attributes.GetValue(nameof(Name));
-        if (value != null)
-        {
-            string name = Cast(value);
-            Debug.Assert(IsValid(name));
-            return name;
-        }
-        return null;
-    }
-
     public static string RequireOf(IBuildContext context)
     {
         Element element = context.Element;
         string name = element.View.Name;
-        Debug.Assert(IsValid(name));
-        return name;
-    }
-
-    public static string RequireOf(IImmutableDictionary<object, object?> attributes)
-    {
-        string name = Cast(attributes.RequireValue(nameof(Name)));
         Debug.Assert(IsValid(name));
         return name;
     }

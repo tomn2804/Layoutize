@@ -5,26 +5,26 @@ namespace Layoutize.Elements;
 
 internal sealed class StatefulElement : ComponentElement
 {
+    private readonly State _state;
+
     internal StatefulElement(StatefulLayout layout)
-        : base(layout)
+            : base(layout)
     {
-        State = StatefulLayout.CreateState();
-        State.StateUpdated += UpdateChild;
+        _state = Layout.CreateState();
+        _state.StateUpdated += UpdateChild;
     }
 
-    private State State { get; }
-
-    private StatefulLayout StatefulLayout => (StatefulLayout)Layout;
+    private new StatefulLayout Layout => (StatefulLayout)base.Layout;
 
     private protected override Layout Build()
     {
-        return State.Build(this);
+        return _state.Build(this);
     }
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(IsMounted);
-        State.Layout = StatefulLayout;
+        _state.Layout = Layout;
         base.OnLayoutUpdated(e);
     }
 

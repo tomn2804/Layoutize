@@ -1,7 +1,7 @@
 ﻿using Layoutize.Elements;
 using System;
 using System.Collections;
-using System.Collections.Immutable;
+using System.Reflection;
 
 namespace Layoutize;
 
@@ -12,9 +12,17 @@ public abstract partial class State
         Layout = layout;
     }
 
-    public IImmutableDictionary<object, object?> Attributes => Layout.Attributes;
-
-    internal StatefulLayout Layout { get; set; }
+    internal StatefulLayout Layout
+    {
+        set
+        {
+            Type thisType = GetType();
+            foreach (PropertyInfo attribute in value.GetType().GetProperties())
+            {
+                thisType.GetProperty(attribute.Name)!.SetValue(this, attribute.GetValue(value));
+            }
+        }
+    }
 
     protected internal abstract Layout Build(IBuildContext context);
 }

@@ -11,7 +11,7 @@ internal abstract partial class ViewGroupElement : ViewElement
     private protected ViewGroupElement(ViewGroupLayout layout)
         : base(layout)
     {
-        _children = new(() => GetAttributeChildren());
+        _children = new(() => Layout.Children.Select(layout => layout.CreateElement()).ToImmutableSortedSet());
     }
 
     internal new bool IsMounted
@@ -30,13 +30,13 @@ internal abstract partial class ViewGroupElement : ViewElement
         }
     }
 
-    internal ViewGroupLayout ViewGroupLayout => (ViewGroupLayout)Layout;
+    private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(IsMounted);
         ImmutableSortedSet<Element>.Builder childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Element newChild in GetAttributeChildren())
+        foreach (Element newChild in Layout.Children.Select(layout => layout.CreateElement()).ToImmutableSortedSet())
         {
             if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
             {
@@ -76,11 +76,6 @@ internal abstract partial class ViewGroupElement : ViewElement
             child.Unmount();
         }
         Debug.Assert(!IsMounted);
-    }
-
-    private ImmutableSortedSet<Element> GetAttributeChildren()
-    {
-        return Attributes.Children.Of(Layout.Attributes)?.Select(layout => layout.CreateElement()).ToImmutableSortedSet() ?? ImmutableSortedSet<Element>.Empty;
     }
 }
 

@@ -43,7 +43,7 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
     internal override DirectoryView CreateView(IBuildContext context)
     {
         string fullName = System.IO.Path.Combine(Path, Name);
-        Debug.Assert(Views.Path.IsValid(fullName));
+        Debug.Assert(Elements.Path.IsValid(fullName));
         return new(new(fullName));
     }
 }

@@ -1,8 +1,7 @@
-﻿using Layoutize.Elements;
-using System;
+﻿using System;
 using System.Diagnostics;
 
-namespace Layoutize.Views;
+namespace Layoutize.Elements;
 
 public static class Name
 {

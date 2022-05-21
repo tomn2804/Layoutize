@@ -1,5 +1,4 @@
-﻿using Layoutize.Attributes;
-using Layoutize.Views;
+﻿using Layoutize.Views;
 using System;
 using System.Diagnostics;
 

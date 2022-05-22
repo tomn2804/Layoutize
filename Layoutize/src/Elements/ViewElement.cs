@@ -6,20 +6,13 @@ namespace Layoutize.Elements;
 
 internal abstract partial class ViewElement : Element
 {
-    private Lazy<View> _view;
+    private readonly Lazy<View> _view;
 
     private protected ViewElement(ViewLayout layout)
         : base(layout)
     {
         _view = new(() => Layout.CreateView(this));
-        Creating += Layout.OnCreating;
-        Created += Layout.OnCreated;
-        Deleting += Layout.OnDeleting;
-        Deleted += Layout.OnDeleted;
-        Mounting += Layout.OnMounting;
-        Mounted += Layout.OnUnmounted;
-        Unmounting += Layout.OnUnmounting;
-        Unmounted += Layout.OnUnmounted;
+        AddEventListener();
     }
 
     internal override View View => _view.Value;
@@ -28,28 +21,16 @@ internal abstract partial class ViewElement : Element
 
     private protected override void OnLayoutUpdated(EventArgs e)
     {
-        Creating += Layout.OnCreating;
-        Created += Layout.OnCreated;
-        Deleting += Layout.OnDeleting;
-        Deleted += Layout.OnDeleted;
-        Mounting += Layout.OnMounting;
-        Mounted += Layout.OnUnmounted;
-        Unmounting += Layout.OnUnmounting;
-        Unmounted += Layout.OnUnmounted;
+        Debug.Assert(IsMounted);
+        AddEventListener();
         base.OnLayoutUpdated(e);
     }
 
     private protected override void OnLayoutUpdating(EventArgs e)
     {
         base.OnLayoutUpdating(e);
-        Creating -= Layout.OnCreating;
-        Created -= Layout.OnCreated;
-        Deleting -= Layout.OnDeleting;
-        Deleted -= Layout.OnDeleted;
-        Mounting -= Layout.OnMounting;
-        Mounted -= Layout.OnUnmounted;
-        Unmounting -= Layout.OnUnmounting;
-        Unmounted -= Layout.OnUnmounted;
+        Debug.Assert(IsMounted);
+        RemoveEventListener();
     }
 
     private protected override void OnMounting(EventArgs e)
@@ -60,7 +41,6 @@ internal abstract partial class ViewElement : Element
         {
             Create();
         }
-        Debug.Assert(IsMounted);
     }
 
     private protected override void OnUnmounting(EventArgs e)
@@ -71,7 +51,30 @@ internal abstract partial class ViewElement : Element
         {
             Delete();
         }
-        Debug.Assert(!IsMounted);
+    }
+
+    private void AddEventListener()
+    {
+        Creating += Layout.OnCreating;
+        Created += Layout.OnCreated;
+        Deleting += Layout.OnDeleting;
+        Deleted += Layout.OnDeleted;
+        Mounting += Layout.OnMounting;
+        Mounted += Layout.OnUnmounted;
+        Unmounting += Layout.OnUnmounting;
+        Unmounted += Layout.OnUnmounted;
+    }
+
+    private void RemoveEventListener()
+    {
+        Creating -= Layout.OnCreating;
+        Created -= Layout.OnCreated;
+        Deleting -= Layout.OnDeleting;
+        Deleted -= Layout.OnDeleted;
+        Mounting -= Layout.OnMounting;
+        Mounted -= Layout.OnUnmounted;
+        Unmounting -= Layout.OnUnmounting;
+        Unmounted -= Layout.OnUnmounted;
     }
 }
 

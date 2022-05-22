@@ -38,6 +38,7 @@ internal abstract partial class ComponentElement : Element
     {
         Debug.Assert(IsMounted);
         Child.Layout = Build();
+        Debug.Assert(IsMounted);
         base.OnLayoutUpdated(e);
     }
 

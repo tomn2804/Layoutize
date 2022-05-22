@@ -36,11 +36,12 @@ internal abstract partial class ViewGroupElement : ViewElement
     {
         Debug.Assert(IsMounted);
         ImmutableSortedSet<Element>.Builder childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Element newChild in Layout.Children.Select(layout => layout.CreateElement()).ToImmutableSortedSet())
+        foreach (Layout newChildLayout in Layout.Children)
         {
-            if (Children.TryGetValue(newChild, out Element? currentChild) && Comparer.Equals(currentChild, newChild))
+            Element newChild = newChildLayout.CreateElement();
+            if (Children.TryGetValue(newChild, out Element? currentChild) && currentChild.Layout.GetType().Equals(newChildLayout.GetType()))
             {
-                currentChild.Layout = newChild.Layout;
+                currentChild.Layout = newChildLayout;
                 childrenBuilder.Add(currentChild);
             }
             else
@@ -48,10 +49,7 @@ internal abstract partial class ViewGroupElement : ViewElement
                 childrenBuilder.Add(newChild);
             }
         }
-        if (childrenBuilder.Any())
-        {
-            Children = childrenBuilder.ToImmutable();
-        }
+        Children = childrenBuilder.ToImmutable();
         Debug.Assert(IsMounted);
         base.OnLayoutUpdated(e);
     }
@@ -64,7 +62,6 @@ internal abstract partial class ViewGroupElement : ViewElement
         {
             child.Mount(this);
         }
-        Debug.Assert(IsMounted);
     }
 
     private protected override void OnUnmounting(EventArgs e)
@@ -75,7 +72,6 @@ internal abstract partial class ViewGroupElement : ViewElement
         {
             child.Unmount();
         }
-        Debug.Assert(!IsMounted);
     }
 }
 

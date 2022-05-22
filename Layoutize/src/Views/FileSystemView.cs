@@ -5,6 +5,8 @@ namespace Layoutize.Views;
 
 internal abstract class FileSystemView : View
 {
+    private protected readonly FileSystemInfo FileSystemInfo;
+
     private protected FileSystemView(FileSystemInfo fileSystemInfo)
     {
         FileSystemInfo = fileSystemInfo;
@@ -17,7 +19,7 @@ internal abstract class FileSystemView : View
         get
         {
             string fullName = FileSystemInfo.FullName;
-            Debug.Assert(Elements.Path.IsValid(fullName));
+            Debug.Assert(Utils.Path.IsValid(fullName));
             return fullName;
         }
     }
@@ -27,14 +29,14 @@ internal abstract class FileSystemView : View
         get
         {
             string name = FileSystemInfo.Name;
-            Debug.Assert(Elements.Name.IsValid(name));
+            Debug.Assert(Utils.Name.IsValid(name));
             return name;
         }
     }
 
-    private protected FileSystemInfo FileSystemInfo { get; }
+    internal override abstract void Create();
 
-    internal override sealed void Delete()
+    internal override void Delete()
     {
         Debug.Assert(Exists);
         FileSystemInfo.Delete();

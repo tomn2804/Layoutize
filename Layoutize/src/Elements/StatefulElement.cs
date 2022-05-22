@@ -8,7 +8,7 @@ internal sealed class StatefulElement : ComponentElement
     private readonly State _state;
 
     internal StatefulElement(StatefulLayout layout)
-            : base(layout)
+        : base(layout)
     {
         _state = Layout.CreateState();
         _state.StateUpdated += UpdateChild;
@@ -31,14 +31,14 @@ internal sealed class StatefulElement : ComponentElement
     private void UpdateChild(object? sender, EventArgs e)
     {
         Debug.Assert(IsMounted);
-        Element newChild = Build().CreateElement();
-        if (Comparer.Equals(Child, newChild))
+        Layout newChildLayout = Build();
+        if (Child.Layout.GetType().Equals(newChildLayout.GetType()))
         {
-            Child.Layout = newChild.Layout;
+            Child.Layout = newChildLayout;
         }
         else
         {
-            Child = newChild;
+            Child = newChildLayout.CreateElement();
         }
         Debug.Assert(IsMounted);
     }

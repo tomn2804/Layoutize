@@ -19,14 +19,14 @@
     <Compile Include="src\Elements\ComponentElement.cs" />
     <Compile Include="src\Elements\DirectoryElement.cs" />
     <Compile Include="src\Elements\Element.cs" />
-    <Compile Include="src\Elements\Element.UpdateComparer.cs" />
     <Compile Include="src\Elements\FileElement.cs" />
+    <Compile Include="src\Utils\FullName.cs" />
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
     <Compile Include="src\RootDirectoryLayout.cs" />
-    <Compile Include="src\Elements\Name.cs" />
-    <Compile Include="src\Elements\Path.cs" />
+    <Compile Include="src\Utils\Name.cs" />
+    <Compile Include="src\Utils\Path.cs" />
     <Compile Include="src\FileLayout.cs" />
     <Compile Include="src\StatefulLayout.cs" />
     <Compile Include="src\StatelessLayout.cs" />
@@ -44,10 +44,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.1.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\Utils\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

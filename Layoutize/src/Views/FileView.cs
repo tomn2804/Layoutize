@@ -10,12 +10,12 @@ internal sealed class FileView : FileSystemView
     {
     }
 
-    private FileInfo FileInfo => (FileInfo)FileSystemInfo;
+    private new FileInfo FileSystemInfo => (FileInfo)base.FileSystemInfo;
 
-    internal override sealed void Create()
+    internal sealed override void Create()
     {
         Debug.Assert(!Exists);
-        FileInfo.Create().Dispose();
+        FileSystemInfo.Create().Dispose();
         Debug.Assert(Exists);
     }
 }

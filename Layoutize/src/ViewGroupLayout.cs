@@ -1,19 +1,12 @@
 ﻿using Layoutize.Elements;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 
 namespace Layoutize;
 
 public abstract class ViewGroupLayout : ViewLayout
 {
-    private protected ViewGroupLayout(IDictionary attributes)
-        : base(attributes)
-    {
-        Debug.Assert(Children != null);
-    }
-
-    public IEnumerable<Layout> Children { get; }
+    public IEnumerable<Layout> Children { get; init; } = Enumerable.Empty<Layout>();
 
     internal abstract override ViewGroupElement CreateElement();
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Layoutize.Utils;
+namespace Layoutize.Contexts;
 
 public static class Path
 {

@@ -15,7 +15,7 @@ public abstract class ViewLayout : Layout
         get => _name ?? throw new InvalidOperationException("Attribute 'Name' is not initialized.");
         init
         {
-            Utils.Name.Validate(value);
+            Contexts.Name.Validate(value);
             _name = value;
         }
     }

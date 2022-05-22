@@ -19,7 +19,7 @@ internal abstract class FileSystemView : View
         get
         {
             string fullName = FileSystemInfo.FullName;
-            Debug.Assert(Utils.Path.IsValid(fullName));
+            Debug.Assert(Contexts.Path.IsValid(fullName));
             return fullName;
         }
     }
@@ -29,7 +29,7 @@ internal abstract class FileSystemView : View
         get
         {
             string name = FileSystemInfo.Name;
-            Debug.Assert(Utils.Name.IsValid(name));
+            Debug.Assert(Contexts.Name.IsValid(name));
             return name;
         }
     }

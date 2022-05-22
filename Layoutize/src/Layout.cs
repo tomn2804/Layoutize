@@ -13,7 +13,7 @@ public abstract class Layout
             Type thisType = GetType();
             foreach (PropertyInfo property in value.GetType().GetProperties())
             {
-                thisType.GetProperty(property.Name)!.SetValue(this, property.GetValue(value));
+                thisType.GetProperty(property.Name)?.SetValue(this, property.GetValue(value));
             }
         }
     }

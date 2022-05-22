@@ -35,12 +35,11 @@
     <Compile Include="src\ViewGroupLayout.cs" />
     <Compile Include="src\ViewLayout.cs" />
     <Compile Include="src\Views\DirectoryView.cs" />
-    <Compile Include="src\Views\FileSystemView.cs" />
+    <Compile Include="src\Views\View.cs" />
     <Compile Include="src\Views\FileView.cs" />
     <Compile Include="src\Elements\IBuildContext.cs" />
     <Compile Include="src\Layout.cs" />
     <Compile Include="src\State.cs" />
-    <Compile Include="src\Views\View.cs" />
     <Compile Include="src\Elements\ViewElement.cs" />
   </ItemGroup>
 

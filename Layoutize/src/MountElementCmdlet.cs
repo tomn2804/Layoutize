@@ -36,6 +36,10 @@ public class MountElementCmdlet : PSCmdlet
         base.ProcessRecord();
         Debug.Assert(Contexts.Path.IsValid(FullName));
         DirectoryInfo rootDirectory = Directory.CreateDirectory(FullName);
+        if (!rootDirectory.Exists)
+        {
+            throw new PSArgumentException("Path does not exists.", nameof(Path));
+        }
         DirectoryElement rootElement = new RootDirectoryLayout()
         {
             Name = rootDirectory.Name,

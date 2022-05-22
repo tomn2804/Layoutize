@@ -5,9 +5,19 @@ using System.Diagnostics;
 
 namespace Layoutize;
 
-internal sealed class RootDirectoryLayout : DirectoryLayout
+internal class RootDirectoryLayout : DirectoryLayout
 {
-    internal string Path { get; init; } = string.Empty;
+    private string _path = string.Empty;
+
+    public string Path
+    {
+        get => _path;
+        init
+        {
+            Debug.Assert(Contexts.Path.IsValid(value));
+            _path = value;
+        }
+    }
 
     internal override DirectoryView CreateView(IBuildContext context)
     {

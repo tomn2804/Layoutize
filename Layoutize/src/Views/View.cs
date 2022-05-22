@@ -1,14 +1,45 @@
-﻿namespace Layoutize.Views;
+﻿using System.IO;
+using System.Diagnostics;
+
+namespace Layoutize.Views;
 
 internal abstract class View
 {
-    internal abstract bool Exists { get; }
+    protected readonly FileSystemInfo FileSystem;
 
-    internal abstract string FullName { get; }
+    protected View(FileSystemInfo fileSystem)
+    {
+        FileSystem = fileSystem;
+    }
 
-    internal abstract string Name { get; }
+    public virtual bool Exists => FileSystem.Exists;
 
-    internal abstract void Create();
+    public virtual string FullName
+    {
+        get
+        {
+            string fullName = FileSystem.FullName;
+            Debug.Assert(Contexts.FullName.IsValid(fullName));
+            return fullName;
+        }
+    }
 
-    internal abstract void Delete();
+    public virtual string Name
+    {
+        get
+        {
+            string name = FileSystem.Name;
+            Debug.Assert(Contexts.Name.IsValid(name));
+            return name;
+        }
+    }
+
+    public abstract void Create();
+
+    public virtual void Delete()
+    {
+        Debug.Assert(Exists);
+        FileSystem.Delete();
+        Debug.Assert(!Exists);
+    }
 }

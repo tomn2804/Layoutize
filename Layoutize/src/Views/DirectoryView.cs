@@ -3,19 +3,19 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal sealed class DirectoryView : FileSystemView
+internal class DirectoryView : View
 {
-    internal DirectoryView(DirectoryInfo directoryInfo)
-        : base(directoryInfo)
+    public DirectoryView(DirectoryInfo directory)
+        : base(directory)
     {
     }
 
-    private new DirectoryInfo FileSystemInfo => (DirectoryInfo)base.FileSystemInfo;
+    protected new DirectoryInfo FileSystem => (DirectoryInfo)base.FileSystem;
 
-    internal sealed override void Create()
+    public override void Create()
     {
         Debug.Assert(!Exists);
-        FileSystemInfo.Create();
+        FileSystem.Create();
         Debug.Assert(Exists);
     }
 }

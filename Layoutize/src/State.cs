@@ -1,22 +1,30 @@
 ﻿using Layoutize.Elements;
 using System;
 using System.Collections;
+using System.Diagnostics;
 
 namespace Layoutize;
 
-public abstract partial class State
+public abstract partial class State<T> where T : StatefulLayout<T>
 {
-    internal StatefulLayout Layout;
+    private StatefulElement<T>? _element;
 
-    private protected State(StatefulLayout layout)
+    internal StatefulElement<T> Element
     {
-        Layout = layout;
+        get
+        {
+            Debug.Assert(_element != null);
+            return _element;
+        }
+        set => _element = value;
     }
+
+    protected T Layout => Element.Layout;
 
     protected internal abstract Layout Build(IBuildContext context);
 }
 
-public abstract partial class State
+public abstract partial class State<T>
 {
     internal event EventHandler? StateUpdated;
 
@@ -41,14 +49,4 @@ public abstract partial class State
         }
         OnStateUpdated(EventArgs.Empty);
     }
-}
-
-public abstract class State<T> : State where T : StatefulLayout
-{
-    protected State(T layout)
-        : base(layout)
-    {
-    }
-
-    protected new T Layout => (T)base.Layout;
 }

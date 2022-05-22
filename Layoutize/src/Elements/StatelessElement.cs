@@ -2,14 +2,14 @@
 
 internal sealed class StatelessElement : ComponentElement
 {
-    internal StatelessElement(StatelessLayout layout)
+    public StatelessElement(StatelessLayout layout)
         : base(layout)
     {
     }
 
-    private new StatelessLayout Layout => (StatelessLayout)base.Layout;
+    public new StatelessLayout Layout => (StatelessLayout)base.Layout;
 
-    private protected override sealed Layout Build()
+    protected override sealed Layout Build()
     {
         return Layout.Build(this);
     }

@@ -2,8 +2,10 @@
 
 internal sealed class FileElement : ViewElement
 {
-    internal FileElement(FileLayout layout)
+    public FileElement(FileLayout layout)
         : base(layout)
     {
     }
+
+    public new FileLayout Layout => (FileLayout)base.Layout;
 }

@@ -6,13 +6,13 @@ namespace Layoutize.Elements;
 
 internal abstract partial class ComponentElement : Element
 {
-    private protected ComponentElement(Layout layout)
+    protected ComponentElement(ComponentLayout layout)
         : base(layout)
     {
         _child = new(() => Build().CreateElement());
     }
 
-    internal new bool IsMounted
+    public new bool IsMounted
     {
         get
         {
@@ -30,11 +30,13 @@ internal abstract partial class ComponentElement : Element
         }
     }
 
-    internal override View View => Child.View;
+    public new ComponentLayout Layout => (ComponentLayout)base.Layout;
 
-    private protected abstract Layout Build();
+    public override View View => Child.View;
 
-    private protected override void OnLayoutUpdated(EventArgs e)
+    protected abstract Layout Build();
+
+    protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(IsMounted);
         Child.Layout = Build();
@@ -42,7 +44,7 @@ internal abstract partial class ComponentElement : Element
         base.OnLayoutUpdated(e);
     }
 
-    private protected override void OnMounting(EventArgs e)
+    protected override void OnMounting(EventArgs e)
     {
         base.OnMounting(e);
         Debug.Assert(!IsMounted);
@@ -50,7 +52,7 @@ internal abstract partial class ComponentElement : Element
         Debug.Assert(IsMounted);
     }
 
-    private protected override void OnUnmounting(EventArgs e)
+    protected override void OnUnmounting(EventArgs e)
     {
         base.OnUnmounting(e);
         Debug.Assert(IsMounted);
@@ -63,14 +65,14 @@ internal abstract partial class ComponentElement
 {
     private Lazy<Element> _child;
 
-    internal event EventHandler? ChildUpdated;
+    public event EventHandler? ChildUpdated;
 
-    internal event EventHandler? ChildUpdating;
+    public event EventHandler? ChildUpdating;
 
-    internal Element Child
+    public Element Child
     {
         get => _child.Value;
-        private protected set
+        protected set
         {
             Debug.Assert(IsMounted);
             OnChildUpdating(EventArgs.Empty);
@@ -82,13 +84,13 @@ internal abstract partial class ComponentElement
         }
     }
 
-    private protected virtual void OnChildUpdated(EventArgs e)
+    protected virtual void OnChildUpdated(EventArgs e)
     {
         Debug.Assert(IsMounted);
         ChildUpdated?.Invoke(this, e);
     }
 
-    private protected virtual void OnChildUpdating(EventArgs e)
+    protected virtual void OnChildUpdating(EventArgs e)
     {
         Debug.Assert(IsMounted);
         ChildUpdating?.Invoke(this, e);

@@ -8,32 +8,32 @@ internal abstract partial class ViewElement : Element
 {
     private readonly Lazy<View> _view;
 
-    private protected ViewElement(ViewLayout layout)
+    protected ViewElement(ViewLayout layout)
         : base(layout)
     {
         _view = new(() => Layout.CreateView(this));
-        AddEventListener();
+        AddEventHandler();
     }
 
-    internal override View View => _view.Value;
+    public new ViewLayout Layout => (ViewLayout)base.Layout;
 
-    private new ViewLayout Layout => (ViewLayout)base.Layout;
+    public override View View => _view.Value;
 
-    private protected override void OnLayoutUpdated(EventArgs e)
+    protected override void OnLayoutUpdated(EventArgs e)
     {
         Debug.Assert(IsMounted);
-        AddEventListener();
+        AddEventHandler();
         base.OnLayoutUpdated(e);
     }
 
-    private protected override void OnLayoutUpdating(EventArgs e)
+    protected override void OnLayoutUpdating(EventArgs e)
     {
         base.OnLayoutUpdating(e);
         Debug.Assert(IsMounted);
-        RemoveEventListener();
+        RemoveEventHandler();
     }
 
-    private protected override void OnMounting(EventArgs e)
+    protected override void OnMounting(EventArgs e)
     {
         base.OnMounting(e);
         Debug.Assert(!IsMounted);
@@ -43,7 +43,7 @@ internal abstract partial class ViewElement : Element
         }
     }
 
-    private protected override void OnUnmounting(EventArgs e)
+    protected override void OnUnmounting(EventArgs e)
     {
         base.OnUnmounting(e);
         Debug.Assert(IsMounted);
@@ -53,7 +53,7 @@ internal abstract partial class ViewElement : Element
         }
     }
 
-    private void AddEventListener()
+    private void AddEventHandler()
     {
         Creating += Layout.OnCreating;
         Created += Layout.OnCreated;
@@ -65,7 +65,7 @@ internal abstract partial class ViewElement : Element
         Unmounted += Layout.OnUnmounted;
     }
 
-    private void RemoveEventListener()
+    private void RemoveEventHandler()
     {
         Creating -= Layout.OnCreating;
         Created -= Layout.OnCreated;
@@ -80,17 +80,17 @@ internal abstract partial class ViewElement : Element
 
 internal abstract partial class ViewElement
 {
-    internal event EventHandler? Created;
+    public event EventHandler? Created;
 
-    internal event EventHandler? Creating;
+    public event EventHandler? Creating;
 
-    private protected virtual void OnCreated(EventArgs e)
+    protected virtual void OnCreated(EventArgs e)
     {
         Debug.Assert(View.Exists);
         Created?.Invoke(this, e);
     }
 
-    private protected virtual void OnCreating(EventArgs e)
+    protected virtual void OnCreating(EventArgs e)
     {
         Debug.Assert(!View.Exists);
         Creating?.Invoke(this, e);
@@ -108,17 +108,17 @@ internal abstract partial class ViewElement
 
 internal abstract partial class ViewElement
 {
-    internal event EventHandler? Deleted;
+    public event EventHandler? Deleted;
 
-    internal event EventHandler? Deleting;
+    public event EventHandler? Deleting;
 
-    private protected virtual void OnDeleted(EventArgs e)
+    protected virtual void OnDeleted(EventArgs e)
     {
         Debug.Assert(!View.Exists);
         Deleted?.Invoke(this, e);
     }
 
-    private protected virtual void OnDeleting(EventArgs e)
+    protected virtual void OnDeleting(EventArgs e)
     {
         Debug.Assert(View.Exists);
         Deleting?.Invoke(this, e);

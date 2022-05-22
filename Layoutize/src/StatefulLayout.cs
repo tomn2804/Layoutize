@@ -2,12 +2,12 @@
 
 namespace Layoutize;
 
-public abstract class StatefulLayout : ComponentLayout
+public abstract class StatefulLayout<T> : ComponentLayout where T : StatefulLayout<T>
 {
-    internal override sealed StatefulElement CreateElement()
+    internal override sealed StatefulElement<T> CreateElement()
     {
         return new(this);
     }
 
-    protected internal abstract State CreateState();
+    protected internal abstract State<T> CreateState();
 }

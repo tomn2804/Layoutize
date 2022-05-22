@@ -1,76 +1,58 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using Xunit;
+﻿using Xunit;
 
 namespace Layoutize.Tests;
 
+public class DirectoryLayoutTests : LayoutTests
+{
+    protected override Layout CreateLayout()
+    {
+        return new FileLayout() { Name = "FileLayoutTests" };
+    }
+}
+
+public class FileLayoutTests : LayoutTests
+{
+    protected override Layout CreateLayout()
+    {
+        return new FileLayout() { Name = "FileLayoutTests" };
+    }
+}
+
+public class FileViewTests : ViewTests
+{
+}
+
 public abstract class LayoutTests
 {
-    public static IEnumerable<object[]> InvalidLayoutAttributes => new[]
+    [Fact]
+    public void CreateElement_Basic_ReturnsElement()
     {
-        new object[]
-        {
-            new Hashtable(),
-            typeof(KeyNotFoundException),
-        },
-        new object[]
-        {
-            new Dictionary<object, object>(),
-            typeof(KeyNotFoundException),
-        },
-        new object[]
-        {
-            ImmutableDictionary<object, object>.Empty,
-            typeof(KeyNotFoundException),
-        }
-    };
-
-    public static IEnumerable<object[]> ValidLayoutAttributes => new[]
-    {
-        new object[]
-        {
-            new Hashtable() { { "Name", nameof(ValidLayoutAttributes) } },
-            ImmutableDictionary.CreateRange(new[] { KeyValuePair.Create<object, object>("Name", nameof(ValidLayoutAttributes)) }),
-        },
-        new object[]
-        {
-            new Dictionary<object, object>() { { "Name", nameof(ValidLayoutAttributes) } },
-            ImmutableDictionary.CreateRange(new[] { KeyValuePair.Create<object, object>("Name", nameof(ValidLayoutAttributes)) }),
-        },
-        new object[]
-        {
-            ImmutableDictionary.CreateRange(new[] { KeyValuePair.Create<object, object>("Name", nameof(ValidLayoutAttributes)) }),
-            ImmutableDictionary.CreateRange(new[] { KeyValuePair.Create<object, object>("Name", nameof(ValidLayoutAttributes)) }),
-        }
-    };
-
-    [Theory]
-    [MemberData(nameof(InvalidLayoutAttributes))]
-    public void GetAttributes_ConstructWithInvalidEnumerable_ThrowsException(IDictionary attributes, Type expectedExceptionType)
-    {
-        Assert.Throws(expectedExceptionType, () => CreateLayout(attributes));
+        _ = CreateLayout();
     }
 
-    [Theory]
-    [MemberData(nameof(ValidLayoutAttributes))]
-    public void GetAttributes_ConstructWithValidEnumerable_ReturnsImmutableDictionary(IDictionary attributes, IImmutableDictionary<object, object> expected)
-    {
-        Layout layout = CreateLayout(attributes);
-        if (attributes is not IImmutableDictionary<object, object>)
-        {
-            attributes.Clear();
-            attributes.Add(new object(), new object());
-        }
-        else
-        {
-            Assert.True(layout.Attributes == attributes);
-        }
-        layout.Attributes.Clear();
-        layout.Attributes.Add(new object(), new object());
-        Assert.Equal(expected, layout.Attributes);
-    }
+    protected abstract Layout CreateLayout();
+}
 
-    private protected abstract Layout CreateLayout(IDictionary attributes);
+public class StatefulLayoutTests : LayoutTests
+{
+    protected override Layout CreateLayout()
+    {
+        return new FileLayout() { Name = "FileLayoutTests" };
+    }
+}
+
+public class StatelessLayoutTests : LayoutTests
+{
+    protected override Layout CreateLayout()
+    {
+        return new FileLayout() { Name = "FileLayoutTests" };
+    }
+}
+
+public abstract class ViewTests
+{
+}
+
+public class DirectoryViewTests : ViewTests
+{
 }

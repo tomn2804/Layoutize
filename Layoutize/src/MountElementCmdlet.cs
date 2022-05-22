@@ -1,7 +1,4 @@
-﻿using Layoutize.Attributes;
-using Layoutize.Elements;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using Layoutize.Elements;
 using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
@@ -13,43 +10,39 @@ public class MountElementCmdlet : PSCmdlet
 {
     [Parameter(Mandatory = true, Position = 1)]
     [ValidateNotNull]
-    public Layout Layout { get; set; } = null!;
+    public Layout Layout { get; init; } = null!;
 
     [Parameter(Mandatory = true, Position = 0)]
-    [ValidateNotNullOrEmpty]
-    public string Path { get; set; } = null!;
+    public string Path { get; init; } = string.Empty;
 
-    private string FullPath
+    private string FullName
     {
         get
         {
-            string fullPath = Path;
-            if (!System.IO.Path.IsPathFullyQualified(fullPath))
+            string fullName = Path;
+            if (!System.IO.Path.IsPathFullyQualified(fullName))
             {
-                fullPath = System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, fullPath);
+                fullName = System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, fullName);
             }
-            Attributes.Path.Validate(fullPath);
-            fullPath = System.IO.Path.GetFullPath(fullPath);
-            Debug.Assert(Attributes.Path.IsValid(fullPath));
-            return fullPath;
+            Contexts.Path.Validate(fullName);
+            fullName = System.IO.Path.GetFullPath(fullName);
+            Debug.Assert(Contexts.Path.IsValid(fullName));
+            return fullName;
         }
     }
 
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
-        Debug.Assert(Layout is not RootDirectoryLayout);
-        Debug.Assert(Attributes.Path.IsValid(FullPath));
-        DirectoryInfo rootDirectory = Directory.CreateDirectory(FullPath);
-        ImmutableDictionary<object, object> attributes = ImmutableDictionary.CreateRange(new[]
+        Debug.Assert(Contexts.Path.IsValid(FullName));
+        DirectoryInfo rootDirectory = Directory.CreateDirectory(FullName);
+        DirectoryElement rootElement = new RootDirectoryLayout()
         {
-            KeyValuePair.Create<object, object>(nameof(Name), rootDirectory.Name),
-            KeyValuePair.Create<object, object>(nameof(Attributes.Path), rootDirectory.Parent?.FullName ?? string.Empty),
-            KeyValuePair.Create<object, object>(nameof(Children), Layout),
-        });
-        DirectoryElement rootElement = new RootDirectoryLayout(attributes).CreateElement();
+            Name = rootDirectory.Name,
+            Path = rootDirectory.Parent?.FullName ?? string.Empty,
+            Children = Layout,
+        }.CreateElement();
         rootElement.Mount(null);
-        Debug.Assert(!rootElement.IsDisposed);
         Debug.Assert(rootElement.IsMounted);
         WriteObject(rootElement);
     }

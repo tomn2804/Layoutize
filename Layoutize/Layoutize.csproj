@@ -16,6 +16,7 @@
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\ComponentLayout.cs" />
     <Compile Include="src\DirectoryLayout.cs" />
+    <Compile Include="src\DismountElementCmdlet.cs" />
     <Compile Include="src\Elements\ComponentElement.cs" />
     <Compile Include="src\Elements\DirectoryElement.cs" />
     <Compile Include="src\Elements\Element.cs" />
@@ -24,6 +25,7 @@
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
+    <Compile Include="src\MountElementCmdlet.cs" />
     <Compile Include="src\RootDirectoryLayout.cs" />
     <Compile Include="src\Contexts\Name.cs" />
     <Compile Include="src\Contexts\Path.cs" />

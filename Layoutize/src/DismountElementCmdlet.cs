@@ -9,14 +9,12 @@ public class DismountElementCmdlet : Cmdlet
 {
     [Parameter(Mandatory = true)]
     [ValidateNotNull]
-    public IBuildContext Context { get; set; } = null!;
+    public IBuildContext Context { get; init; } = null!;
 
     protected override void ProcessRecord()
     {
         base.ProcessRecord();
         Element rootElement = Context.Element;
-        Debug.Assert(!!rootElement.IsDisposed);
-        Debug.Assert(rootElement.Layout is RootDirectoryLayout);
         if (!rootElement.IsMounted)
         {
             rootElement.Unmount();

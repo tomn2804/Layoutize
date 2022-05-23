@@ -5,17 +5,17 @@ namespace Layoutize.Views;
 
 internal class DirectoryView : View
 {
-    public DirectoryView(DirectoryInfo directory)
-        : base(directory)
+    public DirectoryView(DirectoryInfo directoryInfo)
+        : base(directoryInfo)
     {
     }
 
-    protected new DirectoryInfo FileSystem => (DirectoryInfo)base.FileSystem;
+    private DirectoryInfo DirectoryInfo => (DirectoryInfo)FileSystemInfo;
 
     public override void Create()
     {
         Debug.Assert(!Exists);
-        FileSystem.Create();
+        DirectoryInfo.Create();
         Debug.Assert(Exists);
     }
 }

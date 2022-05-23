@@ -15,9 +15,9 @@ internal abstract partial class ViewElement : Element
         AddEventHandler();
     }
 
-    public new ViewLayout Layout => (ViewLayout)base.Layout;
-
     public override View View => _view.Value;
+
+    private new ViewLayout Layout => (ViewLayout)base.Layout;
 
     protected override void OnLayoutUpdated(EventArgs e)
     {

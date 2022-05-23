@@ -5,11 +5,11 @@ using System.Diagnostics;
 
 namespace Layoutize;
 
-public abstract partial class State<T> where T : StatefulLayout<T>
+public abstract partial class State
 {
-    private StatefulElement<T>? _element;
+    private StatefulElement? _element;
 
-    internal StatefulElement<T> Element
+    internal StatefulElement Element
     {
         get
         {
@@ -19,12 +19,10 @@ public abstract partial class State<T> where T : StatefulLayout<T>
         set => _element = value;
     }
 
-    protected T Layout => Element.Layout;
-
     protected internal abstract Layout Build(IBuildContext context);
 }
 
-public abstract partial class State<T>
+public abstract partial class State
 {
     internal event EventHandler? StateUpdated;
 
@@ -49,4 +47,9 @@ public abstract partial class State<T>
         }
         OnStateUpdated(EventArgs.Empty);
     }
+}
+
+public abstract class State<T> : State where T : StatefulLayout
+{
+    protected T Layout => (T)Element.Layout;
 }

@@ -5,20 +5,20 @@ namespace Layoutize.Views;
 
 internal abstract class View
 {
-    protected readonly FileSystemInfo FileSystem;
+    protected readonly FileSystemInfo FileSystemInfo;
 
-    protected View(FileSystemInfo fileSystem)
+    protected View(FileSystemInfo fileSystemInfo)
     {
-        FileSystem = fileSystem;
+        FileSystemInfo = fileSystemInfo;
     }
 
-    public virtual bool Exists => FileSystem.Exists;
+    public virtual bool Exists => FileSystemInfo.Exists;
 
     public virtual string FullName
     {
         get
         {
-            string fullName = FileSystem.FullName;
+            string fullName = FileSystemInfo.FullName;
             Debug.Assert(Contexts.FullName.IsValid(fullName));
             return fullName;
         }
@@ -28,7 +28,7 @@ internal abstract class View
     {
         get
         {
-            string name = FileSystem.Name;
+            string name = FileSystemInfo.Name;
             Debug.Assert(Contexts.Name.IsValid(name));
             return name;
         }
@@ -39,7 +39,7 @@ internal abstract class View
     public virtual void Delete()
     {
         Debug.Assert(Exists);
-        FileSystem.Delete();
+        FileSystemInfo.Delete();
         Debug.Assert(!Exists);
     }
 }

@@ -7,7 +7,7 @@ internal sealed class StatelessElement : ComponentElement
     {
     }
 
-    public new StatelessLayout Layout => (StatelessLayout)base.Layout;
+    private new StatelessLayout Layout => (StatelessLayout)base.Layout;
 
     protected override sealed Layout Build()
     {

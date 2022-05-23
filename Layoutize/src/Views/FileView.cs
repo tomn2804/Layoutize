@@ -5,17 +5,17 @@ namespace Layoutize.Views;
 
 internal class FileView : View
 {
-    public FileView(FileInfo file)
-        : base(file)
+    public FileView(FileInfo fileInfo)
+        : base(fileInfo)
     {
     }
 
-    protected new FileInfo FileSystem => (FileInfo)base.FileSystem;
+    private FileInfo FileInfo => (FileInfo)FileSystemInfo;
 
     public override void Create()
     {
         Debug.Assert(!Exists);
-        FileSystem.Create().Dispose();
+        FileInfo.Create().Dispose();
         Debug.Assert(Exists);
     }
 }

@@ -3,11 +3,11 @@ using System.Diagnostics;
 
 namespace Layoutize.Elements;
 
-internal sealed class StatefulElement<T> : ComponentElement where T : StatefulLayout<T>
+internal sealed class StatefulElement : ComponentElement
 {
-    private readonly State<T> _state;
+    private readonly State _state;
 
-    public StatefulElement(StatefulLayout<T> layout)
+    public StatefulElement(StatefulLayout layout)
         : base(layout)
     {
         _state = Layout.CreateState();
@@ -15,7 +15,7 @@ internal sealed class StatefulElement<T> : ComponentElement where T : StatefulLa
         _state.StateUpdated += UpdateChild;
     }
 
-    public new T Layout => (T)base.Layout;
+    private new StatefulLayout Layout => (StatefulLayout)base.Layout;
 
     protected override Layout Build()
     {

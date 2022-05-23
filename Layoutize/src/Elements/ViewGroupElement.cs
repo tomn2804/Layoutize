@@ -30,7 +30,7 @@ internal abstract partial class ViewGroupElement : ViewElement
         }
     }
 
-    public new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
+    private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
 
     protected override void OnLayoutUpdated(EventArgs e)
     {

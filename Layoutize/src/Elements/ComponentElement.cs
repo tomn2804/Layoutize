@@ -30,8 +30,6 @@ internal abstract partial class ComponentElement : Element
         }
     }
 
-    public new ComponentLayout Layout => (ComponentLayout)base.Layout;
-
     public override View View => Child.View;
 
     protected abstract Layout Build();

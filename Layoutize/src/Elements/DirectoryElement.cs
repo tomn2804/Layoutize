@@ -6,6 +6,4 @@ internal sealed class DirectoryElement : ViewGroupElement
         : base(layout)
     {
     }
-
-    public new DirectoryLayout Layout => (DirectoryLayout)base.Layout;
 }

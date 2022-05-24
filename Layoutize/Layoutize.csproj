@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot;&#xD;&#xA;" />
+    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot; -ProjectName &quot;$(ProjectName)&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

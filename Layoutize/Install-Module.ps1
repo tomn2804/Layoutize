@@ -1,15 +1,14 @@
-﻿[CmdletBinding()]
-param (
+﻿param (
 	[Parameter(Mandatory)]
 	[ValidateNotNullOrEmpty()]
-	[string]
-	$TargetPath,
+	[string]$TargetPath,
 
-	[string]
+	[Parameter(Mandatory)]
 	[ValidateNotNullOrEmpty()]
-	$PSModulePath = ($Env:PSModulePath -split ';' | Select-Object -First 1)
+	[string]$ProjectName
 )
 
-Copy-Item -Path $TargetPath -Destination (
-	New-Item -Path $PSModulePath -Name (Split-Path -Path $TargetPath -LeafBase) -ItemType 'Directory' -Force
-)
+$PSModulePath = $Env:PSModulePath -split ';' | Select-Object -First 1
+$ProjectModulePath = New-Item -Path $PSModulePath -Name $ProjectName -ItemType 'Directory' -Force
+
+Copy-Item -Path $TargetPath -Destination $ProjectModulePath

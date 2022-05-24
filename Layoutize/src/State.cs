@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Diagnostics;
 using Layoutize.Elements;
 
@@ -9,13 +8,10 @@ public abstract class State
 {
 	protected internal abstract Layout Build(IBuildContext context);
 
-	protected void SetState(IDictionary properties)
+	protected void SetState(Action action)
 	{
 		OnStateUpdating(EventArgs.Empty);
-		foreach (DictionaryEntry property in properties)
-		{
-			GetType().GetProperty((string)property.Key)!.SetValue(this, property.Value);
-		}
+		action.Invoke();
 		OnStateUpdated(EventArgs.Empty);
 	}
 

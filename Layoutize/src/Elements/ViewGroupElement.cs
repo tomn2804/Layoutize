@@ -6,117 +6,116 @@ using System.Linq;
 
 namespace Layoutize.Elements;
 
-internal abstract partial class ViewGroupElement : ViewElement
+internal abstract class ViewGroupElement : ViewElement
 {
-    protected ViewGroupElement(ViewGroupLayout layout)
-        : base(layout)
-    {
-        _children = new(() => Layout.Children.Select(layout => layout.CreateElement()).ToImmutableSortedSet());
-    }
+	public ImmutableSortedSet<Element> Children
+	{
+		get => _children.Value;
+		protected set
+		{
+			Debug.Assert(IsMounted);
+			OnChildrenUpdating(EventArgs.Empty);
+			IEnumerable<Element> enteringChildren = value.Except(Children);
+			IEnumerable<Element> exitingChildren = Children.Except(value);
+			foreach (var exitingChild in exitingChildren)
+			{
+				exitingChild.Unmount();
+			}
+			Debug.Assert(exitingChildren.All(child => !child.IsMounted));
+			Debug.Assert(exitingChildren.All(child => child.Parent == null));
+			_children = new(() => value);
+			foreach (var enteringChild in enteringChildren)
+			{
+				enteringChild.Mount(this);
+			}
+			OnChildrenUpdated(EventArgs.Empty);
+			Debug.Assert(IsMounted);
+		}
+	}
 
-    public new bool IsMounted
-    {
-        get
-        {
-            if (base.IsMounted)
-            {
-                Debug.Assert(Children.All(child => child.IsMounted));
-                Debug.Assert(Children.All(child => child.Parent == this));
-                return true;
-            }
-            Debug.Assert(Children.All(child => !child.IsMounted));
-            Debug.Assert(Children.All(child => child.Parent == null));
-            return false;
-        }
-    }
+	public new bool IsMounted
+	{
+		get
+		{
+			if (base.IsMounted)
+			{
+				Debug.Assert(Children.All(child => child.IsMounted));
+				Debug.Assert(Children.All(child => child.Parent == this));
+				return true;
+			}
+			Debug.Assert(Children.All(child => !child.IsMounted));
+			Debug.Assert(Children.All(child => child.Parent == null));
+			return false;
+		}
+	}
 
-    private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
+	public event EventHandler? ChildrenUpdated;
 
-    protected override void OnLayoutUpdated(EventArgs e)
-    {
-        Debug.Assert(IsMounted);
-        ImmutableSortedSet<Element>.Builder childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-        foreach (Layout newChildLayout in Layout.Children)
-        {
-            Element newChild = newChildLayout.CreateElement();
-            if (Children.TryGetValue(newChild, out Element? currentChild) && currentChild.Layout.GetType().Equals(newChildLayout.GetType()))
-            {
-                currentChild.Layout = newChildLayout;
-                childrenBuilder.Add(currentChild);
-            }
-            else
-            {
-                childrenBuilder.Add(newChild);
-            }
-        }
-        Children = childrenBuilder.ToImmutable();
-        Debug.Assert(IsMounted);
-        base.OnLayoutUpdated(e);
-    }
+	public event EventHandler? ChildrenUpdating;
 
-    protected override void OnMounting(EventArgs e)
-    {
-        base.OnMounting(e);
-        Debug.Assert(!IsMounted);
-        foreach (Element child in Children)
-        {
-            child.Mount(this);
-        }
-    }
+	protected ViewGroupElement(ViewGroupLayout layout)
+		: base(layout)
+	{
+		_children = new(() => Layout.Children.Select(layout => layout.CreateElement()).ToImmutableSortedSet());
+	}
 
-    protected override void OnUnmounting(EventArgs e)
-    {
-        base.OnUnmounting(e);
-        Debug.Assert(IsMounted);
-        foreach (Element child in Children)
-        {
-            child.Unmount();
-        }
-    }
-}
+	protected virtual void OnChildrenUpdated(EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		ChildrenUpdated?.Invoke(this, e);
+	}
 
-internal abstract partial class ViewGroupElement
-{
-    private Lazy<ImmutableSortedSet<Element>> _children;
+	protected virtual void OnChildrenUpdating(EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		ChildrenUpdating?.Invoke(this, e);
+	}
 
-    public event EventHandler? ChildrenUpdated;
+	protected override void OnLayoutUpdated(EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		var childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
+		foreach (var newChildLayout in Layout.Children)
+		{
+			var newChild = newChildLayout.CreateElement();
+			if (Children.TryGetValue(newChild, out var currentChild)
+				&& currentChild.Layout.GetType() == newChildLayout.GetType())
+			{
+				currentChild.Layout = newChildLayout;
+				childrenBuilder.Add(currentChild);
+			}
+			else
+			{
+				childrenBuilder.Add(newChild);
+			}
+		}
 
-    public event EventHandler? ChildrenUpdating;
+		Children = childrenBuilder.ToImmutable();
+		Debug.Assert(IsMounted);
+		base.OnLayoutUpdated(e);
+	}
 
-    public ImmutableSortedSet<Element> Children
-    {
-        get => _children.Value;
-        protected set
-        {
-            Debug.Assert(IsMounted);
-            OnChildrenUpdating(EventArgs.Empty);
-            IEnumerable<Element> enteringChildren = value.Except(Children);
-            IEnumerable<Element> exitingChildren = Children.Except(value);
-            foreach (Element exitingChild in exitingChildren)
-            {
-                exitingChild.Unmount();
-            }
-            Debug.Assert(exitingChildren.All(child => !child.IsMounted));
-            Debug.Assert(exitingChildren.All(child => child.Parent == null));
-            _children = new(() => value);
-            foreach (Element enteringChild in enteringChildren)
-            {
-                enteringChild.Mount(this);
-            }
-            OnChildrenUpdated(EventArgs.Empty);
-            Debug.Assert(IsMounted);
-        }
-    }
+	protected override void OnMounting(EventArgs e)
+	{
+		base.OnMounting(e);
+		Debug.Assert(!IsMounted);
+		foreach (var child in Children)
+		{
+			child.Mount(this);
+		}
+	}
 
-    protected virtual void OnChildrenUpdated(EventArgs e)
-    {
-        Debug.Assert(IsMounted);
-        ChildrenUpdated?.Invoke(this, e);
-    }
+	protected override void OnUnmounting(EventArgs e)
+	{
+		base.OnUnmounting(e);
+		Debug.Assert(IsMounted);
+		foreach (var child in Children)
+		{
+			child.Unmount();
+		}
+	}
 
-    protected virtual void OnChildrenUpdating(EventArgs e)
-    {
-        Debug.Assert(IsMounted);
-        ChildrenUpdating?.Invoke(this, e);
-    }
+	private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
+
+	private Lazy<ImmutableSortedSet<Element>> _children;
 }

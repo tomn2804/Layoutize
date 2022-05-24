@@ -4,10 +4,10 @@ namespace Layoutize;
 
 public abstract class StatefulLayout : ComponentLayout
 {
-    internal override sealed StatefulElement CreateElement()
-    {
-        return new(this);
-    }
+	protected internal abstract State CreateState();
 
-    protected internal abstract State CreateState();
+	internal sealed override StatefulElement CreateElement()
+	{
+		return new(this);
+	}
 }

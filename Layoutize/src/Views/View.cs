@@ -1,45 +1,45 @@
-﻿using System.IO;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.IO;
 
 namespace Layoutize.Views;
 
 internal abstract class View
 {
-    protected readonly FileSystemInfo FileSystemInfo;
+	public abstract void Create();
 
-    protected View(FileSystemInfo fileSystemInfo)
-    {
-        FileSystemInfo = fileSystemInfo;
-    }
+	public virtual void Delete()
+	{
+		Debug.Assert(Exists);
+		FileSystemInfo.Delete();
+		Debug.Assert(!Exists);
+	}
 
-    public virtual bool Exists => FileSystemInfo.Exists;
+	public virtual bool Exists => FileSystemInfo.Exists;
 
-    public virtual string FullName
-    {
-        get
-        {
-            string fullName = FileSystemInfo.FullName;
-            Debug.Assert(Contexts.FullName.IsValid(fullName));
-            return fullName;
-        }
-    }
+	public virtual string FullName
+	{
+		get
+		{
+			var fullName = FileSystemInfo.FullName;
+			Debug.Assert(Contexts.FullName.IsValid(fullName));
+			return fullName;
+		}
+	}
 
-    public virtual string Name
-    {
-        get
-        {
-            string name = FileSystemInfo.Name;
-            Debug.Assert(Contexts.Name.IsValid(name));
-            return name;
-        }
-    }
+	public virtual string Name
+	{
+		get
+		{
+			var name = FileSystemInfo.Name;
+			Debug.Assert(Contexts.Name.IsValid(name));
+			return name;
+		}
+	}
 
-    public abstract void Create();
+	protected View(FileSystemInfo fileSystemInfo)
+	{
+		FileSystemInfo = fileSystemInfo;
+	}
 
-    public virtual void Delete()
-    {
-        Debug.Assert(Exists);
-        FileSystemInfo.Delete();
-        Debug.Assert(!Exists);
-    }
+	protected readonly FileSystemInfo FileSystemInfo;
 }

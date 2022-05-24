@@ -2,8 +2,8 @@
 
 internal sealed class DirectoryElement : ViewGroupElement
 {
-    public DirectoryElement(DirectoryLayout layout)
-        : base(layout)
-    {
-    }
+	public DirectoryElement(DirectoryLayout layout)
+		: base(layout)
+	{
+	}
 }

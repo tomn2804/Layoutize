@@ -4,5 +4,5 @@ namespace Layoutize;
 
 public abstract class ComponentLayout : Layout
 {
-    internal abstract override ComponentElement CreateElement();
+	internal abstract override ComponentElement CreateElement();
 }

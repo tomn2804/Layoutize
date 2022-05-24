@@ -5,35 +5,35 @@ namespace Layoutize.Elements;
 
 internal sealed class StatefulElement : ComponentElement
 {
-    private readonly State _state;
+	public StatefulElement(StatefulLayout layout)
+		: base(layout)
+	{
+		_state = Layout.CreateState();
+		_state.Element = this;
+		_state.StateUpdated += UpdateChild;
+	}
 
-    public StatefulElement(StatefulLayout layout)
-        : base(layout)
-    {
-        _state = Layout.CreateState();
-        _state.Element = this;
-        _state.StateUpdated += UpdateChild;
-    }
+	protected override Layout Build()
+	{
+		return _state.Build(this);
+	}
 
-    private new StatefulLayout Layout => (StatefulLayout)base.Layout;
+	private void UpdateChild(object? sender, EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		var newChildLayout = Build();
+		if (Child.Layout.GetType() == newChildLayout.GetType())
+		{
+			Child.Layout = newChildLayout;
+		}
+		else
+		{
+			Child = newChildLayout.CreateElement();
+		}
+		Debug.Assert(IsMounted);
+	}
 
-    protected override Layout Build()
-    {
-        return _state.Build(this);
-    }
+	private new StatefulLayout Layout => (StatefulLayout)base.Layout;
 
-    private void UpdateChild(object? sender, EventArgs e)
-    {
-        Debug.Assert(IsMounted);
-        Layout newChildLayout = Build();
-        if (Child.Layout.GetType().Equals(newChildLayout.GetType()))
-        {
-            Child.Layout = newChildLayout;
-        }
-        else
-        {
-            Child = newChildLayout.CreateElement();
-        }
-        Debug.Assert(IsMounted);
-    }
+	private readonly State _state;
 }

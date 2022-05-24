@@ -2,19 +2,34 @@
 
 namespace Layoutize.Tests;
 
-public abstract class LayoutTests
+public abstract class LayoutTests<T> where T : Layout, new()
 {
 }
 
-public class FileLayoutTests : LayoutTests
+public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, new()
 {
 	[Fact]
 	public void CreateView_MissingNameAttribute_ThrowsException()
 	{
-		var layout = new FileLayout();
+		void test()
+		{
+		}
+		var layout = new T();
 		var element = layout.CreateElement();
 		Assert.Throws<InvalidOperationException>(() => layout.CreateView(element));
 	}
+}
+
+public abstract class ViewGroupLayoutTests<T> : ViewLayoutTests<T> where T : ViewGroupLayout, new()
+{
+}
+
+public class FileLayoutTests : ViewLayoutTests<FileLayout>
+{
+}
+
+public class DirectoryLayoutTests : ViewLayoutTests<FileLayout>
+{
 }
 
 /*

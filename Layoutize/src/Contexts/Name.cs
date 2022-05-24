@@ -28,7 +28,19 @@ public static class Name
 
 	public static void Validate(string value)
 	{
-		if (string.IsNullOrWhiteSpace(value)) throw new ArgumentException($"Attribute value '{nameof(Name)}' is either null, empty, or consists of only white-space characters.", nameof(value));
-		if (value.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1) throw new ArgumentException($"Attribute value '{nameof(Name)}' contains invalid characters.", nameof(value));
+		if (string.IsNullOrWhiteSpace(value))
+		{
+			throw new ArgumentException(
+				$"Attribute value '{nameof(Name)}' is either null, empty, or consists of only white-space characters.",
+				nameof(value)
+			);
+		}
+		if (value.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
+		{
+			throw new ArgumentException(
+				$"Attribute value '{nameof(Name)}' contains invalid characters.",
+				nameof(value)
+			);
+		}
 	}
 }

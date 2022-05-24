@@ -46,6 +46,12 @@ public static class Path
 
 	public static void Validate(string value)
 	{
-		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1) throw new ArgumentException($"Attribute value '{nameof(Path)}' contains invalid characters.", nameof(value));
+		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
+		{
+			throw new ArgumentException(
+				$"Attribute value '{nameof(Path)}' contains invalid characters.",
+				nameof(value)
+			);
+		}
 	}
 }

@@ -15,8 +15,7 @@ public class DirectoryLayout : ViewGroupLayout
 		get => base.Children;
 		init => base.Children = value switch
 		{
-			IEnumerable<object> children => children.Cast<Layout>(),
-			_ => new[] { (Layout)value },
+			IEnumerable<object> children => children.Cast<Layout>(), _ => new[] { (Layout)value },
 		};
 	}
 

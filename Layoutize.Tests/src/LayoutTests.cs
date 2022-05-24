@@ -1,76 +1,23 @@
-﻿using System.IO;
-using Xunit;
+﻿using Xunit;
 
 namespace Layoutize.Tests;
 
-public class DirectoryLayoutTests : LayoutTests
-{
-	protected override Layout CreateLayout()
-	{
-		return new FileLayout { Name = "FileLayoutTests" };
-	}
-}
-
-public class DirectoryViewTests : ViewTests
+public abstract class LayoutTests
 {
 }
 
 public class FileLayoutTests : LayoutTests
 {
-	protected override Layout CreateLayout()
-	{
-		return new FileLayout { Name = "FileLayoutTests" };
-	}
-}
-
-public class FileViewTests : ViewTests
-{
 	[Fact]
-	public void Create_Basic_FileExists()
+	public void CreateView_MissingNameAttribute_ThrowsException()
 	{
-		_ = new MockFileLayout { Name = "Main.cs" };
+		var layout = new FileLayout();
+		var element = layout.CreateElement();
+		Assert.Throws<InvalidOperationException>(() => layout.CreateView(element));
 	}
 }
 
-public abstract class LayoutTests
-{
-	[Fact]
-	public void CreateElement_Basic_ReturnsElement()
-	{
-		_ = CreateLayout();
-	}
-
-	protected abstract Layout CreateLayout();
-}
-
-public class MockDirectoryLayout : DirectoryLayout
-{
-	internal override MockDirectoryView CreateView(IBuildContext context)
-	{
-		return new MockDirectoryView(base.CreateView(context));
-	}
-}
-
-public class StatefulLayoutTests : LayoutTests
-{
-	protected override Layout CreateLayout()
-	{
-		return new FileLayout { Name = "FileLayoutTests" };
-	}
-}
-
-public class StatelessLayoutTests : LayoutTests
-{
-	protected override Layout CreateLayout()
-	{
-		return new FileLayout { Name = "FileLayoutTests" };
-	}
-}
-
-public abstract class ViewTests
-{
-}
-
+/*
 internal class MockDirectoryView : DirectoryView
 {
 	internal MockDirectoryView(DirectoryView view)
@@ -129,6 +76,7 @@ public class MockFileLayout : FileLayout
 {
 	internal override MockFileView CreateView(IBuildContext context)
 	{
-		return new MockFileView(base.CreateView(context));
+		return new (base.CreateView(context));
 	}
 }
+*/

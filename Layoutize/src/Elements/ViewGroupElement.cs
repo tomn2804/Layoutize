@@ -56,7 +56,9 @@ internal abstract class ViewGroupElement : ViewElement
 	protected ViewGroupElement(ViewGroupLayout layout)
 		: base(layout)
 	{
-		_children = new(() => Layout.Children.Select(layout => layout.CreateElement()).ToImmutableSortedSet());
+		_children = new(
+			() => Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet()
+		);
 	}
 
 	protected virtual void OnChildrenUpdated(EventArgs e)
@@ -89,7 +91,6 @@ internal abstract class ViewGroupElement : ViewElement
 				childrenBuilder.Add(newChild);
 			}
 		}
-
 		Children = childrenBuilder.ToImmutable();
 		Debug.Assert(IsMounted);
 		base.OnLayoutUpdated(e);

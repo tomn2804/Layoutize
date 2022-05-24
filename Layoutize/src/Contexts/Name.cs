@@ -38,7 +38,7 @@ public static class Name
 		if (value.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
 		{
 			throw new ArgumentException(
-				$"Attribute value '{nameof(Name)}' contains invalid characters.",
+				$"Attribute value '{nameof(Name)}' contains invalid path characters.",
 				nameof(value)
 			);
 		}

@@ -32,7 +32,6 @@ internal abstract class ComponentElement : Element
 				Debug.Assert(Child.Parent == this);
 				return true;
 			}
-
 			Debug.Assert(Parent == null);
 			Debug.Assert(!Child.IsMounted);
 			Debug.Assert(Child.Parent == null);

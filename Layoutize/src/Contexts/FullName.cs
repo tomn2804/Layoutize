@@ -38,7 +38,7 @@ public static class FullName
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
 			throw new ArgumentException(
-				$"Attribute value '{nameof(FullName)}' contains invalid characters.",
+				$"Attribute value '{nameof(FullName)}' contains invalid path characters.",
 				nameof(value)
 			);
 		}

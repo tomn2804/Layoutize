@@ -49,7 +49,7 @@ public static class Path
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
 			throw new ArgumentException(
-				$"Attribute value '{nameof(Path)}' contains invalid characters.",
+				$"Attribute value '{nameof(Path)}' contains invalid path characters.",
 				nameof(value)
 			);
 		}

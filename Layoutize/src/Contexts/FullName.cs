@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
@@ -7,7 +8,16 @@ namespace Layoutize.Contexts;
 
 public static class FullName
 {
-	public static bool IsValid([NotNullWhen(true)] string? value)
+	public static string Of(IBuildContext context)
+	{
+		var element = context.Element;
+		if (!element.IsMounted) throw new ArgumentException("Context is not mounted.", nameof(context));
+		var fullName = element.View.FullName;
+		Debug.Assert(TryValidate(fullName));
+		return fullName;
+	}
+
+	public static bool TryValidate([NotNullWhen(true)] string? value)
 	{
 		try
 		{
@@ -20,35 +30,21 @@ public static class FullName
 		return true;
 	}
 
-	public static string Of(IBuildContext context)
-	{
-		var fullName = context.Element.View.FullName;
-		Debug.Assert(IsValid(fullName));
-		return fullName;
-	}
-
 	public static void Validate([NotNull] string? value)
 	{
 		if (string.IsNullOrWhiteSpace(value))
 		{
-			throw new ArgumentException(
-				$"Attribute value '{nameof(FullName)}' is either null, empty, or consists of only white-space characters.",
-				nameof(value)
+			throw new ValidationException(
+				$"Attribute value '{nameof(FullName)}' is either null, empty, or consists of only white-space characters."
 			);
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ArgumentException(
-				$"Attribute value '{nameof(FullName)}' contains invalid path characters.",
-				nameof(value)
-			);
+			throw new ValidationException($"Attribute value '{nameof(FullName)}' contains invalid characters.");
 		}
 		if (!System.IO.Path.IsPathFullyQualified(value))
 		{
-			throw new ArgumentException(
-				$"Attribute value '{nameof(FullName)}' is not an absolute path.",
-				nameof(value)
-			);
+			throw new ValidationException($"Attribute value '{nameof(FullName)}' is not an absolute path.");
 		}
 	}
 }

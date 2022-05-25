@@ -7,7 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public override View View => _view.Value;
+	public override View? View => _view;
 
 	public event EventHandler? Created;
 
@@ -20,30 +20,33 @@ internal abstract class ViewElement : Element
 	protected ViewElement(ViewLayout layout)
 		: base(layout)
 	{
-		_view = new(() => Layout.CreateView(this));
 		AddEventHandler();
 	}
 
 	protected virtual void OnCreated(EventArgs e)
 	{
+		Debug.Assert(View != null);
 		Debug.Assert(View.Exists);
 		Created?.Invoke(this, e);
 	}
 
 	protected virtual void OnCreating(EventArgs e)
 	{
+		Debug.Assert(View != null);
 		Debug.Assert(!View.Exists);
 		Creating?.Invoke(this, e);
 	}
 
 	protected virtual void OnDeleted(EventArgs e)
 	{
+		Debug.Assert(View != null);
 		Debug.Assert(!View.Exists);
 		Deleted?.Invoke(this, e);
 	}
 
 	protected virtual void OnDeleting(EventArgs e)
 	{
+		Debug.Assert(View != null);
 		Debug.Assert(View.Exists);
 		Deleting?.Invoke(this, e);
 	}
@@ -66,14 +69,17 @@ internal abstract class ViewElement : Element
 	{
 		base.OnMounting(e);
 		Debug.Assert(!IsMounted);
-		if (!View.Exists) Create();
+		_view = Layout.CreateView(this);
+		if (!_view.Exists) Create();
 	}
 
 	protected override void OnUnmounting(EventArgs e)
 	{
 		base.OnUnmounting(e);
 		Debug.Assert(IsMounted);
+		Debug.Assert(View != null);
 		if (Layout.DeleteOnUnmount && View.Exists) Delete();
+		_view = null;
 	}
 
 	private void AddEventHandler()
@@ -90,6 +96,7 @@ internal abstract class ViewElement : Element
 
 	private void Create()
 	{
+		Debug.Assert(View != null);
 		Debug.Assert(!View.Exists);
 		OnCreating(EventArgs.Empty);
 		View.Create();
@@ -99,6 +106,7 @@ internal abstract class ViewElement : Element
 
 	private void Delete()
 	{
+		Debug.Assert(View != null);
 		Debug.Assert(View.Exists);
 		OnDeleting(EventArgs.Empty);
 		View.Delete();
@@ -120,5 +128,5 @@ internal abstract class ViewElement : Element
 
 	private new ViewLayout Layout => (ViewLayout)base.Layout;
 
-	private readonly Lazy<View> _view;
+	private View? _view;
 }

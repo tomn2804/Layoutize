@@ -11,7 +11,7 @@ public abstract class ViewLayout : Layout
 	public bool DeleteOnUnmount { get; init; }
 
 	[Required]
-	[NameValidation]
+	[Name]
 	public string Name { get; init; } = null!;
 
 	public EventHandler? OnCreated { get; init; }

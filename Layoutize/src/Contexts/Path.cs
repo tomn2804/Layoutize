@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
@@ -7,19 +7,6 @@ namespace Layoutize.Contexts;
 
 public static class Path
 {
-	public static bool IsValid([NotNullWhen(true)] string? value)
-	{
-		try
-		{
-			Validate(value);
-		}
-		catch
-		{
-			return false;
-		}
-		return true;
-	}
-
 	public static string Of(IBuildContext context)
 	{
 		var path = string.Empty;
@@ -41,22 +28,32 @@ public static class Path
 			}
 		}
 		VisitParent(context.Element);
-		Debug.Assert(IsValid(path));
+		Debug.Assert(TryValidate(path));
 		return path;
+	}
+
+	public static bool TryValidate([NotNullWhen(true)] string? value)
+	{
+		try
+		{
+			Validate(value);
+		}
+		catch
+		{
+			return false;
+		}
+		return true;
 	}
 
 	public static void Validate([NotNull] string? value)
 	{
 		if (value == null)
 		{
-			throw new ArgumentException($"Attribute value '{nameof(Path)}' is null.", nameof(value));
+			throw new ValidationException($"Attribute value '{nameof(Path)}' is null.");
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ArgumentException(
-				$"Attribute value '{nameof(Path)}' contains invalid path characters.",
-				nameof(value)
-			);
+			throw new ValidationException($"Attribute value '{nameof(Path)}' contains invalid characters.");
 		}
 	}
 }

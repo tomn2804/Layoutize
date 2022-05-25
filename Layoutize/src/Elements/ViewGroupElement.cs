@@ -11,7 +11,7 @@ internal abstract class ViewGroupElement : ViewElement
 {
 	public ImmutableSortedSet<Element> Children
 	{
-		get => _children.Value;
+		get => _children;
 		protected set
 		{
 			Debug.Assert(IsMounted);
@@ -24,7 +24,7 @@ internal abstract class ViewGroupElement : ViewElement
 			}
 			Debug.Assert(exitingChildren.All(child => !child.IsMounted));
 			Debug.Assert(exitingChildren.All(child => child.Parent == null));
-			_children = new(() => value);
+			_children = value;
 			foreach (var enteringChild in enteringChildren)
 			{
 				enteringChild.Mount(this);
@@ -57,9 +57,6 @@ internal abstract class ViewGroupElement : ViewElement
 	protected ViewGroupElement(ViewGroupLayout layout)
 		: base(layout)
 	{
-		_children = new(
-			() => Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet()
-		);
 	}
 
 	protected virtual void OnChildrenUpdated(EventArgs e)
@@ -77,23 +74,7 @@ internal abstract class ViewGroupElement : ViewElement
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		var childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
-		foreach (var newChildLayout in Layout.Children)
-		{
-			var newChild = newChildLayout.CreateElement();
-			if (Children.TryGetValue(newChild, out var currentChild)
-				&& currentChild.Layout.GetType() == newChildLayout.GetType())
-			{
-				currentChild.Layout = newChildLayout;
-				childrenBuilder.Add(currentChild);
-			}
-			else
-			{
-				childrenBuilder.Add(newChild);
-			}
-		}
-		Children = childrenBuilder.ToImmutable();
-		Debug.Assert(IsMounted);
+		UpdateChildren();
 		base.OnLayoutUpdated(e);
 	}
 
@@ -117,7 +98,29 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
+	private void UpdateChildren()
+	{
+		Debug.Assert(IsMounted);
+		var childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
+		foreach (var newChildLayout in Layout.Children)
+		{
+			var newChild = newChildLayout.CreateElement();
+			if (Children.TryGetValue(newChild, out var currentChild)
+				&& currentChild.Layout.GetType() == newChildLayout.GetType())
+			{
+				currentChild.Layout = newChildLayout;
+				childrenBuilder.Add(currentChild);
+			}
+			else
+			{
+				childrenBuilder.Add(newChild);
+			}
+		}
+		Children = childrenBuilder.ToImmutable();
+		Debug.Assert(IsMounted);
+	}
+
 	private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
 
-	private Lazy<ImmutableSortedSet<Element>> _children;
+	private ImmutableSortedSet<Element> _children = ImmutableSortedSet<Element>.Empty;
 }

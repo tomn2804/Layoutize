@@ -28,7 +28,7 @@ public class DirectoryLayout : ViewGroupLayout
 	internal override DirectoryView CreateView(IBuildContext context)
 	{
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
-		Debug.Assert(FullName.IsValid(fullName));
+		Debug.Assert(FullName.TryValidate(fullName));
 		return new(new(fullName));
 	}
 }

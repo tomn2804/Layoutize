@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Contexts;
 using Layoutize.Layouts;
 using Layoutize.Views;
@@ -34,14 +34,20 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(!IsMounted);
 	}
 
-	public abstract View View { get; }
+	public abstract View? View { get; }
 
+	[MemberNotNullWhen(true, nameof(View))]
 	public bool IsMounted
 	{
 		get
 		{
 			if (!_isMounted) return false;
-			Debug.Assert(View.Exists);
+			Debug.Assert(
+				View is
+				{
+					Exists: true,
+				}
+			);
 			return true;
 		}
 	}
@@ -74,20 +80,19 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
-		Validator.ValidateObject(layout, new(layout));
 		_layout = layout;
 	}
 
 	protected virtual void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		LayoutUpdated?.Invoke(this, e);
+		LayoutUpdated?.Invoke(this, EventArgs.Empty);
 	}
 
 	protected virtual void OnLayoutUpdating(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		LayoutUpdating?.Invoke(this, e);
+		LayoutUpdating?.Invoke(this, EventArgs.Empty);
 	}
 
 	protected virtual void OnMounted(EventArgs e)

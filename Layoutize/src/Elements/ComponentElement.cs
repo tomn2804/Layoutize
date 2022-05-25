@@ -8,22 +8,23 @@ namespace Layoutize.Elements;
 
 internal abstract class ComponentElement : Element
 {
-	public Element Child
+	[DisallowNull]
+	public Element? Child
 	{
-		get => _child.Value;
+		get => _child;
 		protected set
 		{
 			Debug.Assert(IsMounted);
 			OnChildUpdating(EventArgs.Empty);
-			Child.Unmount();
-			_child = new(() => value);
-			Child.Mount(this);
+			_child.Unmount();
+			_child = value;
+			_child.Mount(this);
 			OnChildUpdated(EventArgs.Empty);
 			Debug.Assert(IsMounted);
 		}
 	}
 
-	[MemberNotNullWhen(true, nameof(Child))]
+	[MemberNotNullWhen(true, nameof(Child), nameof(_child))]
 	public new bool IsMounted
 	{
 		get
@@ -31,18 +32,18 @@ internal abstract class ComponentElement : Element
 			if (base.IsMounted)
 			{
 				Debug.Assert(Parent != null);
+				Debug.Assert(_child != null);
+				Debug.Assert(Child != null);
 				Debug.Assert(Child.IsMounted);
 				Debug.Assert(Child.Parent == this);
 				return true;
 			}
-			Debug.Assert(Parent == null);
-			Debug.Assert(!Child.IsMounted);
-			Debug.Assert(Child.Parent == null);
+			Debug.Assert(Parent == null && Child == null);
 			return false;
 		}
 	}
-	
-	public override View View => Child.View;
+
+	public override View? View => Child?.View;
 
 	public event EventHandler? ChildUpdated;
 
@@ -51,7 +52,6 @@ internal abstract class ComponentElement : Element
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)
 	{
-		_child = new(() => Build().CreateElement());
 	}
 
 	protected abstract Layout Build();
@@ -71,8 +71,7 @@ internal abstract class ComponentElement : Element
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		Child.Layout = Build();
-		Debug.Assert(IsMounted);
+		UpdateChild();
 		base.OnLayoutUpdated(e);
 	}
 
@@ -80,7 +79,8 @@ internal abstract class ComponentElement : Element
 	{
 		base.OnMounting(e);
 		Debug.Assert(!IsMounted);
-		Child.Mount(this);
+		_child = Build().CreateElement();
+		_child.Mount(this);
 		Debug.Assert(IsMounted);
 	}
 
@@ -88,9 +88,16 @@ internal abstract class ComponentElement : Element
 	{
 		base.OnUnmounting(e);
 		Debug.Assert(IsMounted);
-		Child.Unmount();
+		_child.Unmount();
+		_child = null;
 		Debug.Assert(!IsMounted);
 	}
 
-	private Lazy<Element> _child;
+	private void UpdateChild()
+	{
+		Debug.Assert(IsMounted);
+		Child.Layout = Build();
+	}
+
+	private Element? _child;
 }

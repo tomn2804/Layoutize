@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
 
 namespace Layoutize.Contexts;
 
 public static class FullName
 {
-	public static bool IsValid(string value)
+	public static bool IsValid([NotNullWhen(true)] string? value)
 	{
 		try
 		{
@@ -26,7 +27,7 @@ public static class FullName
 		return fullName;
 	}
 
-	public static void Validate(string value)
+	public static void Validate([NotNull] string? value)
 	{
 		if (string.IsNullOrWhiteSpace(value))
 		{

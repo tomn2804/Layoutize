@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
 
 namespace Layoutize.Contexts;
 
 public static class Path
 {
-	public static bool IsValid(string value)
+	public static bool IsValid([NotNullWhen(true)] string? value)
 	{
 		try
 		{
@@ -44,8 +45,12 @@ public static class Path
 		return path;
 	}
 
-	public static void Validate(string value)
+	public static void Validate([NotNull] string? value)
 	{
+		if (value == null)
+		{
+			throw new ArgumentException($"Attribute value '{nameof(Path)}' is null.", nameof(value));
+		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
 			throw new ArgumentException(

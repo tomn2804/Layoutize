@@ -14,9 +14,9 @@
 
   <ItemGroup>
     <Compile Include="src\AssemblyInfo.cs" />
-    <Compile Include="src\ComponentLayout.cs" />
-    <Compile Include="src\DirectoryLayout.cs" />
-    <Compile Include="src\DismountElementCmdlet.cs" />
+    <Compile Include="src\Layouts\ComponentLayout.cs" />
+    <Compile Include="src\Layouts\DirectoryLayout.cs" />
+    <Compile Include="src\Cmdlets\DismountElementCmdlet.cs" />
     <Compile Include="src\Elements\ComponentElement.cs" />
     <Compile Include="src\Elements\DirectoryElement.cs" />
     <Compile Include="src\Elements\Element.cs" />
@@ -25,26 +25,32 @@
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
-    <Compile Include="src\MountElementCmdlet.cs" />
-    <Compile Include="src\RootDirectoryLayout.cs" />
+    <Compile Include="src\Cmdlets\MountElementCmdlet.cs" />
+    <Compile Include="src\Annotations\NameValidationAttribute.cs" />
+    <Compile Include="src\Annotations\PathValidationAttribute.cs" />
+    <Compile Include="src\Layouts\RootDirectoryLayout.cs" />
     <Compile Include="src\Contexts\Name.cs" />
     <Compile Include="src\Contexts\Path.cs" />
-    <Compile Include="src\FileLayout.cs" />
-    <Compile Include="src\StatefulLayout.cs" />
-    <Compile Include="src\StatelessLayout.cs" />
-    <Compile Include="src\ViewGroupLayout.cs" />
-    <Compile Include="src\ViewLayout.cs" />
+    <Compile Include="src\Layouts\FileLayout.cs" />
+    <Compile Include="src\Layouts\StatefulLayout.cs" />
+    <Compile Include="src\Layouts\StatelessLayout.cs" />
+    <Compile Include="src\Layouts\ViewGroupLayout.cs" />
+    <Compile Include="src\Layouts\ViewLayout.cs" />
     <Compile Include="src\Views\DirectoryView.cs" />
     <Compile Include="src\Views\View.cs" />
     <Compile Include="src\Views\FileView.cs" />
     <Compile Include="src\Elements\IBuildContext.cs" />
-    <Compile Include="src\Layout.cs" />
-    <Compile Include="src\State.cs" />
+    <Compile Include="src\Layouts\Layout.cs" />
+    <Compile Include="src\Layouts\State.cs" />
     <Compile Include="src\Elements\ViewElement.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Utils\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

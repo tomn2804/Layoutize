@@ -6,7 +6,7 @@ using Layoutize.Elements;
 using Layoutize.Views;
 using Path = System.IO.Path;
 
-namespace Layoutize;
+namespace Layoutize.Layouts;
 
 public class DirectoryLayout : ViewGroupLayout
 {

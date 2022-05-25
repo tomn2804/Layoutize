@@ -1,4 +1,6 @@
-﻿namespace Layoutize.Elements;
+﻿using Layoutize.Layouts;
+
+namespace Layoutize.Elements;
 
 internal sealed class DirectoryElement : ViewGroupElement
 {

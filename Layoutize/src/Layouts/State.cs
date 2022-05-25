@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
+using System.ComponentModel.DataAnnotations;
 using Layoutize.Elements;
 
-namespace Layoutize;
+namespace Layoutize.Layouts;
 
 public abstract class State
 {
@@ -15,21 +15,12 @@ public abstract class State
 		OnStateUpdated(EventArgs.Empty);
 	}
 
-	internal StatefulElement Element
-	{
-		get
-		{
-			Debug.Assert(_element != null);
-			return _element;
-		}
-		set => _element = value;
-	}
+	[Required]
+	internal StatefulElement Element { get; set; } = null!;
 
 	internal event EventHandler? StateUpdated;
 
 	internal event EventHandler? StateUpdating;
-
-	private StatefulElement? _element;
 
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{

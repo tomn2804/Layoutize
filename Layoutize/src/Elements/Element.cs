@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Contexts;
+using Layoutize.Layouts;
 using Layoutize.Views;
 
 namespace Layoutize.Elements;
@@ -72,6 +74,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
+		Validator.ValidateObject(layout, new(layout));
 		_layout = layout;
 	}
 

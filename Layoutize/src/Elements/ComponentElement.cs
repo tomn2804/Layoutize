@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using Layoutize.Layouts;
 using Layoutize.Views;
 
 namespace Layoutize.Elements;
@@ -21,6 +23,7 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
+	[MemberNotNullWhen(true, nameof(Child))]
 	public new bool IsMounted
 	{
 		get
@@ -38,7 +41,7 @@ internal abstract class ComponentElement : Element
 			return false;
 		}
 	}
-
+	
 	public override View View => Child.View;
 
 	public event EventHandler? ChildUpdated;

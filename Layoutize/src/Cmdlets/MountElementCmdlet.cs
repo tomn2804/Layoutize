@@ -2,8 +2,9 @@
 using System.IO;
 using System.Management.Automation;
 using Layoutize.Elements;
+using Layoutize.Layouts;
 
-namespace Layoutize;
+namespace Layoutize.Cmdlets;
 
 [Cmdlet(VerbsData.Mount, nameof(Element))]
 public class MountElementCmdlet : PSCmdlet
@@ -23,7 +24,9 @@ public class MountElementCmdlet : PSCmdlet
 		if (!rootDirectory.Exists) throw new PSArgumentException("Path does not exists.", nameof(Path));
 		var rootElement = new RootDirectoryLayout
 		{
-			Name = rootDirectory.Name, Path = rootDirectory.Parent?.FullName ?? string.Empty, Children = Layout,
+			Name = rootDirectory.Name,
+			Path = rootDirectory.Parent?.FullName ?? string.Empty,
+			Children = Layout,
 		}.CreateElement();
 		rootElement.Mount(null);
 		Debug.Assert(rootElement.IsMounted);

@@ -1,22 +1,18 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Layoutize.Annotations;
 using Layoutize.Elements;
 using Layoutize.Views;
 
-namespace Layoutize;
+namespace Layoutize.Layouts;
 
 public abstract class ViewLayout : Layout
 {
 	public bool DeleteOnUnmount { get; init; }
 
-	public string Name
-	{
-		get => _name ?? throw new InvalidOperationException("Attribute 'Name' is not initialized.");
-		init
-		{
-			Contexts.Name.Validate(value);
-			_name = value;
-		}
-	}
+	[Required]
+	[NameValidation]
+	public string Name { get; init; } = null!;
 
 	public EventHandler? OnCreated { get; init; }
 
@@ -37,6 +33,4 @@ public abstract class ViewLayout : Layout
 	internal abstract override ViewElement CreateElement();
 
 	internal abstract View CreateView(IBuildContext context);
-
-	private readonly string? _name;
 }

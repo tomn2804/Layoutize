@@ -2,7 +2,7 @@
 using System.Management.Automation;
 using Layoutize.Elements;
 
-namespace Layoutize;
+namespace Layoutize.Cmdlets;
 
 [Cmdlet(VerbsData.Dismount, nameof(Element))]
 public class DismountElementCmdlet : Cmdlet

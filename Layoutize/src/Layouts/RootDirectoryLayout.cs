@@ -1,21 +1,17 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Views;
 
-namespace Layoutize;
+namespace Layoutize.Layouts;
 
 internal class RootDirectoryLayout : DirectoryLayout
 {
-	public string Path
-	{
-		get => _path;
-		init
-		{
-			Debug.Assert(Contexts.Path.IsValid(value));
-			_path = value;
-		}
-	}
+	[Required]
+	[PathValidation]
+	public string Path { get; init; } = null!;
 
 	internal override DirectoryView CreateView(IBuildContext context)
 	{
@@ -23,6 +19,4 @@ internal class RootDirectoryLayout : DirectoryLayout
 		Debug.Assert(FullName.IsValid(fullName));
 		return new(new(fullName));
 	}
-
-	private readonly string _path = string.Empty;
 }

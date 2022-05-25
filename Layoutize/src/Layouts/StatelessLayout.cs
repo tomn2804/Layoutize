@@ -1,6 +1,6 @@
 ﻿using Layoutize.Elements;
 
-namespace Layoutize;
+namespace Layoutize.Layouts;
 
 public abstract class StatelessLayout : ComponentLayout
 {

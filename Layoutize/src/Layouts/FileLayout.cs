@@ -15,8 +15,9 @@ public class FileLayout : ViewLayout
 
 	internal override FileView CreateView(IBuildContext context)
 	{
+		Debug.Assert(IsValid());
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
-		Debug.Assert(FullName.TryValidate(fullName));
+		Debug.Assert(FullName.IsValid(fullName));
 		return new(new(fullName));
 	}
 }

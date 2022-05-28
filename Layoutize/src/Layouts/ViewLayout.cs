@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Annotations;
 using Layoutize.Elements;
 using Layoutize.Views;
@@ -12,7 +14,7 @@ public abstract class ViewLayout : Layout
 
 	[Required]
 	[Name]
-	public string Name { get; init; } = null!;
+	public string? Name { get; set; }
 
 	public EventHandler? OnCreated { get; init; }
 
@@ -33,4 +35,19 @@ public abstract class ViewLayout : Layout
 	internal abstract override ViewElement CreateElement();
 
 	internal abstract View CreateView(IBuildContext context);
+
+	[MemberNotNull(nameof(Name))]
+	internal override void Validate()
+	{
+		base.Validate();
+		Debug.Assert(Name != null);
+	}
+
+	[MemberNotNullWhen(true, nameof(Name))]
+	internal override bool IsValid()
+	{
+		var result = base.IsValid();
+		Debug.Assert(Name != null);
+		return result;
+	}
 }

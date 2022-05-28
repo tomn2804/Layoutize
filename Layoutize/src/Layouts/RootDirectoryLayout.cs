@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
@@ -11,12 +12,28 @@ internal class RootDirectoryLayout : DirectoryLayout
 {
 	[Required]
 	[Path]
-	public string Path { get; init; } = null!;
+	public string? Path { get; init; }
 
 	internal override DirectoryView CreateView(IBuildContext context)
 	{
+		Debug.Assert(IsValid());
 		var fullName = System.IO.Path.Combine(Path, Name);
-		Debug.Assert(FullName.TryValidate(fullName));
+		Debug.Assert(FullName.IsValid(fullName));
 		return new(new(fullName));
+	}
+
+	[MemberNotNull(nameof(Path))]
+	internal override void Validate()
+	{
+		base.Validate();
+		Debug.Assert(Path != null);
+	}
+
+	[MemberNotNullWhen(true, nameof(Path))]
+	internal override bool IsValid()
+	{
+		var result = base.IsValid();
+		Debug.Assert(Path != null);
+		return result;
 	}
 }

@@ -5,7 +5,7 @@ namespace Layoutize.Annotations;
 
 public class NameAttribute : ValidationAttribute
 {
-	protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+	protected override ValidationResult? IsValid(object? value, ValidationContext context)
 	{
 		try
 		{

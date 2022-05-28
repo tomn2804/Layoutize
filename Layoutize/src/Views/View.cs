@@ -21,7 +21,7 @@ internal abstract class View
 		get
 		{
 			var fullName = FileSystemInfo.FullName;
-			Debug.Assert(Contexts.FullName.TryValidate(fullName));
+			Debug.Assert(Contexts.FullName.IsValid(fullName));
 			return fullName;
 		}
 	}
@@ -31,7 +31,7 @@ internal abstract class View
 		get
 		{
 			var name = FileSystemInfo.Name;
-			Debug.Assert(Contexts.Name.TryValidate(name));
+			Debug.Assert(Contexts.Name.IsValid(name));
 			return name;
 		}
 	}

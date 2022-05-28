@@ -28,11 +28,11 @@ public static class Path
 			}
 		}
 		VisitParent(context.Element);
-		Debug.Assert(TryValidate(path));
+		Debug.Assert(IsValid(path));
 		return path;
 	}
 
-	public static bool TryValidate([NotNullWhen(true)] string? value)
+	public static bool IsValid([NotNullWhen(true)] string? value)
 	{
 		try
 		{

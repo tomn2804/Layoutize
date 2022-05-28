@@ -13,11 +13,11 @@ public static class Name
 		var element = context.Element;
 		if (!element.IsMounted) throw new ArgumentException("Context is not mounted.", nameof(context));
 		var name = element.View.Name;
-		Debug.Assert(TryValidate(name));
+		Debug.Assert(IsValid(name));
 		return name;
 	}
 
-	public static bool TryValidate([NotNullWhen(true)] string? value)
+	public static bool IsValid([NotNullWhen(true)] string? value)
 	{
 		try
 		{

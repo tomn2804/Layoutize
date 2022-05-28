@@ -19,7 +19,7 @@ public class MountElementCmdlet : PSCmdlet
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
-		Debug.Assert(Contexts.Path.TryValidate(FullName));
+		Debug.Assert(Contexts.Path.IsValid(FullName));
 		var rootDirectory = Directory.CreateDirectory(FullName);
 		if (!rootDirectory.Exists) throw new PSArgumentException("Path does not exists.", nameof(Path));
 		var rootElement = new RootDirectoryLayout
@@ -40,7 +40,7 @@ public class MountElementCmdlet : PSCmdlet
 				: System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, Path);
 			Contexts.Path.Validate(fullName);
 			fullName = System.IO.Path.GetFullPath(fullName);
-			Debug.Assert(Contexts.Path.TryValidate(fullName));
+			Debug.Assert(Contexts.Path.IsValid(fullName));
 			return fullName;
 		}
 	}

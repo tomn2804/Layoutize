@@ -41,9 +41,7 @@ public abstract class ViewLayout : Layout
 	[MemberNotNullWhen(true, nameof(Name))]
 	internal override bool IsValid()
 	{
-		var result = base.IsValid();
-		if (result) Debug.Assert(Name != null);
-		return result;
+		return base.IsValid();
 	}
 
 	[MemberNotNull(nameof(Name))]

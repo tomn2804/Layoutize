@@ -2,7 +2,7 @@
 
 namespace Layoutize.Annotations;
 
-internal abstract class LayoutAttribute : ValidationAttribute
+public abstract class LayoutAttribute : ValidationAttribute
 {
 	protected sealed override ValidationResult? IsValid(object? value, ValidationContext context)
 	{

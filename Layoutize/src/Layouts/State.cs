@@ -23,16 +23,22 @@ public abstract class State
 	[MemberNotNullWhen(true, nameof(Element))]
 	internal virtual bool IsValid()
 	{
-		var result = Validator.TryValidateObject(this, new(this), null);
-		if (result) Debug.Assert(Element != null);
-		return result;
+		try
+		{
+			Validate();
+		}
+		catch
+		{
+			return false;
+		}
+		return true;
 	}
 
 	[MemberNotNull(nameof(Element))]
 	internal virtual void Validate()
 	{
 		Validator.ValidateObject(this, new(this));
-		Debug.Assert(Element != null);
+		if (Element == null) throw new ValidationException("Element is uninitialized.");
 	}
 
 	internal event EventHandler? StateUpdated;

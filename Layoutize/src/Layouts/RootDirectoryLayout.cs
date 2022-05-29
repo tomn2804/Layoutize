@@ -34,9 +34,7 @@ internal class RootDirectoryLayout : DirectoryLayout
 	[MemberNotNullWhen(true, nameof(Path))]
 	internal override bool IsValid()
 	{
-		var result = base.IsValid();
-		if (result) Debug.Assert(Path != null);
-		return result;
+		return base.IsValid();
 	}
 
 	[MemberNotNull(nameof(Path))]

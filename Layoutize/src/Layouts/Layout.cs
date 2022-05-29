@@ -21,7 +21,15 @@ public abstract class Layout
 
 	internal virtual bool IsValid()
 	{
-		return Validator.TryValidateObject(this, new(this), null);
+		try
+		{
+			Validate();
+		}
+		catch
+		{
+			return false;
+		}
+		return true;
 	}
 
 	internal virtual void Validate()

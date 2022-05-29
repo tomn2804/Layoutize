@@ -1,20 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Layoutize.Contexts;
+﻿using Layoutize.Contexts;
 
 namespace Layoutize.Annotations;
 
-public class NameAttribute : ValidationAttribute
+internal sealed class NameAttribute : LayoutAttribute
 {
-	protected override ValidationResult? IsValid(object? value, ValidationContext context)
+	protected override void Validate(object? value)
 	{
-		try
-		{
-			Name.Validate((string?)value);
-		}
-		catch (ValidationException e)
-		{
-			return new(e.Message);
-		}
-		return null;
+		Name.Validate((string?)value);
 	}
 }

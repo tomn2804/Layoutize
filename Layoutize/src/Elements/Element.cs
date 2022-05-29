@@ -22,12 +22,10 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		OnMounting(EventArgs.Empty);
 		_isMounted = true;
 		OnMounted(EventArgs.Empty);
-		Debug.Assert(IsMounted);
 	}
 
 	public void Unmount()
 	{
-		Debug.Assert(IsMounted);
 		OnUnmounting(EventArgs.Empty);
 		_isMounted = false;
 		OnUnmounted(EventArgs.Empty);
@@ -42,24 +40,28 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		get
 		{
-			if (!_isMounted) return false;
-			Debug.Assert(View != null);
-			Debug.Assert(View.Exists);
-			return true;
+			if (_isMounted)
+			{
+				Debug.Assert(View != null);
+				Debug.Assert(View.Exists);
+			}
+			return _isMounted;
 		}
 	}
 
 	public Layout Layout
 	{
-		get => _layout;
+		get
+		{
+			Debug.Assert(_layout.IsValid());
+			return _layout;
+		}
 		set
 		{
-			Debug.Assert(IsMounted);
 			value.Validate();
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
 			OnLayoutUpdated(EventArgs.Empty);
-			Debug.Assert(IsMounted);
 		}
 	}
 
@@ -79,6 +81,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
+		Debug.Assert(layout.IsValid());
 		_layout = layout;
 	}
 

@@ -14,20 +14,34 @@ public abstract class State
 	[MemberNotNull(nameof(Element))]
 	protected void SetState(Action action)
 	{
-		Debug.Assert(IsValid());
 		OnStateUpdating(EventArgs.Empty);
 		action.Invoke();
 		Validate();
 		OnStateUpdated(EventArgs.Empty);
-		Debug.Assert(IsValid());
 	}
 
-	[Required]
-	internal StatefulElement? Element { get; set; }
+	[MemberNotNullWhen(true, nameof(Element))]
+	internal virtual bool IsValid()
+	{
+		var result = Validator.TryValidateObject(this, new(this), null);
+		if (result) Debug.Assert(Element != null);
+		return result;
+	}
+
+	[MemberNotNull(nameof(Element))]
+	internal virtual void Validate()
+	{
+		Validator.ValidateObject(this, new(this));
+		Debug.Assert(Element != null);
+	}
 
 	internal event EventHandler? StateUpdated;
 
 	internal event EventHandler? StateUpdating;
+
+	[Required]
+	[DisallowNull]
+	internal StatefulElement? Element; // TODO: Replace this with ViewModel
 
 	[MemberNotNull(nameof(Element))]
 	private protected virtual void OnStateUpdated(EventArgs e)
@@ -43,21 +57,6 @@ public abstract class State
 		Debug.Assert(IsValid());
 		StateUpdating?.Invoke(this, e);
 		Debug.Assert(IsValid());
-	}
-
-	[MemberNotNull(nameof(Element))]
-	internal virtual void Validate()
-	{
-		Validator.ValidateObject(this, new(this));
-		Debug.Assert(Element != null);
-	}
-
-	[MemberNotNullWhen(true, nameof(Element))]
-	internal virtual bool IsValid()
-	{
-		var result = Validator.TryValidateObject(this, new(this), null);
-		if (result) Debug.Assert(Element != null);
-		return result;
 	}
 }
 

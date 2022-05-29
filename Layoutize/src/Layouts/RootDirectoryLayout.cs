@@ -31,18 +31,18 @@ internal class RootDirectoryLayout : DirectoryLayout
 		return new(new(fullName));
 	}
 
-	[MemberNotNull(nameof(Path))]
-	internal override void Validate()
-	{
-		base.Validate();
-		Debug.Assert(Path != null);
-	}
-
 	[MemberNotNullWhen(true, nameof(Path))]
 	internal override bool IsValid()
 	{
 		var result = base.IsValid();
 		if (result) Debug.Assert(Path != null);
 		return result;
+	}
+
+	[MemberNotNull(nameof(Path))]
+	internal override void Validate()
+	{
+		base.Validate();
+		Debug.Assert(Path != null);
 	}
 }

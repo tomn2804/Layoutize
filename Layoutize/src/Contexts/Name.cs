@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
 
@@ -12,12 +11,10 @@ public static class Name
 	{
 		var element = context.Element;
 		if (!element.IsMounted) throw new ArgumentException("Context is not mounted.", nameof(context));
-		var name = element.View.Name;
-		Debug.Assert(IsValid(name));
-		return name;
+		return element.View.Name;
 	}
 
-	public static bool IsValid([NotNullWhen(true)] string? value)
+	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{
 		try
 		{
@@ -30,7 +27,7 @@ public static class Name
 		return true;
 	}
 
-	public static void Validate([NotNull] string? value)
+	internal static void Validate([NotNull] string? value)
 	{
 		if (string.IsNullOrWhiteSpace(value))
 		{

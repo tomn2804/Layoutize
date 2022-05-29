@@ -9,7 +9,6 @@ internal sealed class StatefulElement : ComponentElement
 	public StatefulElement(StatefulLayout layout)
 		: base(layout)
 	{
-		Debug.Assert(Layout.IsValid());
 		_state = Layout.CreateState();
 		_state.Element = this;
 		_state.StateUpdated += UpdateChild;
@@ -18,8 +17,7 @@ internal sealed class StatefulElement : ComponentElement
 
 	protected override Layout Build()
 	{
-		Debug.Assert(_state.IsValid());
-		return _state.Build(this);
+		return State.Build(this);
 	}
 
 	private void UpdateChild(object? sender, EventArgs e)
@@ -38,6 +36,15 @@ internal sealed class StatefulElement : ComponentElement
 	}
 
 	private new StatefulLayout Layout => (StatefulLayout)base.Layout;
+
+	private State State
+	{
+		get
+		{
+			Debug.Assert(_state.IsValid());
+			return _state;
+		}
+	}
 
 	private readonly State _state;
 }

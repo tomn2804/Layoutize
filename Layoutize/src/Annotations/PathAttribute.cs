@@ -1,20 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Layoutize.Contexts;
+﻿using Layoutize.Contexts;
 
 namespace Layoutize.Annotations;
 
-public class PathAttribute : ValidationAttribute
+internal sealed class PathAttribute : LayoutAttribute
 {
-	protected override ValidationResult? IsValid(object? value, ValidationContext context)
+	protected override void Validate(object? value)
 	{
-		try
-		{
-			Path.Validate((string?)value);
-		}
-		catch (ValidationException e)
-		{
-			return new(e.Message);
-		}
-		return null;
+		Path.Validate((string?)value);
 	}
 }

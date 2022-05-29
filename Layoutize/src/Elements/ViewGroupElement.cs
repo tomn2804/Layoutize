@@ -36,15 +36,18 @@ internal abstract class ViewGroupElement : ViewElement
 	{
 		get
 		{
-			if (base.IsMounted)
+			var result = base.IsMounted;
+			if (result)
 			{
 				Debug.Assert(Children.All(child => child.IsMounted));
 				Debug.Assert(Children.All(child => child.Parent == this));
-				return true;
 			}
-			Debug.Assert(Children.All(child => !child.IsMounted));
-			Debug.Assert(Children.All(child => child.Parent == null));
-			return false;
+			else
+			{
+				Debug.Assert(Children.All(child => !child.IsMounted));
+				Debug.Assert(Children.All(child => child.Parent == null));
+			}
+			return result;
 		}
 	}
 
@@ -55,16 +58,13 @@ internal abstract class ViewGroupElement : ViewElement
 
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
-		Debug.Assert(IsMounted);
 		UpdateChildren();
-		Debug.Assert(IsMounted);
 		base.OnLayoutUpdated(e);
 	}
 
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		Debug.Assert(!IsMounted);
 		foreach (var child in Children)
 		{
 			child.Mount(this);
@@ -74,7 +74,6 @@ internal abstract class ViewGroupElement : ViewElement
 	protected override void OnUnmounting(EventArgs e)
 	{
 		base.OnUnmounting(e);
-		Debug.Assert(IsMounted);
 		foreach (var child in Children)
 		{
 			child.Unmount();

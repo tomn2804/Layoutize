@@ -8,6 +8,7 @@ public abstract class StatelessLayout : ComponentLayout
 
 	internal sealed override StatelessElement CreateElement()
 	{
+		Validate();
 		return new(this);
 	}
 }

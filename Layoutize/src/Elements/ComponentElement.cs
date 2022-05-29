@@ -28,10 +28,10 @@ internal abstract class ComponentElement : Element
 		get
 		{
 			var result = base.IsMounted;
+			Debug.Assert(_child == Child);
 			if (result)
 			{
 				Debug.Assert(Parent != null);
-				Debug.Assert(_child != null);
 				Debug.Assert(Child != null);
 				Debug.Assert(Child.IsMounted);
 				Debug.Assert(Child.Parent == this);
@@ -59,27 +59,25 @@ internal abstract class ComponentElement : Element
 	{
 		Debug.Assert(IsMounted);
 		Child.Layout = Build();
-		Debug.Assert(IsMounted);
 		base.OnLayoutUpdated(e);
 	}
 
-	[MemberNotNull(nameof(_child), nameof(Child), nameof(View))]
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		Debug.Assert(!IsMounted);
 		_child = Build().CreateElement();
-		_child.Mount(this);
-		Debug.Assert(IsMounted);
+		Debug.Assert(Child != null);
+		Child.Mount(this);
+		Debug.Assert(!IsMounted);
 	}
 
 	protected override void OnUnmounting(EventArgs e)
 	{
 		base.OnUnmounting(e);
-		Debug.Assert(IsMounted);
-		_child.Unmount();
+		Debug.Assert(Child != null);
+		Child.Unmount();
 		_child = null;
-		Debug.Assert(!IsMounted);
+		Debug.Assert(IsMounted);
 	}
 
 	private Element? _child;

@@ -22,9 +22,8 @@ public class DirectoryLayout : ViewGroupLayout
 
 	internal override DirectoryElement CreateElement()
 	{
-		var element = new DirectoryElement(this);
-		Debug.Assert(IsValid());
-		return element;
+		Validate();
+		return new(this);
 	}
 
 	internal override DirectoryView CreateView(IBuildContext context)

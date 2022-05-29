@@ -8,6 +8,17 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
+	[MemberNotNullWhen(true, nameof(View))]
+	public override bool IsMounted
+	{
+		get
+		{
+			var result = base.IsMounted;
+			if (result) Debug.Assert(View != null);
+			return result;
+		}
+	}
+
 	public override View? View => _view;
 
 	public event EventHandler? Created;
@@ -65,26 +76,13 @@ internal abstract class ViewElement : Element
 	{
 		Debug.Assert(IsMounted);
 		AddEventHandler();
-		Debug.Assert(IsMounted);
 		base.OnLayoutUpdated(e);
-	}
-
-	[MemberNotNullWhen(true, nameof(View))]
-	public override bool IsMounted
-	{
-		get
-		{
-			var result = base.IsMounted;
-			if (result) Debug.Assert(View != null);
-			return result;
-		}
 	}
 
 	[MemberNotNull(nameof(View))]
 	protected override void OnLayoutUpdating(EventArgs e)
 	{
 		base.OnLayoutUpdating(e);
-		Debug.Assert(IsMounted);
 		RemoveEventHandler();
 		Debug.Assert(IsMounted);
 	}
@@ -93,16 +91,14 @@ internal abstract class ViewElement : Element
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		Debug.Assert(!IsMounted);
 		_view = Layout.CreateView(this);
-		if (!_view.Exists) Create();
 		Debug.Assert(View != null);
+		if (!View.Exists) Create();
 	}
 
 	protected override void OnUnmounting(EventArgs e)
 	{
 		base.OnUnmounting(e);
-		Debug.Assert(IsMounted);
 		Debug.Assert(View != null);
 		if (Layout.DeleteOnUnmount && View.Exists) Delete();
 		_view = null;
@@ -123,23 +119,17 @@ internal abstract class ViewElement : Element
 	[MemberNotNull(nameof(View))]
 	private void Create()
 	{
-		Debug.Assert(View != null);
-		Debug.Assert(!View.Exists);
 		OnCreating(EventArgs.Empty);
 		View.Create();
 		OnCreated(EventArgs.Empty);
-		Debug.Assert(View.Exists);
 	}
 
 	[MemberNotNull(nameof(View))]
 	private void Delete()
 	{
-		Debug.Assert(View != null);
-		Debug.Assert(View.Exists);
 		OnDeleting(EventArgs.Empty);
 		View.Delete();
 		OnDeleted(EventArgs.Empty);
-		Debug.Assert(!View.Exists);
 	}
 
 	private void RemoveEventHandler()

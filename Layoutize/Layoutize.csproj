@@ -13,6 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="src\Annotations\LayoutAttribute.cs" />
+    <Compile Include="src\Annotations\NameAttribute.cs" />
+    <Compile Include="src\Annotations\PathAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Layouts\DirectoryLayout.cs" />
@@ -26,8 +29,6 @@
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
     <Compile Include="src\Cmdlets\MountElementCmdlet.cs" />
-    <Compile Include="src\Annotations\NameAttribute.cs" />
-    <Compile Include="src\Annotations\PathAttribute.cs" />
     <Compile Include="src\Layouts\RootDirectoryLayout.cs" />
     <Compile Include="src\Contexts\Name.cs" />
     <Compile Include="src\Contexts\Path.cs" />

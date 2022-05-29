@@ -19,13 +19,13 @@ public abstract class Layout
 
 	internal abstract Element CreateElement();
 
-	internal virtual void Validate()
-	{
-		Validator.ValidateObject(this, new(this));
-	}
-
 	internal virtual bool IsValid()
 	{
 		return Validator.TryValidateObject(this, new(this), null);
+	}
+
+	internal virtual void Validate()
+	{
+		Validator.ValidateObject(this, new(this));
 	}
 }

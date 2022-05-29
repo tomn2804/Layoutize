@@ -32,7 +32,7 @@ public static class Path
 		return path;
 	}
 
-	public static bool IsValid([NotNullWhen(true)] string? value)
+	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{
 		try
 		{
@@ -45,7 +45,7 @@ public static class Path
 		return true;
 	}
 
-	public static void Validate([NotNull] string? value)
+	internal static void Validate([NotNull] string? value)
 	{
 		if (value == null)
 		{

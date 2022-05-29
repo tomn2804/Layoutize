@@ -38,18 +38,18 @@ public abstract class ViewLayout : Layout
 	[MemberNotNull(nameof(Name))]
 	internal abstract View CreateView(IBuildContext context);
 
-	[MemberNotNull(nameof(Name))]
-	internal override void Validate()
-	{
-		base.Validate();
-		Debug.Assert(Name != null);
-	}
-
 	[MemberNotNullWhen(true, nameof(Name))]
 	internal override bool IsValid()
 	{
 		var result = base.IsValid();
 		if (result) Debug.Assert(Name != null);
 		return result;
+	}
+
+	[MemberNotNull(nameof(Name))]
+	internal override void Validate()
+	{
+		base.Validate();
+		Debug.Assert(Name != null);
 	}
 }

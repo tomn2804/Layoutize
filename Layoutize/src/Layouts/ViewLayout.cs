@@ -32,8 +32,10 @@ public abstract class ViewLayout : Layout
 
 	public EventHandler? OnUnmounting { get; init; }
 
+	[MemberNotNull(nameof(Name))]
 	internal abstract override ViewElement CreateElement();
 
+	[MemberNotNull(nameof(Name))]
 	internal abstract View CreateView(IBuildContext context);
 
 	[MemberNotNull(nameof(Name))]
@@ -47,7 +49,7 @@ public abstract class ViewLayout : Layout
 	internal override bool IsValid()
 	{
 		var result = base.IsValid();
-		Debug.Assert(Name != null);
+		if (result) Debug.Assert(Name != null);
 		return result;
 	}
 }

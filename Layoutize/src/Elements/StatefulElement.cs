@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Layouts;
 
@@ -10,14 +9,16 @@ internal sealed class StatefulElement : ComponentElement
 	public StatefulElement(StatefulLayout layout)
 		: base(layout)
 	{
+		Debug.Assert(Layout.IsValid());
 		_state = Layout.CreateState();
 		_state.Element = this;
 		_state.StateUpdated += UpdateChild;
-		Validator.ValidateObject(_state, new(_state));
+		_state.Validate();
 	}
 
 	protected override Layout Build()
 	{
+		Debug.Assert(_state.IsValid());
 		return _state.Build(this);
 	}
 

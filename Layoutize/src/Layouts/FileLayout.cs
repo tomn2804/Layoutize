@@ -10,7 +10,9 @@ public class FileLayout : ViewLayout
 {
 	internal override FileElement CreateElement()
 	{
-		return new(this);
+		var element = new FileElement(this);
+		Debug.Assert(IsValid());
+		return element;
 	}
 
 	internal override FileView CreateView(IBuildContext context)

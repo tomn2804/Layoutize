@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Layoutize.Elements;
 
 namespace Layoutize.Layouts;
@@ -10,7 +9,7 @@ public abstract class Layout
 	{
 		init
 		{
-			Debug.Assert(value.IsValid());
+			value.Validate();
 			foreach (var property in value.GetType().GetProperties())
 			{
 				GetType().GetProperty(property.Name)?.SetValue(this, property.GetValue(value));

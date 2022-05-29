@@ -9,7 +9,7 @@ public class PathAttribute : ValidationAttribute
 	{
 		try
 		{
-			Path.Validate(value?.ToString());
+			Path.Validate((string?)value);
 		}
 		catch (ValidationException e)
 		{

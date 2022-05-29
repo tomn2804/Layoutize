@@ -9,7 +9,7 @@ public class NameAttribute : ValidationAttribute
 	{
 		try
 		{
-			Name.Validate(value?.ToString());
+			Name.Validate((string?)value);
 		}
 		catch (ValidationException e)
 		{

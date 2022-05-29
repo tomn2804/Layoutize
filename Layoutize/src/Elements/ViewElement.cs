@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Layouts;
 using Layoutize.Views;
 
@@ -23,54 +24,79 @@ internal abstract class ViewElement : Element
 		AddEventHandler();
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnCreated(EventArgs e)
 	{
 		Debug.Assert(View != null);
 		Debug.Assert(View.Exists);
 		Created?.Invoke(this, e);
+		Debug.Assert(View.Exists);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnCreating(EventArgs e)
 	{
 		Debug.Assert(View != null);
 		Debug.Assert(!View.Exists);
 		Creating?.Invoke(this, e);
+		Debug.Assert(!View.Exists);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnDeleted(EventArgs e)
 	{
 		Debug.Assert(View != null);
 		Debug.Assert(!View.Exists);
 		Deleted?.Invoke(this, e);
+		Debug.Assert(!View.Exists);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnDeleting(EventArgs e)
 	{
 		Debug.Assert(View != null);
 		Debug.Assert(View.Exists);
 		Deleting?.Invoke(this, e);
+		Debug.Assert(View.Exists);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		AddEventHandler();
+		Debug.Assert(IsMounted);
 		base.OnLayoutUpdated(e);
 	}
 
+	[MemberNotNullWhen(true, nameof(View))]
+	public override bool IsMounted
+	{
+		get
+		{
+			var result = base.IsMounted;
+			if (result) Debug.Assert(View != null);
+			return result;
+		}
+	}
+
+	[MemberNotNull(nameof(View))]
 	protected override void OnLayoutUpdating(EventArgs e)
 	{
 		base.OnLayoutUpdating(e);
 		Debug.Assert(IsMounted);
 		RemoveEventHandler();
+		Debug.Assert(IsMounted);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
 		Debug.Assert(!IsMounted);
 		_view = Layout.CreateView(this);
 		if (!_view.Exists) Create();
+		Debug.Assert(View != null);
 	}
 
 	protected override void OnUnmounting(EventArgs e)
@@ -94,6 +120,7 @@ internal abstract class ViewElement : Element
 		Unmounted += Layout.OnUnmounted;
 	}
 
+	[MemberNotNull(nameof(View))]
 	private void Create()
 	{
 		Debug.Assert(View != null);
@@ -104,6 +131,7 @@ internal abstract class ViewElement : Element
 		Debug.Assert(View.Exists);
 	}
 
+	[MemberNotNull(nameof(View))]
 	private void Delete()
 	{
 		Debug.Assert(View != null);

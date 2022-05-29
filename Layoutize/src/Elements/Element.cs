@@ -14,6 +14,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		return other == null ? 1 : string.Compare(Name.Of(this), Name.Of(other), StringComparison.Ordinal);
 	}
 
+	[MemberNotNull(nameof(View))]
 	public void Mount(Element? parent)
 	{
 		Debug.Assert(!IsMounted);
@@ -37,17 +38,13 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	public abstract View? View { get; }
 
 	[MemberNotNullWhen(true, nameof(View))]
-	public bool IsMounted
+	public virtual bool IsMounted
 	{
 		get
 		{
 			if (!_isMounted) return false;
-			Debug.Assert(
-				View is
-				{
-					Exists: true,
-				}
-			);
+			Debug.Assert(View != null);
+			Debug.Assert(View.Exists);
 			return true;
 		}
 	}
@@ -58,9 +55,11 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		set
 		{
 			Debug.Assert(IsMounted);
+			value.Validate();
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
 			OnLayoutUpdated(EventArgs.Empty);
+			Debug.Assert(IsMounted);
 		}
 	}
 
@@ -83,40 +82,50 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		_layout = layout;
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		LayoutUpdated?.Invoke(this, EventArgs.Empty);
+		Debug.Assert(IsMounted);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnLayoutUpdating(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		LayoutUpdating?.Invoke(this, EventArgs.Empty);
+		Debug.Assert(IsMounted);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnMounted(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		Mounted?.Invoke(this, e);
+		Debug.Assert(IsMounted);
 	}
 
 	protected virtual void OnMounting(EventArgs e)
 	{
 		Debug.Assert(!IsMounted);
 		Mounting?.Invoke(this, e);
+		Debug.Assert(!IsMounted);
 	}
 
 	protected virtual void OnUnmounted(EventArgs e)
 	{
 		Debug.Assert(!IsMounted);
 		Unmounted?.Invoke(this, e);
+		Debug.Assert(!IsMounted);
 	}
 
+	[MemberNotNull(nameof(View))]
 	protected virtual void OnUnmounting(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		Unmounting?.Invoke(this, e);
+		Debug.Assert(IsMounted);
 	}
 
 	Element IBuildContext.Element => this;

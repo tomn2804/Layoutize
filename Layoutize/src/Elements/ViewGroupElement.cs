@@ -15,7 +15,6 @@ internal abstract class ViewGroupElement : ViewElement
 		protected set
 		{
 			Debug.Assert(IsMounted);
-			OnChildrenUpdating(EventArgs.Empty);
 			IEnumerable<Element> enteringChildren = value.Except(Children);
 			IEnumerable<Element> exitingChildren = Children.Except(value);
 			foreach (var exitingChild in exitingChildren)
@@ -29,12 +28,11 @@ internal abstract class ViewGroupElement : ViewElement
 			{
 				enteringChild.Mount(this);
 			}
-			OnChildrenUpdated(EventArgs.Empty);
 			Debug.Assert(IsMounted);
 		}
 	}
 
-	public new bool IsMounted
+	public override bool IsMounted
 	{
 		get
 		{
@@ -50,31 +48,16 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	public event EventHandler? ChildrenUpdated;
-
-	public event EventHandler? ChildrenUpdating;
-
 	protected ViewGroupElement(ViewGroupLayout layout)
 		: base(layout)
 	{
-	}
-
-	protected virtual void OnChildrenUpdated(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		ChildrenUpdated?.Invoke(this, e);
-	}
-
-	protected virtual void OnChildrenUpdating(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		ChildrenUpdating?.Invoke(this, e);
 	}
 
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		UpdateChildren();
+		Debug.Assert(IsMounted);
 		base.OnLayoutUpdated(e);
 	}
 

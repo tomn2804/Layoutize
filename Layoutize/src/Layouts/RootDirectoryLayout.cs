@@ -14,6 +14,15 @@ internal class RootDirectoryLayout : DirectoryLayout
 	[Path]
 	public string? Path { get; init; }
 
+	[MemberNotNull(nameof(Path))]
+	internal override DirectoryElement CreateElement()
+	{
+		var element = base.CreateElement();
+		Debug.Assert(IsValid());
+		return element;
+	}
+
+	[MemberNotNull(nameof(Path))]
 	internal override DirectoryView CreateView(IBuildContext context)
 	{
 		Debug.Assert(IsValid());
@@ -33,7 +42,7 @@ internal class RootDirectoryLayout : DirectoryLayout
 	internal override bool IsValid()
 	{
 		var result = base.IsValid();
-		Debug.Assert(Path != null);
+		if (result) Debug.Assert(Path != null);
 		return result;
 	}
 }

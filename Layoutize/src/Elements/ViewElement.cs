@@ -16,15 +16,7 @@ internal abstract class ViewElement : Element
 	}
 
 	[MemberNotNullWhen(true, nameof(View))]
-	public override bool IsMounted
-	{
-		get
-		{
-			var result = base.IsMounted;
-			if (result) Debug.Assert(View != null);
-			return result;
-		}
-	}
+	public override bool IsMounted => base.IsMounted;
 
 	[NotNullIfNotNull(nameof(_view))]
 	public override View? View => _view;

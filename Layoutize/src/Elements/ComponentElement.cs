@@ -8,7 +8,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ComponentElement : Element
 {
-	[MemberNotNull(nameof(_child), nameof(Child), nameof(View))]
+	[MemberNotNull(nameof(Child), nameof(View))]
 	public override void Mount(Element? parent)
 	{
 		base.Mount(parent);
@@ -23,14 +23,14 @@ internal abstract class ComponentElement : Element
 		protected set
 		{
 			Debug.Assert(IsMounted);
-			_child.Unmount();
+			Child.Unmount();
 			_child = value;
-			_child.Mount(this);
+			Child.Mount(this);
 			Debug.Assert(IsMounted);
 		}
 	}
 
-	[MemberNotNullWhen(true, nameof(_child), nameof(Child), nameof(View))]
+	[MemberNotNullWhen(true, nameof(Child), nameof(View))]
 	public override bool IsMounted
 	{
 		get
@@ -52,6 +52,7 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
+	[NotNullIfNotNull(nameof(Child))]
 	public override View? View => Child?.View;
 
 	protected ComponentElement(ComponentLayout layout)
@@ -61,7 +62,7 @@ internal abstract class ComponentElement : Element
 
 	protected abstract Layout Build();
 
-	[MemberNotNull(nameof(_child), nameof(Child), nameof(View))]
+	[MemberNotNull(nameof(Child), nameof(View))]
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
@@ -69,14 +70,14 @@ internal abstract class ComponentElement : Element
 		base.OnLayoutUpdated(e);
 	}
 
-	[MemberNotNull(nameof(_child), nameof(Child), nameof(View))]
+	[MemberNotNull(nameof(Child), nameof(View))]
 	protected override void OnLayoutUpdating(EventArgs e)
 	{
 		base.OnLayoutUpdating(e);
 		Debug.Assert(IsMounted);
 	}
 
-	[MemberNotNull(nameof(_child), nameof(Child), nameof(View))]
+	[MemberNotNull(nameof(Child), nameof(View))]
 	protected override void OnMounted(EventArgs e)
 	{
 		_child = Build().CreateElement();
@@ -94,7 +95,7 @@ internal abstract class ComponentElement : Element
 		base.OnUnmounted(e);
 	}
 
-	[MemberNotNull(nameof(_child), nameof(Child), nameof(View))]
+	[MemberNotNull(nameof(Child), nameof(View))]
 	protected override void OnUnmounting(EventArgs e)
 	{
 		base.OnUnmounting(e);

@@ -40,12 +40,13 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		get
 		{
-			if (_isMounted)
+			var result = _isMounted;
+			if (result)
 			{
 				Debug.Assert(View != null);
 				Debug.Assert(View.Exists);
 			}
-			return _isMounted;
+			return result;
 		}
 	}
 

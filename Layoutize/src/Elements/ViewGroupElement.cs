@@ -93,7 +93,6 @@ internal abstract class ViewGroupElement : ViewElement
 			}
 		}
 		Children = childrenBuilder.ToImmutable();
-		Debug.Assert(IsMounted);
 	}
 
 	private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;

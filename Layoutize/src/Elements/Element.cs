@@ -20,10 +20,12 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		OnMounting(EventArgs.Empty);
 		_isMounted = true;
 		OnMounted(EventArgs.Empty);
+		Debug.Assert(IsMounted);
 	}
 
 	public void Unmount()
 	{
+		Debug.Assert(IsMounted);
 		OnUnmounting(EventArgs.Empty);
 		_isMounted = false;
 		OnUnmounted(EventArgs.Empty);
@@ -31,18 +33,14 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(!IsMounted);
 	}
 
-	public abstract View View { get; }
+	public abstract IView View { get; }
 
 	public virtual bool IsMounted
 	{
 		get
 		{
 			var result = _isMounted;
-			if (result)
-			{
-				Debug.Assert(View != null);
-				Debug.Assert(View.Exists);
-			}
+			if (result) Debug.Assert(View.Exists);
 			return result;
 		}
 	}
@@ -72,30 +70,22 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected virtual void OnMounted(EventArgs e)
 	{
-		Debug.Assert(IsMounted);
 		Mounted?.Invoke(this, e);
-		Debug.Assert(IsMounted);
 	}
 
 	protected virtual void OnMounting(EventArgs e)
 	{
-		Debug.Assert(!IsMounted);
 		Mounting?.Invoke(this, e);
-		Debug.Assert(!IsMounted);
 	}
 
 	protected virtual void OnUnmounted(EventArgs e)
 	{
-		Debug.Assert(!IsMounted);
 		Unmounted?.Invoke(this, e);
-		Debug.Assert(!IsMounted);
 	}
 
 	protected virtual void OnUnmounting(EventArgs e)
 	{
-		Debug.Assert(IsMounted);
 		Unmounting?.Invoke(this, e);
-		Debug.Assert(IsMounted);
 	}
 
 	Element IBuildContext.Element => this;

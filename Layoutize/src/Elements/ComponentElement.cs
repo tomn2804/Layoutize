@@ -9,7 +9,7 @@ internal abstract class ComponentElement : Element
 {
 	public Element Child
 	{
-		get => _child ?? throw new ElementNotMountedException();
+		get => _child ?? throw new ElementNotMountedException(this);
 		protected set
 		{
 			Debug.Assert(IsMounted);
@@ -39,7 +39,7 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override View View => Child.View;
+	public override IView View => Child.View;
 
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)
@@ -53,21 +53,21 @@ internal abstract class ComponentElement : Element
 	{
 		Debug.Assert(IsMounted);
 		Child.Layout = Build();
-	}
-
-	protected override void OnMounting(EventArgs e)
-	{
-		base.OnMounting(e);
-		_child = Build().CreateElement();
-		Child.Mount(this);
 		Debug.Assert(IsMounted);
 	}
-
-	protected override void OnUnmounted(EventArgs e)
+	
+	protected override void OnMounted(EventArgs e)
 	{
+		_child = Build().CreateElement();
+		Child.Mount(this);
+		base.OnMounted(e);
+	}
+
+	protected override void OnUnmounting(EventArgs e)
+	{
+		base.OnUnmounting(e);
 		Child.Unmount();
 		_child = null;
-		base.OnUnmounted(e);
 	}
 
 	private Element? _child;

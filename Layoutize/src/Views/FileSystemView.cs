@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal abstract class View : IView
+internal abstract class FileSystemView : IView
 {
 	public abstract void Create();
 
@@ -36,7 +36,7 @@ internal abstract class View : IView
 		}
 	}
 
-	protected View(FileSystemInfo fileSystemInfo)
+	protected FileSystemView(FileSystemInfo fileSystemInfo)
 	{
 		FileSystemInfo = fileSystemInfo;
 	}

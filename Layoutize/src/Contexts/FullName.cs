@@ -28,17 +28,15 @@ public static class FullName
 	{
 		if (string.IsNullOrWhiteSpace(value))
 		{
-			throw new ValidationException(
-				$"Attribute value '{nameof(FullName)}' is either null, empty, or consists of only white-space characters."
-			);
+			throw new ValidationException($"Layout property value '{nameof(FullName)}' is either null, empty, or consists of only white-space characters.");
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ValidationException($"Attribute value '{nameof(FullName)}' contains invalid characters.");
+			throw new ValidationException($"Layout property value '{nameof(FullName)}' contains invalid characters.");
 		}
 		if (!System.IO.Path.IsPathFullyQualified(value))
 		{
-			throw new ValidationException($"Attribute value '{nameof(FullName)}' is not an absolute path.");
+			throw new ValidationException($"Layout property value '{nameof(FullName)}' is not an absolute path.");
 		}
 	}
 }

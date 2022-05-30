@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Annotations;
 using Layoutize.Contexts;
@@ -22,12 +21,12 @@ internal class RootDirectoryLayout : DirectoryLayout
 		init => _path = value;
 	}
 
-	internal override DirectoryView CreateView(IBuildContext context)
+	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(IsValid());
 		var fullName = System.IO.Path.Combine(Path, Name);
 		Debug.Assert(FullName.IsValid(fullName));
-		return new(new(fullName));
+		return new DirectoryView(new(fullName));
 	}
 
 	private readonly string? _path;

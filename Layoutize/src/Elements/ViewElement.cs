@@ -7,7 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public override View View => _view ?? throw new ElementNotMountedException();
+	public override IView View => _view ?? throw new ElementNotMountedException(this);
 
 	public event EventHandler? Created;
 
@@ -111,5 +111,5 @@ internal abstract class ViewElement : Element
 
 	private new ViewLayout Layout => (ViewLayout)base.Layout;
 
-	private View? _view;
+	private IView? _view;
 }

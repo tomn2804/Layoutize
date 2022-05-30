@@ -46,7 +46,7 @@
     <Compile Include="src\Views\DirectoryView.cs" />
     <Compile Include="src\Views\FileView.cs" />
     <Compile Include="src\Views\IView.cs" />
-    <Compile Include="src\Views\View.cs" />
+    <Compile Include="src\Views\FileSystemView.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -41,7 +41,7 @@ public abstract class ViewLayout : Layout
 
 	internal abstract override ViewElement CreateElement();
 
-	internal abstract View CreateView(IBuildContext context);
+	internal abstract IView CreateView(IBuildContext context);
 
 	private readonly string? _name;
 }

@@ -14,11 +14,11 @@ public class FileLayout : ViewLayout
 		return new(this);
 	}
 
-	internal override FileView CreateView(IBuildContext context)
+	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(IsValid());
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
 		Debug.Assert(FullName.IsValid(fullName));
-		return new(new(fullName));
+		return new FileView(new(fullName));
 	}
 }

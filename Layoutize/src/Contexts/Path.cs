@@ -49,11 +49,15 @@ public static class Path
 	{
 		if (value == null)
 		{
-			throw new ValidationException($"Attribute value '{nameof(Path)}' is null.");
+			throw new ValidationException($"Layout property value '{nameof(Path)}' is null.");
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ValidationException($"Attribute value '{nameof(Path)}' contains invalid characters.");
+			throw new ValidationException($"Layout property value '{nameof(Path)}' contains invalid characters.");
+		}
+		if (string.IsNullOrWhiteSpace(value) && !System.IO.Path.IsPathFullyQualified(value))
+		{
+			throw new ValidationException($"Layout property value '{nameof(Path)}' is not an absolute path.");
 		}
 	}
 }

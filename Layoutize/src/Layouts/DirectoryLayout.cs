@@ -26,11 +26,11 @@ public class DirectoryLayout : ViewGroupLayout
 		return new(this);
 	}
 
-	internal override DirectoryView CreateView(IBuildContext context)
+	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(IsValid());
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
 		Debug.Assert(FullName.IsValid(fullName));
-		return new(new(fullName));
+		return new DirectoryView(new(fullName));
 	}
 }

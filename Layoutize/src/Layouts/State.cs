@@ -8,10 +8,8 @@ namespace Layoutize.Layouts;
 
 public abstract class State
 {
-	[MemberNotNull(nameof(Element))]
 	protected internal abstract Layout Build(IBuildContext context);
 
-	[MemberNotNull(nameof(Element))]
 	protected void SetState(Action action)
 	{
 		OnStateUpdating(EventArgs.Empty);
@@ -20,8 +18,7 @@ public abstract class State
 		OnStateUpdated(EventArgs.Empty);
 	}
 
-	[MemberNotNullWhen(true, nameof(Element))]
-	internal virtual bool IsValid()
+	internal bool IsValid()
 	{
 		try
 		{
@@ -34,22 +31,27 @@ public abstract class State
 		return true;
 	}
 
-	[MemberNotNull(nameof(Element))]
-	internal virtual void Validate()
+	internal void Validate()
 	{
 		Validator.ValidateObject(this, new(this));
-		Debug.Assert(Element != null);
 	}
 
 	internal event EventHandler? StateUpdated;
 
 	internal event EventHandler? StateUpdating;
 
+	// TODO: Replace this with ViewModel
 	[Required]
-	[DisallowNull]
-	internal StatefulElement? Element; // TODO: Replace this with ViewModel
+	internal StatefulElement Element
+	{
+		get
+		{
+			Debug.Assert(_element != null);
+			return _element;
+		}
+		set => _element = value;
+	}
 
-	[MemberNotNull(nameof(Element))]
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{
 		Debug.Assert(IsValid());
@@ -57,23 +59,17 @@ public abstract class State
 		Debug.Assert(IsValid());
 	}
 
-	[MemberNotNull(nameof(Element))]
 	private protected virtual void OnStateUpdating(EventArgs e)
 	{
 		Debug.Assert(IsValid());
 		StateUpdating?.Invoke(this, e);
 		Debug.Assert(IsValid());
 	}
+
+	private StatefulElement? _element;
 }
 
 public abstract class State<T> : State where T : StatefulLayout
 {
-	protected T Layout
-	{
-		get
-		{
-			Debug.Assert(IsValid());
-			return (T)Element.Layout;
-		}
-	}
+	protected T Layout => (T)Element.Layout;
 }

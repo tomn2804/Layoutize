@@ -19,7 +19,7 @@ public abstract class Layout
 
 	internal abstract Element CreateElement();
 
-	internal virtual bool IsValid()
+	internal bool IsValid()
 	{
 		try
 		{
@@ -32,7 +32,7 @@ public abstract class Layout
 		return true;
 	}
 
-	internal virtual void Validate()
+	internal void Validate()
 	{
 		Validator.ValidateObject(this, new(this));
 	}

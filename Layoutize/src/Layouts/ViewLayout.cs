@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Layoutize.Annotations;
 using Layoutize.Elements;
 using Layoutize.Views;
@@ -14,7 +12,11 @@ public abstract class ViewLayout : Layout
 
 	[Required]
 	[Name]
-	public string? Name { get; init; }
+	public string Name
+	{
+		get => _name ?? throw new InvalidOperationException($"Attribute {nameof(Name)} is uninitialized.");
+		init => _name = value;
+	}
 
 	public EventHandler? OnCreated { get; init; }
 
@@ -32,22 +34,9 @@ public abstract class ViewLayout : Layout
 
 	public EventHandler? OnUnmounting { get; init; }
 
-	[MemberNotNull(nameof(Name))]
 	internal abstract override ViewElement CreateElement();
 
-	[MemberNotNull(nameof(Name))]
 	internal abstract View CreateView(IBuildContext context);
 
-	[MemberNotNullWhen(true, nameof(Name))]
-	internal override bool IsValid()
-	{
-		return base.IsValid();
-	}
-
-	[MemberNotNull(nameof(Name))]
-	internal override void Validate()
-	{
-		base.Validate();
-		Debug.Assert(Name != null);
-	}
+	private readonly string? _name;
 }

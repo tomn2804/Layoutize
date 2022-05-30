@@ -62,10 +62,10 @@ internal abstract class ViewGroupElement : ViewElement
 		base.OnLayoutUpdated(e);
 	}
 
-	protected override void OnMounted(EventArgs e)
+	protected override void OnMounting(EventArgs e)
 	{
+		base.OnMounting(e);
 		Children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
-		base.OnMounted(e);
 	}
 
 	protected override void OnUnmounted(EventArgs e)

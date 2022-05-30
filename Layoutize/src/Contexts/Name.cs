@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
 
@@ -9,9 +8,7 @@ public static class Name
 {
 	public static string Of(IBuildContext context)
 	{
-		var element = context.Element;
-		if (!element.IsMounted) throw new ArgumentException("Context is not mounted.", nameof(context));
-		return element.View.Name;
+		return context.Element.View.Name;
 	}
 
 	internal static bool IsValid([NotNullWhen(true)] string? value)

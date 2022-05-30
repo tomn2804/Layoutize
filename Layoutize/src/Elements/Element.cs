@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Layoutize.Contexts;
 using Layoutize.Layouts;
 using Layoutize.Views;
@@ -14,8 +13,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		return other == null ? 1 : string.Compare(Name.Of(this), Name.Of(other), StringComparison.Ordinal);
 	}
 
-	[MemberNotNull(nameof(View))]
-	public virtual void Mount(Element? parent)
+	public void Mount(Element? parent)
 	{
 		Debug.Assert(!IsMounted);
 		Parent = parent;
@@ -24,7 +22,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		OnMounted(EventArgs.Empty);
 	}
 
-	public virtual void Unmount()
+	public void Unmount()
 	{
 		OnUnmounting(EventArgs.Empty);
 		_isMounted = false;
@@ -33,9 +31,8 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(!IsMounted);
 	}
 
-	public abstract View? View { get; }
+	public abstract View View { get; }
 
-	[MemberNotNullWhen(true, nameof(View))]
 	public virtual bool IsMounted
 	{
 		get
@@ -59,6 +56,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		}
 		set
 		{
+			Debug.Assert(IsMounted);
 			value.Validate();
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
@@ -86,7 +84,6 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		_layout = layout;
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
@@ -94,15 +91,12 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(IsMounted);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnLayoutUpdating(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		LayoutUpdating?.Invoke(this, EventArgs.Empty);
 		Debug.Assert(IsMounted);
 	}
-
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnMounted(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
@@ -124,7 +118,6 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(!IsMounted);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnUnmounting(EventArgs e)
 	{
 		Debug.Assert(IsMounted);

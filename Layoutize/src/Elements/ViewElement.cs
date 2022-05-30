@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Layoutize.Layouts;
 using Layoutize.Views;
 
@@ -8,18 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	[MemberNotNull(nameof(View))]
-	public override void Mount(Element? parent)
-	{
-		base.Mount(parent);
-		Debug.Assert(IsMounted);
-	}
-
-	[MemberNotNullWhen(true, nameof(View))]
-	public override bool IsMounted => base.IsMounted;
-
-	[NotNullIfNotNull(nameof(_view))]
-	public override View? View => _view;
+	public override View View => _view ?? throw new NotMountedException();
 
 	public event EventHandler? Created;
 
@@ -35,7 +23,6 @@ internal abstract class ViewElement : Element
 		AddEventHandler();
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnCreated(EventArgs e)
 	{
 		Debug.Assert(View != null);
@@ -44,7 +31,6 @@ internal abstract class ViewElement : Element
 		Debug.Assert(View.Exists);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnCreating(EventArgs e)
 	{
 		Debug.Assert(View != null);
@@ -53,7 +39,6 @@ internal abstract class ViewElement : Element
 		Debug.Assert(!View.Exists);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnDeleted(EventArgs e)
 	{
 		Debug.Assert(View != null);
@@ -62,7 +47,6 @@ internal abstract class ViewElement : Element
 		Debug.Assert(!View.Exists);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected virtual void OnDeleting(EventArgs e)
 	{
 		Debug.Assert(View != null);
@@ -71,7 +55,6 @@ internal abstract class ViewElement : Element
 		Debug.Assert(View.Exists);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
@@ -79,7 +62,6 @@ internal abstract class ViewElement : Element
 		base.OnLayoutUpdated(e);
 	}
 
-	[MemberNotNull(nameof(View))]
 	protected override void OnLayoutUpdating(EventArgs e)
 	{
 		base.OnLayoutUpdating(e);
@@ -87,35 +69,18 @@ internal abstract class ViewElement : Element
 		Debug.Assert(IsMounted);
 	}
 
-	[MemberNotNull(nameof(View))]
-	protected override void OnMounted(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		base.OnMounted(e);
-	}
-
-	[MemberNotNull(nameof(View))]
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
 		_view = Layout.CreateView(this);
-		Debug.Assert(View != null);
 		if (!View.Exists) Create();
 	}
 
 	protected override void OnUnmounted(EventArgs e)
 	{
-		Debug.Assert(View != null);
 		if (Layout.DeleteOnUnmount && View.Exists) Delete();
 		_view = null;
 		base.OnUnmounted(e);
-	}
-
-	[MemberNotNull(nameof(View))]
-	protected override void OnUnmounting(EventArgs e)
-	{
-		base.OnUnmounting(e);
-		Debug.Assert(IsMounted);
 	}
 
 	private void AddEventHandler()
@@ -130,7 +95,6 @@ internal abstract class ViewElement : Element
 		Unmounted += Layout.OnUnmounted;
 	}
 
-	[MemberNotNull(nameof(View))]
 	private void Create()
 	{
 		OnCreating(EventArgs.Empty);
@@ -138,7 +102,6 @@ internal abstract class ViewElement : Element
 		OnCreated(EventArgs.Empty);
 	}
 
-	[MemberNotNull(nameof(View))]
 	private void Delete()
 	{
 		OnDeleting(EventArgs.Empty);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
 
 namespace Layoutize.Layouts;
@@ -36,10 +35,6 @@ public abstract class State
 		Validator.ValidateObject(this, new(this));
 	}
 
-	internal event EventHandler? StateUpdated;
-
-	internal event EventHandler? StateUpdating;
-
 	// TODO: Replace this with ViewModel
 	[Required]
 	internal StatefulElement Element
@@ -51,6 +46,12 @@ public abstract class State
 		}
 		set => _element = value;
 	}
+
+	internal event EventHandler? StateUpdated;
+
+	internal event EventHandler? StateUpdating;
+
+	private StatefulElement? _element;
 
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{
@@ -65,8 +66,6 @@ public abstract class State
 		StateUpdating?.Invoke(this, e);
 		Debug.Assert(IsValid());
 	}
-
-	private StatefulElement? _element;
 }
 
 public abstract class State<T> : State where T : StatefulLayout

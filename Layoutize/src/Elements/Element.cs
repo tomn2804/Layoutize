@@ -97,6 +97,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		LayoutUpdating?.Invoke(this, EventArgs.Empty);
 		Debug.Assert(IsMounted);
 	}
+
 	protected virtual void OnMounted(EventArgs e)
 	{
 		Debug.Assert(IsMounted);

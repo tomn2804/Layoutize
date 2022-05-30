@@ -6,6 +6,12 @@ namespace Layoutize.Elements;
 
 internal sealed class ViewModel
 {
+	public ViewModel(Layout layout)
+	{
+		Debug.Assert(layout.IsValid());
+		_layout = layout;
+	}
+
 	public Layout Layout
 	{
 		get => _layout;
@@ -16,12 +22,6 @@ internal sealed class ViewModel
 			_layout = value;
 			OnValueUpdated(EventArgs.Empty);
 		}
-	}
-
-	public ViewModel(Layout layout)
-	{
-		Debug.Assert(layout.IsValid());
-		_layout = layout;
 	}
 
 	public event EventHandler? LayoutUpdated;

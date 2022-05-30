@@ -3,20 +3,20 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal abstract class View
+internal abstract class View : IView
 {
 	public abstract void Create();
 
-	public virtual void Delete()
+	public void Delete()
 	{
 		Debug.Assert(Exists);
 		FileSystemInfo.Delete();
 		Debug.Assert(!Exists);
 	}
 
-	public virtual bool Exists => FileSystemInfo.Exists;
+	public bool Exists => FileSystemInfo.Exists;
 
-	public virtual string FullName
+	public string FullName
 	{
 		get
 		{
@@ -26,7 +26,7 @@ internal abstract class View
 		}
 	}
 
-	public virtual string Name
+	public string Name
 	{
 		get
 		{

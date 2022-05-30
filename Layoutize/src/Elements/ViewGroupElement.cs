@@ -54,12 +54,7 @@ internal abstract class ViewGroupElement : ViewElement
 	protected ViewGroupElement(ViewGroupLayout layout)
 		: base(layout)
 	{
-	}
-
-	protected override void OnLayoutUpdated(EventArgs e)
-	{
-		UpdateChildren();
-		base.OnLayoutUpdated(e);
+		ViewModel.LayoutUpdated += (sender, e) => UpdateChildren();
 	}
 
 	protected override void OnMounting(EventArgs e)

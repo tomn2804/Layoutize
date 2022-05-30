@@ -9,7 +9,7 @@ internal abstract class ComponentElement : Element
 {
 	public Element Child
 	{
-		get => _child ?? throw new NotMountedException();
+		get => _child ?? throw new ElementNotMountedException();
 		protected set
 		{
 			Debug.Assert(IsMounted);
@@ -44,15 +44,15 @@ internal abstract class ComponentElement : Element
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)
 	{
+		ViewModel.LayoutUpdated += (sender, e) => UpdateChild();
 	}
 
 	protected abstract Layout Build();
 
-	protected override void OnLayoutUpdated(EventArgs e)
+	private void UpdateChild()
 	{
 		Debug.Assert(IsMounted);
 		Child.Layout = Build();
-		base.OnLayoutUpdated(e);
 	}
 
 	protected override void OnMounting(EventArgs e)

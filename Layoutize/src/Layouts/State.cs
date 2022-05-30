@@ -35,23 +35,26 @@ public abstract class State
 		Validator.ValidateObject(this, new(this));
 	}
 
-	// TODO: Replace this with ViewModel
 	[Required]
-	internal StatefulElement Element
+	internal ViewModel ViewModel
 	{
 		get
 		{
-			Debug.Assert(_element != null);
-			return _element;
+			Debug.Assert(_viewModel != null);
+			return _viewModel;
 		}
-		set => _element = value;
+		set
+		{
+			if (_viewModel != null) throw new InvalidOperationException("Viewmodel is already initialized.");
+			_viewModel = value;
+		}
 	}
 
 	internal event EventHandler? StateUpdated;
 
 	internal event EventHandler? StateUpdating;
 
-	private StatefulElement? _element;
+	private ViewModel? _viewModel;
 
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{
@@ -70,5 +73,12 @@ public abstract class State
 
 public abstract class State<T> : State where T : StatefulLayout
 {
-	protected T Layout => (T)Element.Layout;
+	protected T Layout
+	{
+		get
+		{
+			Debug.Assert(IsValid()); // TODO: Move to Element getter
+			return (T)ViewModel.Layout;
+		}
+	}
 }

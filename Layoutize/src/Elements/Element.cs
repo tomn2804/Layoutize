@@ -47,28 +47,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		}
 	}
 
-	public Layout Layout
-	{
-		get
-		{
-			Debug.Assert(_layout.IsValid());
-			return _layout;
-		}
-		set
-		{
-			Debug.Assert(IsMounted);
-			value.Validate();
-			OnLayoutUpdating(EventArgs.Empty);
-			_layout = value;
-			OnLayoutUpdated(EventArgs.Empty);
-		}
-	}
-
 	public Element? Parent { get; private set; }
-
-	public event EventHandler? LayoutUpdated;
-
-	public event EventHandler? LayoutUpdating;
 
 	public event EventHandler? Mounted;
 
@@ -80,23 +59,16 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
-		Debug.Assert(layout.IsValid());
-		_layout = layout;
+		ViewModel = new(layout);
 	}
 
-	protected virtual void OnLayoutUpdated(EventArgs e)
+	public Layout Layout
 	{
-		Debug.Assert(IsMounted);
-		LayoutUpdated?.Invoke(this, EventArgs.Empty);
-		Debug.Assert(IsMounted);
+		get => ViewModel.Layout;
+		set => ViewModel.Layout = value;
 	}
 
-	protected virtual void OnLayoutUpdating(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		LayoutUpdating?.Invoke(this, EventArgs.Empty);
-		Debug.Assert(IsMounted);
-	}
+	protected readonly ViewModel ViewModel;
 
 	protected virtual void OnMounted(EventArgs e)
 	{
@@ -129,6 +101,4 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	Element IBuildContext.Element => this;
 
 	private bool _isMounted;
-
-	private Layout _layout;
 }

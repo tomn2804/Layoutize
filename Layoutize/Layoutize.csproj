@@ -17,7 +17,7 @@
     <Compile Include="src\Annotations\NameAttribute.cs" />
     <Compile Include="src\Annotations\PathAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
-    <Compile Include="src\Elements\NotMountedException.cs" />
+    <Compile Include="src\Elements\ElementNotMountedException.cs" />
     <Compile Include="src\Elements\ViewModel.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Layouts\DirectoryLayout.cs" />
@@ -45,6 +45,7 @@
     <Compile Include="src\Elements\ViewElement.cs" />
     <Compile Include="src\Views\DirectoryView.cs" />
     <Compile Include="src\Views\FileView.cs" />
+    <Compile Include="src\Views\IView.cs" />
     <Compile Include="src\Views\View.cs" />
   </ItemGroup>
 

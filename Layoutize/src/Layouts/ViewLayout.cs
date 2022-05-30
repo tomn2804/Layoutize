@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Layoutize.Annotations;
 using Layoutize.Elements;
 using Layoutize.Views;
@@ -14,7 +15,11 @@ public abstract class ViewLayout : Layout
 	[Name]
 	public string Name
 	{
-		get => _name ?? throw new InvalidOperationException($"Attribute {nameof(Name)} is uninitialized.");
+		get
+		{
+			Debug.Assert(Contexts.Name.IsValid(_name));
+			return _name;
+		}
 		init => _name = value;
 	}
 

@@ -10,8 +10,8 @@ internal sealed class StatefulElement : ComponentElement
 		: base(layout)
 	{
 		_state = Layout.CreateState();
-		_state.Element = this;
-		_state.StateUpdated += UpdateChild;
+		_state.ViewModel = ViewModel;
+		_state.StateUpdated += (sender, e) => UpdateChild();
 		_state.Validate();
 	}
 
@@ -20,7 +20,7 @@ internal sealed class StatefulElement : ComponentElement
 		return State.Build(this);
 	}
 
-	private void UpdateChild(object? sender, EventArgs e)
+	private void UpdateChild()
 	{
 		Debug.Assert(IsMounted);
 		var newChildLayout = Build();

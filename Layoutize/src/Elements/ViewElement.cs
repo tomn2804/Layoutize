@@ -7,7 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public override View View => _view ?? throw new NotMountedException();
+	public override View View => _view ?? throw new ElementNotMountedException();
 
 	public event EventHandler? Created;
 
@@ -21,6 +21,8 @@ internal abstract class ViewElement : Element
 		: base(layout)
 	{
 		AddEventHandler();
+		ViewModel.LayoutUpdating += (sender, e) => RemoveEventHandler();
+		ViewModel.LayoutUpdated += (sender, e) => AddEventHandler();
 	}
 
 	protected virtual void OnCreated(EventArgs e)
@@ -53,20 +55,6 @@ internal abstract class ViewElement : Element
 		Debug.Assert(View.Exists);
 		Deleting?.Invoke(this, e);
 		Debug.Assert(View.Exists);
-	}
-
-	protected override void OnLayoutUpdated(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		AddEventHandler();
-		base.OnLayoutUpdated(e);
-	}
-
-	protected override void OnLayoutUpdating(EventArgs e)
-	{
-		base.OnLayoutUpdating(e);
-		RemoveEventHandler();
-		Debug.Assert(IsMounted);
 	}
 
 	protected override void OnMounting(EventArgs e)

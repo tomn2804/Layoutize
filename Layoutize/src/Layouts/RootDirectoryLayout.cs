@@ -14,12 +14,17 @@ internal class RootDirectoryLayout : DirectoryLayout
 	[Path]
 	public string Path
 	{
-		get => _path ?? throw new InvalidOperationException($"Attribute {nameof(Path)} is uninitialized.");
+		get
+		{
+			Debug.Assert(Contexts.Path.IsValid(_path));
+			return _path;
+		}
 		init => _path = value;
 	}
 
 	internal override DirectoryView CreateView(IBuildContext context)
 	{
+		Debug.Assert(IsValid());
 		var fullName = System.IO.Path.Combine(Path, Name);
 		Debug.Assert(FullName.IsValid(fullName));
 		return new(new(fullName));

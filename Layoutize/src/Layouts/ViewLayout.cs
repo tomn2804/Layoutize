@@ -14,7 +14,7 @@ public abstract class ViewLayout : Layout
 
 	[Required]
 	[Name]
-	public string? Name { get; set; }
+	public string? Name { get; init; }
 
 	public EventHandler? OnCreated { get; init; }
 

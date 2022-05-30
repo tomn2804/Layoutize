@@ -38,7 +38,7 @@ public abstract class State
 	internal virtual void Validate()
 	{
 		Validator.ValidateObject(this, new(this));
-		if (Element == null) throw new ValidationException("Element is uninitialized.");
+		Debug.Assert(Element != null);
 	}
 
 	internal event EventHandler? StateUpdated;

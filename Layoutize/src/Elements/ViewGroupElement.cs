@@ -62,22 +62,16 @@ internal abstract class ViewGroupElement : ViewElement
 		base.OnLayoutUpdated(e);
 	}
 
-	protected override void OnMounting(EventArgs e)
+	protected override void OnMounted(EventArgs e)
 	{
-		base.OnMounting(e);
-		foreach (var child in Children)
-		{
-			child.Mount(this);
-		}
+		Children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
+		base.OnMounted(e);
 	}
 
-	protected override void OnUnmounting(EventArgs e)
+	protected override void OnUnmounted(EventArgs e)
 	{
-		base.OnUnmounting(e);
-		foreach (var child in Children)
-		{
-			child.Unmount();
-		}
+		Children = ImmutableSortedSet<Element>.Empty;
+		base.OnUnmounted(e);
 	}
 
 	private void UpdateChildren()

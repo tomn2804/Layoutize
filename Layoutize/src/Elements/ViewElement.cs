@@ -8,6 +8,13 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
+	[MemberNotNull(nameof(View))]
+	public override void Mount(Element? parent)
+	{
+		base.Mount(parent);
+		Debug.Assert(IsMounted);
+	}
+
 	[MemberNotNullWhen(true, nameof(View))]
 	public override bool IsMounted
 	{
@@ -19,6 +26,7 @@ internal abstract class ViewElement : Element
 		}
 	}
 
+	[NotNullIfNotNull(nameof(_view))]
 	public override View? View => _view;
 
 	public event EventHandler? Created;
@@ -88,6 +96,13 @@ internal abstract class ViewElement : Element
 	}
 
 	[MemberNotNull(nameof(View))]
+	protected override void OnMounted(EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		base.OnMounted(e);
+	}
+
+	[MemberNotNull(nameof(View))]
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
@@ -96,12 +111,19 @@ internal abstract class ViewElement : Element
 		if (!View.Exists) Create();
 	}
 
-	protected override void OnUnmounting(EventArgs e)
+	protected override void OnUnmounted(EventArgs e)
 	{
-		base.OnUnmounting(e);
 		Debug.Assert(View != null);
 		if (Layout.DeleteOnUnmount && View.Exists) Delete();
 		_view = null;
+		base.OnUnmounted(e);
+	}
+
+	[MemberNotNull(nameof(View))]
+	protected override void OnUnmounting(EventArgs e)
+	{
+		base.OnUnmounting(e);
+		Debug.Assert(IsMounted);
 	}
 
 	private void AddEventHandler()

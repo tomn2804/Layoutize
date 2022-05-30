@@ -15,7 +15,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	}
 
 	[MemberNotNull(nameof(View))]
-	public void Mount(Element? parent)
+	public virtual void Mount(Element? parent)
 	{
 		Debug.Assert(!IsMounted);
 		Parent = parent;
@@ -24,7 +24,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		OnMounted(EventArgs.Empty);
 	}
 
-	public void Unmount()
+	public virtual void Unmount()
 	{
 		OnUnmounting(EventArgs.Empty);
 		_isMounted = false;

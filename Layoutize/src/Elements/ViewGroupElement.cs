@@ -32,7 +32,7 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	public override bool IsMounted
+	public new bool IsMounted
 	{
 		get
 		{
@@ -57,16 +57,24 @@ internal abstract class ViewGroupElement : ViewElement
 		ViewModel.LayoutUpdated += (sender, e) => UpdateChildren();
 	}
 
-	protected override void OnMounted(EventArgs e)
+	protected override void OnMounting(EventArgs e)
 	{
-		Children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
-		base.OnMounted(e);
+		base.OnMounting(e);
+		var children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
+		foreach (var child in children)
+		{
+			child.Mount(this);
+		}
 	}
 
 	protected override void OnUnmounting(EventArgs e)
 	{
 		base.OnUnmounting(e);
-		Children = ImmutableSortedSet<Element>.Empty;
+		foreach (var child in Children)
+		{
+			child.Unmount();
+		}
+		_children = ImmutableSortedSet<Element>.Empty;
 	}
 
 	private void UpdateChildren()

@@ -20,7 +20,7 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override bool IsMounted
+	public new bool IsMounted
 	{
 		get
 		{
@@ -49,25 +49,25 @@ internal abstract class ComponentElement : Element
 
 	protected abstract Layout Build();
 
+	protected override void OnMounting(EventArgs e)
+	{
+		base.OnMounting(e);
+		_child = Build().CreateElement();
+		Child.Mount(this);
+	}
+
+	protected override void OnUnmounted(EventArgs e)
+	{
+		Child.Unmount();
+		_child = null;
+		base.OnUnmounted(e);
+	}
+
 	private void UpdateChild()
 	{
 		Debug.Assert(IsMounted);
 		Child.Layout = Build();
 		Debug.Assert(IsMounted);
-	}
-	
-	protected override void OnMounted(EventArgs e)
-	{
-		_child = Build().CreateElement();
-		Child.Mount(this);
-		base.OnMounted(e);
-	}
-
-	protected override void OnUnmounting(EventArgs e)
-	{
-		base.OnUnmounting(e);
-		Child.Unmount();
-		_child = null;
 	}
 
 	private Element? _child;

@@ -35,7 +35,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public abstract IView View { get; }
 
-	public virtual bool IsMounted
+	public bool IsMounted
 	{
 		get
 		{
@@ -43,6 +43,12 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 			if (result) Debug.Assert(View.Exists);
 			return result;
 		}
+	}
+
+	public Layout Layout
+	{
+		get => ViewModel.Layout;
+		set => ViewModel.Layout = value;
 	}
 
 	public Element? Parent { get; private set; }
@@ -59,14 +65,6 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		ViewModel = new(layout);
 	}
-
-	public Layout Layout
-	{
-		get => ViewModel.Layout;
-		set => ViewModel.Layout = value;
-	}
-
-	protected readonly ViewModel ViewModel;
 
 	protected virtual void OnMounted(EventArgs e)
 	{
@@ -87,6 +85,8 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		Unmounting?.Invoke(this, e);
 	}
+
+	protected readonly ViewModel ViewModel;
 
 	Element IBuildContext.Element => this;
 

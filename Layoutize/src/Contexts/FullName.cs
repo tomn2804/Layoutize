@@ -28,7 +28,9 @@ public static class FullName
 	{
 		if (string.IsNullOrWhiteSpace(value))
 		{
-			throw new ValidationException($"Layout property value '{nameof(FullName)}' is either null, empty, or consists of only white-space characters.");
+			throw new ValidationException(
+				$"Layout property value '{nameof(FullName)}' is either null, empty, or consists of only white-space characters."
+			);
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{

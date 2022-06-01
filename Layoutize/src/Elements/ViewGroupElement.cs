@@ -32,22 +32,19 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	public new bool IsMounted
+	public override bool IsMounted
 	{
 		get
 		{
-			var result = base.IsMounted;
-			if (result)
+			if (base.IsMounted)
 			{
 				Debug.Assert(Children.All(child => child.IsMounted));
 				Debug.Assert(Children.All(child => child.Parent == this));
+				return true;
 			}
-			else
-			{
-				Debug.Assert(Children.All(child => !child.IsMounted));
-				Debug.Assert(Children.All(child => child.Parent == null));
-			}
-			return result;
+			Debug.Assert(Children.All(child => !child.IsMounted));
+			Debug.Assert(Children.All(child => child.Parent == null));
+			return false;
 		}
 	}
 
@@ -67,14 +64,14 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	protected override void OnUnmounting(EventArgs e)
+	protected override void OnUnmounted(EventArgs e)
 	{
-		base.OnUnmounting(e);
 		foreach (var child in Children)
 		{
 			child.Unmount();
 		}
 		_children = ImmutableSortedSet<Element>.Empty;
+		base.OnUnmounted(e);
 	}
 
 	private void UpdateChildren()
@@ -96,6 +93,7 @@ internal abstract class ViewGroupElement : ViewElement
 			}
 		}
 		Children = childrenBuilder.ToImmutable();
+		Debug.Assert(IsMounted);
 	}
 
 	private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;

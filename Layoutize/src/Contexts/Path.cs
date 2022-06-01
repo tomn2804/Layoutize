@@ -15,8 +15,8 @@ public static class Path
 			var parent = element.Parent;
 			switch (parent)
 			{
-				case ViewElement:
-					path = FullName.Of(parent);
+				case ViewElement viewElement:
+					path = viewElement.View.FullName;
 					return;
 
 				case not null:
@@ -55,7 +55,7 @@ public static class Path
 		{
 			throw new ValidationException($"Layout property value '{nameof(Path)}' contains invalid characters.");
 		}
-		if (string.IsNullOrWhiteSpace(value) && !System.IO.Path.IsPathFullyQualified(value))
+		if (!string.IsNullOrWhiteSpace(value) && !System.IO.Path.IsPathFullyQualified(value))
 		{
 			throw new ValidationException($"Layout property value '{nameof(Path)}' is not an absolute path.");
 		}

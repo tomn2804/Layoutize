@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Layoutize.Layouts;
 
 namespace Layoutize.Elements;
@@ -9,9 +10,13 @@ internal sealed class StatefulElement : ComponentElement
 		: base(layout)
 	{
 		_state = Layout.CreateState();
-		_state.ViewModel = ViewModel;
-		_state.StateUpdated += (sender, e) => UpdateChild();
-		_state.Validate();
+		_state.Element = this;
+		_state.StateUpdated += (sender, e) =>
+		{
+			Validator.ValidateObject(_state, new(_state));
+			UpdateChild();
+		};
+		Validator.ValidateObject(_state, new(_state));
 	}
 
 	protected override Layout Build()
@@ -40,7 +45,7 @@ internal sealed class StatefulElement : ComponentElement
 	{
 		get
 		{
-			Debug.Assert(_state.IsValid());
+			Debug.Assert(Validator.TryValidateObject(_state, new(_state), null));
 			return _state;
 		}
 	}

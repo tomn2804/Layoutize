@@ -13,40 +13,21 @@ public abstract class State
 	{
 		OnStateUpdating(EventArgs.Empty);
 		action.Invoke();
-		Validate();
 		OnStateUpdated(EventArgs.Empty);
 	}
 
-	internal bool IsValid()
-	{
-		try
-		{
-			Validate();
-		}
-		catch
-		{
-			return false;
-		}
-		return true;
-	}
-
-	internal void Validate()
-	{
-		Validator.ValidateObject(this, new(this));
-	}
-
 	[Required]
-	internal ViewModel ViewModel
+	internal StatefulElement Element
 	{
 		get
 		{
-			Debug.Assert(_viewModel != null);
-			return _viewModel;
+			Debug.Assert(_element != null);
+			return _element;
 		}
 		set
 		{
-			if (_viewModel != null) throw new InvalidOperationException("Viewmodel is already initialized.");
-			_viewModel = value;
+			Debug.Assert(_element == null);
+			_element = value;
 		}
 	}
 
@@ -54,31 +35,20 @@ public abstract class State
 
 	internal event EventHandler? StateUpdating;
 
-	private ViewModel? _viewModel;
+	private StatefulElement? _element;
 
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{
-		Debug.Assert(IsValid());
 		StateUpdated?.Invoke(this, e);
-		Debug.Assert(IsValid());
 	}
 
 	private protected virtual void OnStateUpdating(EventArgs e)
 	{
-		Debug.Assert(IsValid());
 		StateUpdating?.Invoke(this, e);
-		Debug.Assert(IsValid());
 	}
 }
 
 public abstract class State<T> : State where T : StatefulLayout
 {
-	protected T Layout
-	{
-		get
-		{
-			Debug.Assert(IsValid()); // TODO: Move to Element getter
-			return (T)ViewModel.Layout;
-		}
-	}
+	protected T Layout => (T)Element.Layout;
 }

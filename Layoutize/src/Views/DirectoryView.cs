@@ -6,16 +6,16 @@ namespace Layoutize.Views;
 internal class DirectoryView : FileSystemView
 {
 	public DirectoryView(DirectoryInfo directoryInfo)
-		: base(directoryInfo)
 	{
+		FileSystemInfo = directoryInfo;
 	}
 
 	public override void Create()
 	{
 		Debug.Assert(!Exists);
-		DirectoryInfo.Create();
+		FileSystemInfo.Create();
 		Debug.Assert(Exists);
 	}
 
-	private DirectoryInfo DirectoryInfo => (DirectoryInfo)FileSystemInfo;
+	protected override DirectoryInfo FileSystemInfo { get; }
 }

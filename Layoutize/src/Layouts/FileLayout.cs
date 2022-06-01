@@ -10,13 +10,13 @@ public class FileLayout : ViewLayout
 {
 	internal override FileElement CreateElement()
 	{
-		Validate();
-		return new(this);
+		var element = new FileElement(this);
+		Debug.Assert(!element.IsMounted);
+		return element;
 	}
 
 	internal override IView CreateView(IBuildContext context)
 	{
-		Debug.Assert(IsValid());
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
 		Debug.Assert(FullName.IsValid(fullName));
 		return new FileView(new(fullName));

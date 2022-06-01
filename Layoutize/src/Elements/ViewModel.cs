@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Layouts;
 
@@ -8,19 +9,23 @@ internal sealed class ViewModel
 {
 	public ViewModel(Layout layout)
 	{
-		Debug.Assert(layout.IsValid());
+		Validator.ValidateObject(layout, new(layout));
 		_layout = layout;
 	}
 
 	public Layout Layout
 	{
-		get => _layout;
+		get
+		{
+			Debug.Assert(Validator.TryValidateObject(_layout, new(_layout), null));
+			return _layout;
+		}
 		set
 		{
-			value.Validate();
-			OnValueUpdating(EventArgs.Empty);
+			Validator.ValidateObject(value, new(value));
+			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
-			OnValueUpdated(EventArgs.Empty);
+			OnLayoutUpdated(EventArgs.Empty);
 		}
 	}
 
@@ -28,12 +33,12 @@ internal sealed class ViewModel
 
 	public event EventHandler? LayoutUpdating;
 
-	private void OnValueUpdated(EventArgs e)
+	private void OnLayoutUpdated(EventArgs e)
 	{
 		LayoutUpdated?.Invoke(this, e);
 	}
 
-	private void OnValueUpdating(EventArgs e)
+	private void OnLayoutUpdating(EventArgs e)
 	{
 		LayoutUpdating?.Invoke(this, e);
 	}

@@ -35,20 +35,24 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public abstract IView View { get; }
 
-	public bool IsMounted
+	public virtual bool IsMounted
 	{
 		get
 		{
-			var result = _isMounted;
-			if (result) Debug.Assert(View.Exists);
-			return result;
+			if (_isMounted) Debug.Assert(View.Exists);
+			return _isMounted;
 		}
 	}
 
 	public Layout Layout
 	{
 		get => ViewModel.Layout;
-		set => ViewModel.Layout = value;
+		set
+		{
+			Debug.Assert(IsMounted);
+			ViewModel.Layout = value;
+			Debug.Assert(IsMounted);
+		}
 	}
 
 	public Element? Parent { get; private set; }

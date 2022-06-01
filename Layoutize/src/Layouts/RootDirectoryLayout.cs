@@ -23,7 +23,6 @@ internal class RootDirectoryLayout : DirectoryLayout
 
 	internal override IView CreateView(IBuildContext context)
 	{
-		Debug.Assert(IsValid());
 		var fullName = System.IO.Path.Combine(Path, Name);
 		Debug.Assert(FullName.IsValid(fullName));
 		return new DirectoryView(new(fullName));

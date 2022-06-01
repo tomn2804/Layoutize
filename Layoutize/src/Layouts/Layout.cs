@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Layoutize.Elements;
+﻿using Layoutize.Elements;
 
 namespace Layoutize.Layouts;
 
@@ -9,7 +8,6 @@ public abstract class Layout
 	{
 		init
 		{
-			value.Validate();
 			foreach (var property in value.GetType().GetProperties())
 			{
 				GetType().GetProperty(property.Name)?.SetValue(this, property.GetValue(value));
@@ -18,22 +16,4 @@ public abstract class Layout
 	}
 
 	internal abstract Element CreateElement();
-
-	internal bool IsValid()
-	{
-		try
-		{
-			Validate();
-		}
-		catch
-		{
-			return false;
-		}
-		return true;
-	}
-
-	internal void Validate()
-	{
-		Validator.ValidateObject(this, new(this));
-	}
 }

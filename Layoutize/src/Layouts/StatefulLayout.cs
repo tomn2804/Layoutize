@@ -1,4 +1,5 @@
-﻿using Layoutize.Elements;
+﻿using System.Diagnostics;
+using Layoutize.Elements;
 
 namespace Layoutize.Layouts;
 
@@ -8,7 +9,8 @@ public abstract class StatefulLayout : ComponentLayout
 
 	internal sealed override StatefulElement CreateElement()
 	{
-		Validate();
-		return new(this);
+		var element = new StatefulElement(this);
+		Debug.Assert(!element.IsMounted);
+		return element;
 	}
 }

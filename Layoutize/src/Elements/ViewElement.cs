@@ -7,6 +7,19 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
+	public new bool IsMounted
+	{
+		get
+		{
+			if (base.IsMounted)
+			{
+				Debug.Assert(_view != null);
+				return true;
+			}
+			return false;
+		}
+	}
+
 	public override IView View => _view ?? throw new ElementNotMountedException(this);
 
 	public event EventHandler? Created;
@@ -21,19 +34,6 @@ internal abstract class ViewElement : Element
 		: base(layout)
 	{
 		AddEventHandler();
-	}
-
-	public new bool IsMounted
-	{
-		get
-		{
-			if (base.IsMounted)
-			{
-				Debug.Assert(_view != null);
-				return true;
-			}
-			return false;
-		}
 	}
 
 	protected virtual void OnCreated(EventArgs e)

@@ -32,7 +32,7 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	public override bool IsMounted
+	public new bool IsMounted
 	{
 		get
 		{
@@ -42,8 +42,7 @@ internal abstract class ViewGroupElement : ViewElement
 				Debug.Assert(Children.All(child => child.Parent == this));
 				return true;
 			}
-			Debug.Assert(Children.All(child => !child.IsMounted));
-			Debug.Assert(Children.All(child => child.Parent == null));
+			Debug.Assert(Children.IsEmpty);
 			return false;
 		}
 	}
@@ -51,7 +50,12 @@ internal abstract class ViewGroupElement : ViewElement
 	protected ViewGroupElement(ViewGroupLayout layout)
 		: base(layout)
 	{
-		ViewModel.LayoutUpdated += (sender, e) => UpdateChildren();
+	}
+
+	protected override void OnLayoutUpdated(EventArgs e)
+	{
+		UpdateChildren();
+		base.OnLayoutUpdated(e);
 	}
 
 	protected override void OnMounting(EventArgs e)

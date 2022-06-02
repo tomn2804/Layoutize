@@ -23,6 +23,19 @@ internal abstract class ViewElement : Element
 		AddEventHandler();
 	}
 
+	public new bool IsMounted
+	{
+		get
+		{
+			if (base.IsMounted)
+			{
+				Debug.Assert(_view != null);
+				return true;
+			}
+			return false;
+		}
+	}
+
 	protected virtual void OnCreated(EventArgs e)
 	{
 		Created?.Invoke(this, e);

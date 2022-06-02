@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
 
@@ -8,7 +9,11 @@ public static class FullName
 {
 	public static string Of(IBuildContext context)
 	{
-		return context.Element.View.FullName;
+		var element = context.Element;
+		if (!element.IsMounted) throw new ElementNotMountedException(element);
+		var fullName = element.View.FullName;
+		Debug.Assert(IsValid(fullName));
+		return fullName;
 	}
 
 	internal static bool IsValid([NotNullWhen(true)] string? value)

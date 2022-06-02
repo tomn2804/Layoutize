@@ -20,18 +20,20 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override bool IsMounted
+	public new bool IsMounted
 	{
 		get
 		{
 			if (base.IsMounted)
 			{
 				Debug.Assert(Parent != null);
+				Debug.Assert(_child != null);
 				Debug.Assert(Child.IsMounted);
 				Debug.Assert(Child.Parent == this);
 				return true;
 			}
 			Debug.Assert(Parent == null);
+			Debug.Assert(_child == null);
 			return false;
 		}
 	}

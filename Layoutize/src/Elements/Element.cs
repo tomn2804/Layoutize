@@ -36,7 +36,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public abstract IView View { get; }
 
-	public virtual bool IsMounted
+	public bool IsMounted
 	{
 		get
 		{

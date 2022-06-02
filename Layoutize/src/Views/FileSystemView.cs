@@ -36,5 +36,10 @@ internal abstract class FileSystemView : IView
 		}
 	}
 
-	protected abstract FileSystemInfo FileSystemInfo { get; }
+	protected FileSystemView(FileSystemInfo fileSystemInfo)
+	{
+		FileSystemInfo = fileSystemInfo;
+	}
+
+	protected readonly FileSystemInfo FileSystemInfo;
 }

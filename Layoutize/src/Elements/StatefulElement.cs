@@ -11,11 +11,7 @@ internal sealed class StatefulElement : ComponentElement
 	{
 		_state = Layout.CreateState();
 		_state.Element = this;
-		_state.StateUpdated += (sender, e) =>
-		{
-			Validator.ValidateObject(_state, new(_state));
-			UpdateChild();
-		};
+		_state.StateUpdated += (sender, e) => UpdateChild();
 		Validator.ValidateObject(_state, new(_state));
 	}
 

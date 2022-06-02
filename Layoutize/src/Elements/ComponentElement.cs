@@ -41,10 +41,15 @@ internal abstract class ComponentElement : Element
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)
 	{
-		ViewModel.LayoutUpdated += (sender, e) => UpdateChild();
 	}
 
 	protected abstract Layout Build();
+
+	protected override void OnLayoutUpdated(EventArgs e)
+	{
+		UpdateChild();
+		base.OnLayoutUpdated(e);
+	}
 
 	protected override void OnMounting(EventArgs e)
 	{

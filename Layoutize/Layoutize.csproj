@@ -18,7 +18,6 @@
     <Compile Include="src\Annotations\PathAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\Elements\ElementNotMountedException.cs" />
-    <Compile Include="src\Elements\ViewModel.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Layouts\DirectoryLayout.cs" />
     <Compile Include="src\Cmdlets\DismountElementCmdlet.cs" />

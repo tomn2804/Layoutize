@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Contexts;
 using Layoutize.Layouts;
@@ -46,16 +47,27 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public Layout Layout
 	{
-		get => ViewModel.Layout;
+		get
+		{
+			Debug.Assert(Validator.TryValidateObject(_layout, new(_layout), null));
+			return _layout;
+		}
 		set
 		{
 			Debug.Assert(IsMounted);
-			ViewModel.Layout = value;
+			Validator.ValidateObject(value, new(value));
+			OnLayoutUpdating(EventArgs.Empty);
+			_layout = value;
+			OnLayoutUpdated(EventArgs.Empty);
 			Debug.Assert(IsMounted);
 		}
 	}
 
 	public Element? Parent { get; private set; }
+
+	public event EventHandler? LayoutUpdated;
+
+	public event EventHandler? LayoutUpdating;
 
 	public event EventHandler? Mounted;
 
@@ -67,7 +79,18 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
-		ViewModel = new(layout);
+		Validator.ValidateObject(layout, new(layout));
+		_layout = layout;
+	}
+
+	protected virtual void OnLayoutUpdated(EventArgs e)
+	{
+		LayoutUpdated?.Invoke(this, e);
+	}
+
+	protected virtual void OnLayoutUpdating(EventArgs e)
+	{
+		LayoutUpdating?.Invoke(this, e);
 	}
 
 	protected virtual void OnMounted(EventArgs e)
@@ -90,9 +113,9 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Unmounting?.Invoke(this, e);
 	}
 
-	protected readonly ViewModel ViewModel;
-
 	Element IBuildContext.Element => this;
 
 	private bool _isMounted;
+
+	private Layout _layout;
 }

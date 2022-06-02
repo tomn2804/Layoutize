@@ -21,8 +21,6 @@ internal abstract class ViewElement : Element
 		: base(layout)
 	{
 		AddEventHandler();
-		ViewModel.LayoutUpdating += (sender, e) => RemoveEventHandler();
-		ViewModel.LayoutUpdated += (sender, e) => AddEventHandler();
 	}
 
 	protected virtual void OnCreated(EventArgs e)
@@ -43,6 +41,18 @@ internal abstract class ViewElement : Element
 	protected virtual void OnDeleting(EventArgs e)
 	{
 		Deleting?.Invoke(this, e);
+	}
+
+	protected override void OnLayoutUpdated(EventArgs e)
+	{
+		RemoveEventHandler();
+		base.OnLayoutUpdated(e);
+	}
+
+	protected override void OnLayoutUpdating(EventArgs e)
+	{
+		base.OnLayoutUpdating(e);
+		RemoveEventHandler();
 	}
 
 	protected override void OnMounting(EventArgs e)

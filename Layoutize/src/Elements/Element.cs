@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using Layoutize.Contexts;
 using Layoutize.Layouts;
 using Layoutize.Views;
 
@@ -11,7 +10,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 {
 	public int CompareTo(Element? other)
 	{
-		return other == null ? 1 : string.Compare(Name.Of(this), Name.Of(other), StringComparison.Ordinal);
+		return other == null ? 1 : string.Compare(View.Name, other.View.Name, StringComparison.Ordinal);
 	}
 
 	public void Mount(Element? parent)
@@ -85,32 +84,44 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected virtual void OnLayoutUpdated(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		LayoutUpdated?.Invoke(this, e);
+		Debug.Assert(IsMounted);
 	}
 
 	protected virtual void OnLayoutUpdating(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		LayoutUpdating?.Invoke(this, e);
+		Debug.Assert(IsMounted);
 	}
 
 	protected virtual void OnMounted(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		Mounted?.Invoke(this, e);
+		Debug.Assert(IsMounted);
 	}
 
 	protected virtual void OnMounting(EventArgs e)
 	{
+		Debug.Assert(!IsMounted);
 		Mounting?.Invoke(this, e);
+		Debug.Assert(!IsMounted);
 	}
 
 	protected virtual void OnUnmounted(EventArgs e)
 	{
+		Debug.Assert(!IsMounted);
 		Unmounted?.Invoke(this, e);
+		Debug.Assert(!IsMounted);
 	}
 
 	protected virtual void OnUnmounting(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		Unmounting?.Invoke(this, e);
+		Debug.Assert(IsMounted);
 	}
 
 	Element IBuildContext.Element => this;

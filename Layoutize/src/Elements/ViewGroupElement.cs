@@ -42,7 +42,6 @@ internal abstract class ViewGroupElement : ViewElement
 				Debug.Assert(Children.All(child => child.Parent == this));
 				return true;
 			}
-			Debug.Assert(Children.IsEmpty);
 			return false;
 		}
 	}
@@ -54,6 +53,7 @@ internal abstract class ViewGroupElement : ViewElement
 
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		UpdateChildren();
 		base.OnLayoutUpdated(e);
 	}
@@ -61,15 +61,17 @@ internal abstract class ViewGroupElement : ViewElement
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		var children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
-		foreach (var child in children)
+		_children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
+		foreach (var child in _children)
 		{
 			child.Mount(this);
 		}
+		Debug.Assert(!IsMounted);
 	}
 
 	protected override void OnUnmounted(EventArgs e)
 	{
+		Debug.Assert(!IsMounted);
 		foreach (var child in Children)
 		{
 			child.Unmount();

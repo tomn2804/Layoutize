@@ -7,20 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public new bool IsMounted
-	{
-		get
-		{
-			if (base.IsMounted)
-			{
-				Debug.Assert(_view != null);
-				return true;
-			}
-			return false;
-		}
-	}
-
-	public override IView View => _view ?? throw new ElementNotMountedException(this);
+	public override IView View => _view.Value;
 
 	public event EventHandler? Created;
 
@@ -33,31 +20,41 @@ internal abstract class ViewElement : Element
 	protected ViewElement(ViewLayout layout)
 		: base(layout)
 	{
+		_view = new(() => Layout.CreateView(this));
 		AddEventHandler();
 	}
 
 	protected virtual void OnCreated(EventArgs e)
 	{
+		Debug.Assert(View.Exists);
 		Created?.Invoke(this, e);
+		Debug.Assert(View.Exists);
 	}
 
 	protected virtual void OnCreating(EventArgs e)
 	{
+		Debug.Assert(!View.Exists);
 		Creating?.Invoke(this, e);
+		Debug.Assert(!View.Exists);
 	}
 
 	protected virtual void OnDeleted(EventArgs e)
 	{
+		Debug.Assert(!View.Exists);
 		Deleted?.Invoke(this, e);
+		Debug.Assert(!View.Exists);
 	}
 
 	protected virtual void OnDeleting(EventArgs e)
 	{
+		Debug.Assert(View.Exists);
 		Deleting?.Invoke(this, e);
+		Debug.Assert(View.Exists);
 	}
 
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		RemoveEventHandler();
 		base.OnLayoutUpdated(e);
 	}
@@ -66,19 +63,21 @@ internal abstract class ViewElement : Element
 	{
 		base.OnLayoutUpdating(e);
 		RemoveEventHandler();
+		Debug.Assert(IsMounted);
 	}
 
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		_view = Layout.CreateView(this);
 		if (!View.Exists) Create();
+		Debug.Assert(!IsMounted);
 	}
 
 	protected override void OnUnmounted(EventArgs e)
 	{
+		Debug.Assert(!IsMounted);
 		if (Layout.DeleteOnUnmount && View.Exists) Delete();
-		_view = null;
+		_view = new(() => Layout.CreateView(this));
 		base.OnUnmounted(e);
 	}
 
@@ -126,5 +125,5 @@ internal abstract class ViewElement : Element
 
 	private new ViewLayout Layout => (ViewLayout)base.Layout;
 
-	private IView? _view;
+	private Lazy<IView> _view;
 }

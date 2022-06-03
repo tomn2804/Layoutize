@@ -9,12 +9,12 @@ internal abstract class ComponentElement : Element
 {
 	public Element Child
 	{
-		get => _child ?? throw new ElementNotMountedException(this);
+		get => _child.Value;
 		protected set
 		{
 			Debug.Assert(IsMounted);
 			Child.Unmount();
-			_child = value;
+			_child = new(() => value);
 			Child.Mount(this);
 			Debug.Assert(IsMounted);
 		}
@@ -27,13 +27,10 @@ internal abstract class ComponentElement : Element
 			if (base.IsMounted)
 			{
 				Debug.Assert(Parent != null);
-				Debug.Assert(_child != null);
 				Debug.Assert(Child.IsMounted);
 				Debug.Assert(Child.Parent == this);
 				return true;
 			}
-			Debug.Assert(Parent == null);
-			Debug.Assert(_child == null);
 			return false;
 		}
 	}
@@ -43,12 +40,14 @@ internal abstract class ComponentElement : Element
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)
 	{
+		_child = new(() => Layout.CreateElement());
 	}
 
 	protected abstract Layout Build();
 
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
+		Debug.Assert(IsMounted);
 		UpdateChild();
 		base.OnLayoutUpdated(e);
 	}
@@ -56,14 +55,15 @@ internal abstract class ComponentElement : Element
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		_child = Build().CreateElement();
 		Child.Mount(this);
+		Debug.Assert(!IsMounted);
 	}
 
 	protected override void OnUnmounted(EventArgs e)
 	{
+		Debug.Assert(!IsMounted);
 		Child.Unmount();
-		_child = null;
+		_child = new(() => Layout.CreateElement());
 		base.OnUnmounted(e);
 	}
 
@@ -74,5 +74,5 @@ internal abstract class ComponentElement : Element
 		Debug.Assert(IsMounted);
 	}
 
-	private Element? _child;
+	private Lazy<Element> _child;
 }

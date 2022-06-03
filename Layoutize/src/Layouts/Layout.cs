@@ -8,6 +8,7 @@ public abstract class Layout
 	{
 		init
 		{
+			Model.Validate(value);
 			foreach (var property in value.GetType().GetProperties())
 			{
 				GetType().GetProperty(property.Name)?.SetValue(this, property.GetValue(value));

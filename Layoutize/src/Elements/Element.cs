@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Layouts;
 using Layoutize.Views;
@@ -48,13 +47,13 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		get
 		{
-			Debug.Assert(Validator.TryValidateObject(_layout, new(_layout), null));
+			Debug.Assert(Model.IsValid(_layout));
 			return _layout;
 		}
 		set
 		{
 			Debug.Assert(IsMounted);
-			Validator.ValidateObject(value, new(value));
+			Model.Validate(value);
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
 			OnLayoutUpdated(EventArgs.Empty);
@@ -78,7 +77,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
-		Validator.ValidateObject(layout, new(layout));
+		Debug.Assert(Model.IsValid(layout));
 		_layout = layout;
 	}
 

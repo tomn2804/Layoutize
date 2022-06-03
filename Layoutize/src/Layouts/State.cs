@@ -11,9 +11,11 @@ public abstract class State
 
 	protected void SetState(Action action)
 	{
+		Debug.Assert(Model.IsValid(this));
 		OnStateUpdating(EventArgs.Empty);
 		action.Invoke();
 		OnStateUpdated(EventArgs.Empty);
+		Debug.Assert(Model.IsValid(this));
 	}
 
 	[Required]
@@ -39,16 +41,29 @@ public abstract class State
 
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{
+		Debug.Assert(Model.IsValid(this));
 		StateUpdated?.Invoke(this, e);
+		Debug.Assert(Model.IsValid(this));
 	}
 
 	private protected virtual void OnStateUpdating(EventArgs e)
 	{
+		Debug.Assert(Model.IsValid(this));
 		StateUpdating?.Invoke(this, e);
+		Debug.Assert(Model.IsValid(this));
 	}
 }
 
 public abstract class State<T> : State where T : StatefulLayout
 {
-	protected T Layout => (T)Element.Layout;
+	protected T Layout
+	{
+		get
+		{
+			Debug.Assert(Model.IsValid(this));
+			var layout = (T)Element.Layout;
+			Debug.Assert(Model.IsValid(layout));
+			return layout;
+		}
+	}
 }

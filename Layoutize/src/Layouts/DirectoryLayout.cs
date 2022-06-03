@@ -22,6 +22,7 @@ public class DirectoryLayout : ViewGroupLayout
 
 	internal override DirectoryElement CreateElement()
 	{
+		Model.Validate(this);
 		var element = new DirectoryElement(this);
 		Debug.Assert(!element.IsMounted);
 		return element;
@@ -29,6 +30,7 @@ public class DirectoryLayout : ViewGroupLayout
 
 	internal override IView CreateView(IBuildContext context)
 	{
+		Debug.Assert(Model.IsValid(this));
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
 		Debug.Assert(FullName.IsValid(fullName));
 		return new DirectoryView(new(fullName));

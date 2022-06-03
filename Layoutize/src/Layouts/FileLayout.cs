@@ -10,6 +10,7 @@ public class FileLayout : ViewLayout
 {
 	internal override FileElement CreateElement()
 	{
+		Model.Validate(this);
 		var element = new FileElement(this);
 		Debug.Assert(!element.IsMounted);
 		return element;
@@ -17,6 +18,7 @@ public class FileLayout : ViewLayout
 
 	internal override IView CreateView(IBuildContext context)
 	{
+		Debug.Assert(Model.IsValid(this));
 		var fullName = Path.Combine(Contexts.Path.Of(context), Name);
 		Debug.Assert(FullName.IsValid(fullName));
 		return new FileView(new(fullName));

@@ -9,6 +9,7 @@ public abstract class StatelessLayout : ComponentLayout
 
 	internal sealed override StatelessElement CreateElement()
 	{
+		Model.Validate(this);
 		var element = new StatelessElement(this);
 		Debug.Assert(!element.IsMounted);
 		return element;

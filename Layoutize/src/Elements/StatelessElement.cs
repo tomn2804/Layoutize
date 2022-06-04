@@ -11,7 +11,9 @@ internal sealed class StatelessElement : ComponentElement
 
 	protected override Layout Build()
 	{
-		return Layout.Build(this);
+		var layout = Layout.Build(this);
+		Model.Validate(layout);
+		return layout;
 	}
 
 	private new StatelessLayout Layout => (StatelessLayout)base.Layout;

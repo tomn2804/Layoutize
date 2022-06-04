@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Layoutize.Contexts;
 using Layoutize.Layouts;
 using Layoutize.Views;
 
@@ -9,7 +10,9 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 {
 	public int CompareTo(Element? other)
 	{
-		return other == null ? 1 : string.Compare(View.Name, other.View.Name, StringComparison.Ordinal);
+		return other == null
+			? 1
+			: string.Compare(Name.Of(ViewContext), Name.Of(other.ViewContext), StringComparison.Ordinal);
 	}
 
 	public void Mount(Element? parent)
@@ -32,14 +35,18 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(!IsMounted);
 	}
 
-	public abstract IView View { get; }
+	public abstract IViewContext ViewContext { get; }
 
 	public bool IsMounted
 	{
 		get
 		{
-			if (_isMounted) Debug.Assert(View.Exists);
-			return _isMounted;
+			if (_isMounted)
+			{
+				Debug.Assert(ViewContext.Exists);
+				return true;
+			}
+			return false;
 		}
 	}
 
@@ -53,7 +60,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		set
 		{
 			Debug.Assert(IsMounted);
-			Model.Validate(value);
+			Debug.Assert(Model.IsValid(value));
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
 			OnLayoutUpdated(EventArgs.Empty);

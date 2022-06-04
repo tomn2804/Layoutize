@@ -11,19 +11,7 @@ public class MountElementCmdlet : PSCmdlet
 {
 	[Parameter(Mandatory = true, Position = 1)]
 	[ValidateNotNull]
-	public Layout Layout
-	{
-		get
-		{
-			Debug.Assert(Model.IsValid(_layout));
-			return _layout;
-		}
-		init
-		{
-			Model.Validate(value);
-			_layout = value;
-		}
-	}
+	public Layout Layout { get; init; } = null!;
 
 	[Parameter(Mandatory = true, Position = 0)]
 	public string Path { get; init; } = string.Empty;
@@ -31,6 +19,7 @@ public class MountElementCmdlet : PSCmdlet
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
+		Model.Validate(Layout);
 		var rootDirectory = Directory.CreateDirectory(FullName);
 		if (!rootDirectory.Exists) throw new PSArgumentException("Path does not exists.", nameof(Path));
 		var rootElement = new RootDirectoryLayout
@@ -55,6 +44,4 @@ public class MountElementCmdlet : PSCmdlet
 			return fullName;
 		}
 	}
-
-	private readonly Layout? _layout;
 }

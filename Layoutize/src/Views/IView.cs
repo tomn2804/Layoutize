@@ -1,14 +1,8 @@
 ﻿namespace Layoutize.Views;
 
-internal interface IView
+internal interface IView : IViewContext
 {
 	void Create();
 
 	void Delete();
-
-	bool Exists { get; }
-
-	string FullName { get; }
-
-	string Name { get; }
 }

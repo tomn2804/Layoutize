@@ -10,16 +10,18 @@ internal sealed class StatefulElement : ComponentElement
 	{
 		_state = Layout.CreateState();
 		_state.Element = this;
-		_state.StateUpdated += (sender, e) => UpdateChild();
+		_state.StateUpdated += (sender, e) => Rebuild();
 		Model.Validate(_state);
 	}
 
 	protected override Layout Build()
 	{
-		return State.Build(this);
+		var layout = State.Build(this);
+		Model.Validate(layout);
+		return layout;
 	}
 
-	private void UpdateChild()
+	private void Rebuild()
 	{
 		Debug.Assert(IsMounted);
 		var newChildLayout = Build();

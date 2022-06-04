@@ -11,7 +11,7 @@ internal abstract class ViewGroupElement : ViewElement
 {
 	public ImmutableSortedSet<Element> Children
 	{
-		get => _children;
+		get => _children.Value;
 		protected set
 		{
 			Debug.Assert(IsMounted);
@@ -23,7 +23,7 @@ internal abstract class ViewGroupElement : ViewElement
 			}
 			Debug.Assert(exitingChildren.All(child => !child.IsMounted));
 			Debug.Assert(exitingChildren.All(child => child.Parent == null));
-			_children = value;
+			_children = new(() => value);
 			foreach (var enteringChild in enteringChildren)
 			{
 				enteringChild.Mount(this);
@@ -49,20 +49,22 @@ internal abstract class ViewGroupElement : ViewElement
 	protected ViewGroupElement(ViewGroupLayout layout)
 		: base(layout)
 	{
+		_children = new(
+			() => Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet()
+		);
 	}
 
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		UpdateChildren();
+		Rebuild();
 		base.OnLayoutUpdated(e);
 	}
 
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		_children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
-		foreach (var child in _children)
+		foreach (var child in Children)
 		{
 			child.Mount(this);
 		}
@@ -76,11 +78,13 @@ internal abstract class ViewGroupElement : ViewElement
 		{
 			child.Unmount();
 		}
-		_children = ImmutableSortedSet<Element>.Empty;
+		_children = new(
+			() => Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet()
+		);
 		base.OnUnmounted(e);
 	}
 
-	private void UpdateChildren()
+	private void Rebuild()
 	{
 		Debug.Assert(IsMounted);
 		var childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
@@ -104,5 +108,5 @@ internal abstract class ViewGroupElement : ViewElement
 
 	private new ViewGroupLayout Layout => (ViewGroupLayout)base.Layout;
 
-	private ImmutableSortedSet<Element> _children = ImmutableSortedSet<Element>.Empty;
+	private Lazy<ImmutableSortedSet<Element>> _children;
 }

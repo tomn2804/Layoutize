@@ -47,6 +47,7 @@
     <Compile Include="src\Views\FileView.cs" />
     <Compile Include="src\Views\IView.cs" />
     <Compile Include="src\Views\FileSystemView.cs" />
+    <Compile Include="src\Views\IViewContext.cs" />
   </ItemGroup>
 
   <ItemGroup>

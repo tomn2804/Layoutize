@@ -9,12 +9,12 @@ public abstract class LayoutAttribute : ValidationAttribute
 		try
 		{
 			Validate(value);
+			return null;
 		}
 		catch (ValidationException e)
 		{
 			return new(e.Message);
 		}
-		return null;
 	}
 
 	protected virtual void Validate(object? value)

@@ -7,7 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public override IView View => _view.Value;
+	public override IViewContext ViewContext => View;
 
 	public event EventHandler? Created;
 
@@ -21,7 +21,7 @@ internal abstract class ViewElement : Element
 		: base(layout)
 	{
 		_view = new(() => Layout.CreateView(this));
-		AddEventHandler();
+		Build();
 	}
 
 	protected virtual void OnCreated(EventArgs e)
@@ -55,14 +55,14 @@ internal abstract class ViewElement : Element
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		RemoveEventHandler();
+		Rebuild();
 		base.OnLayoutUpdated(e);
 	}
 
 	protected override void OnLayoutUpdating(EventArgs e)
 	{
 		base.OnLayoutUpdating(e);
-		RemoveEventHandler();
+		Unbuild();
 		Debug.Assert(IsMounted);
 	}
 
@@ -81,16 +81,9 @@ internal abstract class ViewElement : Element
 		base.OnUnmounted(e);
 	}
 
-	private void AddEventHandler()
+	private void Build()
 	{
-		Creating += Layout.OnCreating;
-		Created += Layout.OnCreated;
-		Deleting += Layout.OnDeleting;
-		Deleted += Layout.OnDeleted;
-		Mounting += Layout.OnMounting;
-		Mounted += Layout.OnMounted;
-		Unmounting += Layout.OnUnmounting;
-		Unmounted += Layout.OnUnmounted;
+		Rebuild();
 	}
 
 	private void Create()
@@ -111,7 +104,19 @@ internal abstract class ViewElement : Element
 		Debug.Assert(!View.Exists);
 	}
 
-	private void RemoveEventHandler()
+	private void Rebuild()
+	{
+		Creating += Layout.OnCreating;
+		Created += Layout.OnCreated;
+		Deleting += Layout.OnDeleting;
+		Deleted += Layout.OnDeleted;
+		Mounting += Layout.OnMounting;
+		Mounted += Layout.OnMounted;
+		Unmounting += Layout.OnUnmounting;
+		Unmounted += Layout.OnUnmounted;
+	}
+
+	private void Unbuild()
 	{
 		Creating -= Layout.OnCreating;
 		Created -= Layout.OnCreated;
@@ -124,6 +129,8 @@ internal abstract class ViewElement : Element
 	}
 
 	private new ViewLayout Layout => (ViewLayout)base.Layout;
+
+	private IView View => _view.Value;
 
 	private Lazy<IView> _view;
 }

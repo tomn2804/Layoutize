@@ -35,12 +35,12 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override IView View => Child.View;
+	public override IViewContext ViewContext => Child.ViewContext;
 
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)
 	{
-		_child = new(() => Layout.CreateElement());
+		_child = new(() => Build().CreateElement());
 	}
 
 	protected abstract Layout Build();
@@ -48,7 +48,7 @@ internal abstract class ComponentElement : Element
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		UpdateChild();
+		Rebuild();
 		base.OnLayoutUpdated(e);
 	}
 
@@ -63,11 +63,11 @@ internal abstract class ComponentElement : Element
 	{
 		Debug.Assert(!IsMounted);
 		Child.Unmount();
-		_child = new(() => Layout.CreateElement());
+		_child = new(() => Build().CreateElement());
 		base.OnUnmounted(e);
 	}
 
-	private void UpdateChild()
+	private void Rebuild()
 	{
 		Debug.Assert(IsMounted);
 		Child.Layout = Build();

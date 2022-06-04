@@ -11,23 +11,14 @@ internal class RootDirectoryLayout : DirectoryLayout
 {
 	[Required]
 	[Path]
-	public string Path
-	{
-		get
-		{
-			Debug.Assert(Contexts.Path.IsValid(_path));
-			return _path;
-		}
-		init => _path = value;
-	}
+	public string Path { get; init; } = null!;
 
 	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(Model.IsValid(this));
-		var fullName = System.IO.Path.Combine(Path, Name);
-		Debug.Assert(FullName.IsValid(fullName));
-		return new DirectoryView(new(fullName));
+		var view = new DirectoryView(new(System.IO.Path.Combine(Path, Name)));
+		Debug.Assert(Contexts.Name.IsValid(view.Name));
+		Debug.Assert(FullName.IsValid(view.FullName));
+		return view;
 	}
-
-	private readonly string? _path;
 }

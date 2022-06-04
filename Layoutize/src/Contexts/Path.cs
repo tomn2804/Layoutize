@@ -16,7 +16,7 @@ public static class Path
 			switch (parent)
 			{
 				case ViewElement viewElement:
-					path = viewElement.View.FullName;
+					path = viewElement.ViewContext.FullName;
 					return;
 
 				case not null:
@@ -37,27 +37,27 @@ public static class Path
 		try
 		{
 			Validate(value);
+			return true;
 		}
 		catch
 		{
 			return false;
 		}
-		return true;
 	}
 
 	internal static void Validate([NotNull] string? value)
 	{
 		if (value == null)
 		{
-			throw new ValidationException($"Layout property value '{nameof(Path)}' is null.");
+			throw new ValidationException($"Property value '{nameof(Path)}' is null.");
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ValidationException($"Layout property value '{nameof(Path)}' contains invalid characters.");
+			throw new ValidationException($"Property value '{nameof(Path)}' contains invalid characters.");
 		}
 		if (!string.IsNullOrWhiteSpace(value) && !System.IO.Path.IsPathFullyQualified(value))
 		{
-			throw new ValidationException($"Layout property value '{nameof(Path)}' is not an absolute path.");
+			throw new ValidationException($"Property value '{nameof(Path)}' is not an absolute path.");
 		}
 	}
 }

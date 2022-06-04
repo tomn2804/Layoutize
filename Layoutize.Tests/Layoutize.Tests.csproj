@@ -16,6 +16,9 @@
 
   <ItemGroup>
     <Compile Include="src\LayoutTests.cs" />
+    <Compile Include="src\Mocks\MockDirectoryLayout.cs" />
+    <Compile Include="src\Mocks\MockFileLayout.cs" />
+    <Compile Include="src\Mocks\MockFileSystemView.cs" />
   </ItemGroup>
 
   <ItemGroup>

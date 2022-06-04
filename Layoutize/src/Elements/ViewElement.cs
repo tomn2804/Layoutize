@@ -7,7 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public override IViewContext? ViewContext => _view;
+	public override IView? View => _view;
 
 	public event EventHandler? Created;
 
@@ -25,34 +25,34 @@ internal abstract class ViewElement : Element
 
 	protected virtual void OnCreated(EventArgs e)
 	{
-		Debug.Assert(_view != null);
-		Debug.Assert(_view.Exists);
+		Debug.Assert(View != null);
+		Debug.Assert(View.Exists);
 		Created?.Invoke(this, e);
-		Debug.Assert(_view.Exists);
+		Debug.Assert(View.Exists);
 	}
 
 	protected virtual void OnCreating(EventArgs e)
 	{
-		Debug.Assert(_view != null);
-		Debug.Assert(!_view.Exists);
+		Debug.Assert(View != null);
+		Debug.Assert(!View.Exists);
 		Creating?.Invoke(this, e);
-		Debug.Assert(!_view.Exists);
+		Debug.Assert(!View.Exists);
 	}
 
 	protected virtual void OnDeleted(EventArgs e)
 	{
-		Debug.Assert(_view != null);
-		Debug.Assert(!_view.Exists);
+		Debug.Assert(View != null);
+		Debug.Assert(!View.Exists);
 		Deleted?.Invoke(this, e);
-		Debug.Assert(!_view.Exists);
+		Debug.Assert(!View.Exists);
 	}
 
 	protected virtual void OnDeleting(EventArgs e)
 	{
-		Debug.Assert(_view != null);
-		Debug.Assert(_view.Exists);
+		Debug.Assert(View != null);
+		Debug.Assert(View.Exists);
 		Deleting?.Invoke(this, e);
-		Debug.Assert(_view.Exists);
+		Debug.Assert(View.Exists);
 	}
 
 	protected override void OnLayoutUpdated(EventArgs e)
@@ -93,22 +93,22 @@ internal abstract class ViewElement : Element
 
 	private void Create()
 	{
-		Debug.Assert(_view != null);
-		Debug.Assert(!_view.Exists);
+		Debug.Assert(View != null);
+		Debug.Assert(!View.Exists);
 		OnCreating(EventArgs.Empty);
-		_view.Create();
+		View.Create();
 		OnCreated(EventArgs.Empty);
-		Debug.Assert(_view.Exists);
+		Debug.Assert(View.Exists);
 	}
 
 	private void Delete()
 	{
-		Debug.Assert(_view != null);
-		Debug.Assert(_view.Exists);
+		Debug.Assert(View != null);
+		Debug.Assert(View.Exists);
 		OnDeleting(EventArgs.Empty);
-		_view.Delete();
+		View.Delete();
 		OnDeleted(EventArgs.Empty);
-		Debug.Assert(!_view.Exists);
+		Debug.Assert(!View.Exists);
 	}
 
 	private void Rebuild()

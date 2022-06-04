@@ -34,7 +34,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public abstract string Name { get; }
 
-	public abstract IViewContext? ViewContext { get; }
+	public abstract IView? View { get; }
 
 	public bool IsMounted
 	{
@@ -42,8 +42,8 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		{
 			if (_isMounted)
 			{
-				Debug.Assert(ViewContext != null);
-				Debug.Assert(ViewContext.Exists);
+				Debug.Assert(View != null);
+				Debug.Assert(View.Exists);
 				return true;
 			}
 			return false;

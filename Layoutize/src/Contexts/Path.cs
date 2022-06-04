@@ -17,7 +17,9 @@ public static class Path
 			switch (parent)
 			{
 				case ViewElement viewElement:
-					path = viewElement.ViewContext!.FullName;
+					var view = viewElement.View;
+					Debug.Assert(view != null);
+					path = view.FullName;
 					return;
 
 				default:
@@ -50,16 +52,16 @@ public static class Path
 		if (string.IsNullOrWhiteSpace(value))
 		{
 			throw new ValidationException(
-				$"Property value '{nameof(Path)}' is either null, empty, or consists of only white-space characters."
+				$"'{nameof(Path)}' value is either null, empty, or consists of only white-space characters."
 			);
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ValidationException($"Property value '{nameof(Path)}' contains invalid characters.");
+			throw new ValidationException($"'{nameof(Path)}' value contains invalid characters.");
 		}
-		if (!string.IsNullOrWhiteSpace(value) && !System.IO.Path.IsPathFullyQualified(value))
+		if (!System.IO.Path.IsPathFullyQualified(value))
 		{
-			throw new ValidationException($"Property value '{nameof(Path)}' is not an absolute path.");
+			throw new ValidationException($"'{nameof(Path)}' value is not an absolute path.");
 		}
 	}
 }

@@ -34,12 +34,12 @@ public static class Name
 		if (string.IsNullOrWhiteSpace(value))
 		{
 			throw new ValidationException(
-				$"Property value '{nameof(Name)}' is either null, empty, or consists of only white-space characters."
+				$"'{nameof(Name)}' value is either null, empty, or consists of only white-space characters."
 			);
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
 		{
-			throw new ValidationException($"Property value '{nameof(Name)}' contains invalid characters.");
+			throw new ValidationException($"'{nameof(Name)}' value contains invalid characters.");
 		}
 	}
 }

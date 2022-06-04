@@ -3,10 +3,10 @@ using Layoutize.Contexts;
 
 namespace Layoutize.Annotations;
 
-internal sealed class PathAttribute : LayoutAttribute
+internal sealed class FullNameAttribute : LayoutAttribute
 {
 	protected override void Validate([NotNull] object? value)
 	{
-		Path.Validate((string?)value);
+		FullName.Validate((string?)value);
 	}
 }

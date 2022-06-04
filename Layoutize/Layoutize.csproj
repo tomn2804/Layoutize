@@ -15,9 +15,10 @@
   <ItemGroup>
     <Compile Include="src\Annotations\LayoutAttribute.cs" />
     <Compile Include="src\Annotations\NameAttribute.cs" />
-    <Compile Include="src\Annotations\PathAttribute.cs" />
+    <Compile Include="src\Annotations\FullNameAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\Elements\ElementNotMountedException.cs" />
+    <Compile Include="src\Elements\RootDirectoryElement.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Layouts\DirectoryLayout.cs" />
     <Compile Include="src\Cmdlets\DismountElementCmdlet.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="src\Views\IView.cs" />
     <Compile Include="src\Views\FileSystemView.cs" />
     <Compile Include="src\Views\IViewContext.cs" />
+    <Compile Include="src\Views\RootDirectoryView.cs" />
   </ItemGroup>
 
   <ItemGroup>

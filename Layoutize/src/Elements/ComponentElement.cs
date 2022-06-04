@@ -35,7 +35,9 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override IViewContext ViewContext => Child.ViewContext;
+	public override string Name => Child.Name;
+
+	public override IViewContext? ViewContext => Child.ViewContext;
 
 	protected ComponentElement(ComponentLayout layout)
 		: base(layout)

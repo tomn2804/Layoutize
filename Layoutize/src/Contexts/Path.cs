@@ -9,25 +9,25 @@ public static class Path
 {
 	public static string Of(IBuildContext context)
 	{
-		var path = string.Empty;
+		string? path;
 		void VisitParent(Element element)
 		{
 			var parent = element.Parent;
+			Debug.Assert(parent != null);
 			switch (parent)
 			{
 				case ViewElement viewElement:
-					path = viewElement.ViewContext.FullName;
-					return;
-
-				case not null:
-					VisitParent(parent);
+					path = viewElement.ViewContext!.FullName;
 					return;
 
 				default:
+					VisitParent(parent);
 					return;
 			}
 		}
-		VisitParent(context.Element);
+		var element = context.Element;
+		Debug.Assert(element is not RootDirectoryElement);
+		VisitParent(element);
 		Debug.Assert(IsValid(path));
 		return path;
 	}
@@ -47,9 +47,11 @@ public static class Path
 
 	internal static void Validate([NotNull] string? value)
 	{
-		if (value == null)
+		if (string.IsNullOrWhiteSpace(value))
 		{
-			throw new ValidationException($"Property value '{nameof(Path)}' is null.");
+			throw new ValidationException(
+				$"Property value '{nameof(Path)}' is either null, empty, or consists of only white-space characters."
+			);
 		}
 		if (value.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
 		{

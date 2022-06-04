@@ -7,7 +7,7 @@ namespace Layoutize.Elements;
 
 internal abstract class ViewElement : Element
 {
-	public override IViewContext ViewContext => View;
+	public override IViewContext? ViewContext => _view;
 
 	public event EventHandler? Created;
 
@@ -20,36 +20,39 @@ internal abstract class ViewElement : Element
 	protected ViewElement(ViewLayout layout)
 		: base(layout)
 	{
-		_view = new(() => Layout.CreateView(this));
 		Build();
 	}
 
 	protected virtual void OnCreated(EventArgs e)
 	{
-		Debug.Assert(View.Exists);
+		Debug.Assert(_view != null);
+		Debug.Assert(_view.Exists);
 		Created?.Invoke(this, e);
-		Debug.Assert(View.Exists);
+		Debug.Assert(_view.Exists);
 	}
 
 	protected virtual void OnCreating(EventArgs e)
 	{
-		Debug.Assert(!View.Exists);
+		Debug.Assert(_view != null);
+		Debug.Assert(!_view.Exists);
 		Creating?.Invoke(this, e);
-		Debug.Assert(!View.Exists);
+		Debug.Assert(!_view.Exists);
 	}
 
 	protected virtual void OnDeleted(EventArgs e)
 	{
-		Debug.Assert(!View.Exists);
+		Debug.Assert(_view != null);
+		Debug.Assert(!_view.Exists);
 		Deleted?.Invoke(this, e);
-		Debug.Assert(!View.Exists);
+		Debug.Assert(!_view.Exists);
 	}
 
 	protected virtual void OnDeleting(EventArgs e)
 	{
-		Debug.Assert(View.Exists);
+		Debug.Assert(_view != null);
+		Debug.Assert(_view.Exists);
 		Deleting?.Invoke(this, e);
-		Debug.Assert(View.Exists);
+		Debug.Assert(_view.Exists);
 	}
 
 	protected override void OnLayoutUpdated(EventArgs e)
@@ -69,15 +72,17 @@ internal abstract class ViewElement : Element
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		if (!View.Exists) Create();
+		_view = Layout.CreateView(this);
+		if (!_view.Exists) Create();
 		Debug.Assert(!IsMounted);
 	}
 
 	protected override void OnUnmounted(EventArgs e)
 	{
 		Debug.Assert(!IsMounted);
-		if (Layout.DeleteOnUnmount && View.Exists) Delete();
-		_view = new(() => Layout.CreateView(this));
+		Debug.Assert(_view != null);
+		if (Layout.DeleteOnUnmount && _view.Exists) Delete();
+		_view = null;
 		base.OnUnmounted(e);
 	}
 
@@ -88,20 +93,22 @@ internal abstract class ViewElement : Element
 
 	private void Create()
 	{
-		Debug.Assert(!View.Exists);
+		Debug.Assert(_view != null);
+		Debug.Assert(!_view.Exists);
 		OnCreating(EventArgs.Empty);
-		View.Create();
+		_view.Create();
 		OnCreated(EventArgs.Empty);
-		Debug.Assert(View.Exists);
+		Debug.Assert(_view.Exists);
 	}
 
 	private void Delete()
 	{
-		Debug.Assert(View.Exists);
+		Debug.Assert(_view != null);
+		Debug.Assert(_view.Exists);
 		OnDeleting(EventArgs.Empty);
-		View.Delete();
+		_view.Delete();
 		OnDeleted(EventArgs.Empty);
-		Debug.Assert(!View.Exists);
+		Debug.Assert(!_view.Exists);
 	}
 
 	private void Rebuild()
@@ -130,7 +137,5 @@ internal abstract class ViewElement : Element
 
 	private new ViewLayout Layout => (ViewLayout)base.Layout;
 
-	private IView View => _view.Value;
-
-	private Lazy<IView> _view;
+	private IView? _view;
 }

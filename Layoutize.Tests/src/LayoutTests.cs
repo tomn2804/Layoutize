@@ -7,6 +7,13 @@ namespace Layoutize.Tests;
 
 public abstract class LayoutTests<T> where T : Layout, new()
 {
+	[Fact]
+	public void InitInherit_MergeWithInvalidLayout_ThrowsValidationException()
+	{
+		Assert.Throws<ValidationException>(() => new T { Inherit = InvalidLayout });
+	}
+
+	public abstract Layout InvalidLayout { get; }
 }
 
 public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, new()
@@ -28,14 +35,6 @@ public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, 
 		Assert.Equal(derivedName, derivedLayout.Name);
 	}
 
-	[Theory]
-	[MemberData(nameof(InvalidNames))]
-	public void InitInherit_MergeInvalidLayout_ThrowsValidationException(string invalidName)
-	{
-		var invalidLayout = new T { Name = invalidName };
-		Assert.Throws<ValidationException>(() => new T { Inherit = invalidLayout });
-	}
-
 	[Fact]
 	public void InitInherit_MergeTwoLayouts_ReturnsDerivedLayout()
 	{
@@ -46,6 +45,8 @@ public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, 
 
 		Assert.Equal(baseLayout.Name, derivedLayout.Name);
 	}
+
+	public override T InvalidLayout => new();
 }
 
 public abstract class ViewGroupLayoutTests<T> : ViewLayoutTests<T> where T : ViewGroupLayout, new()

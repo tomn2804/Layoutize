@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Views;
@@ -8,6 +10,10 @@ namespace Layoutize.Layouts;
 
 public class FileLayout : ViewLayout
 {
+	[Required]
+	[Name]
+	public string Name { get; init; } = null!;
+
 	internal override FileElement CreateElement()
 	{
 		Model.Validate(this);

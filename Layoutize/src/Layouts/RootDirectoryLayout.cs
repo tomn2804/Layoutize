@@ -1,24 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Annotations;
-using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Views;
 
 namespace Layoutize.Layouts;
 
-internal class RootDirectoryLayout : DirectoryLayout
+internal class RootDirectoryLayout : ViewGroupLayout
 {
 	[Required]
-	[Path]
-	public string Path { get; init; } = null!;
+	[FullName]
+	public string FullName { get; init; } = null!;
+
+	internal override RootDirectoryElement CreateElement()
+	{
+		Debug.Assert(Model.IsValid(this));
+		var element = new RootDirectoryElement(this);
+		Debug.Assert(!element.IsMounted);
+		return element;
+	}
 
 	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(Model.IsValid(this));
-		var view = new DirectoryView(new(System.IO.Path.Combine(Path, Name)));
-		Debug.Assert(Contexts.Name.IsValid(view.Name));
-		Debug.Assert(FullName.IsValid(view.FullName));
+		var view = new RootDirectoryView(new(FullName));
+		Debug.Assert(Contexts.FullName.IsValid(view.FullName));
 		return view;
 	}
 }

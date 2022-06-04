@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
+using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Views;
@@ -19,6 +21,10 @@ public class DirectoryLayout : ViewGroupLayout
 			_ => new[] { (Layout)value },
 		};
 	}
+
+	[Required]
+	[Name]
+	public string Name { get; init; } = null!;
 
 	internal override DirectoryElement CreateElement()
 	{

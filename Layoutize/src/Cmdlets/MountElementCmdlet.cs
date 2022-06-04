@@ -14,19 +14,17 @@ public class MountElementCmdlet : PSCmdlet
 	public Layout Layout { get; init; } = null!;
 
 	[Parameter(Mandatory = true, Position = 0)]
-	public string Path { get; init; } = string.Empty;
+	public string Path { get; init; } = null!;
 
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
 		Model.Validate(Layout);
 		var rootDirectory = Directory.CreateDirectory(FullName);
-		if (!rootDirectory.Exists) throw new PSArgumentException("Path does not exists.", nameof(Path));
-		var rootElement = new RootDirectoryLayout
-		{
-			Name = rootDirectory.Name, Path = rootDirectory.Parent?.FullName ?? string.Empty, Children = Layout,
-		}.CreateElement();
-		rootElement.Mount(null);
+		if (!rootDirectory.Exists) throw new PSArgumentException($"{nameof(Path)} does not exists.", nameof(Path));
+		var rootElement = new RootDirectoryLayout { FullName = rootDirectory.FullName, Children = new[] { Layout } }
+			.CreateElement();
+		rootElement.Mount();
 		Debug.Assert(rootElement.IsMounted);
 		WriteObject(rootElement);
 	}

@@ -11,8 +11,13 @@ public static class FullName
 	public static string Of(IBuildContext context)
 	{
 		var element = context.Element;
+		Debug.Assert(element is not RootDirectoryElement);
 		if (!element.IsMounted) throw new ElementNotMountedException(element);
-		return Of(element.ViewContext);
+		var viewContext = element.ViewContext;
+		Debug.Assert(viewContext != null);
+		var fullName = viewContext.FullName;
+		Debug.Assert(IsValid(fullName));
+		return fullName;
 	}
 
 	internal static bool IsValid([NotNullWhen(true)] string? value)

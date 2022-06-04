@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
-using Layoutize.Views;
 
 namespace Layoutize.Contexts;
 
@@ -11,8 +10,10 @@ public static class Name
 	public static string Of(IBuildContext context)
 	{
 		var element = context.Element;
-		if (!element.IsMounted) throw new ElementNotMountedException(element);
-		return Of(element.ViewContext);
+		Debug.Assert(element is not RootDirectoryElement);
+		var name = element.Name;
+		Debug.Assert(IsValid(name));
+		return name;
 	}
 
 	internal static bool IsValid([NotNullWhen(true)] string? value)
@@ -26,13 +27,6 @@ public static class Name
 		{
 			return false;
 		}
-	}
-
-	internal static string Of(IViewContext context)
-	{
-		var name = context.Name;
-		Debug.Assert(IsValid(name));
-		return name;
 	}
 
 	internal static void Validate([NotNull] string? value)

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Layoutize.Annotations;
 using Layoutize.Elements;
 using Layoutize.Views;
 
@@ -9,10 +7,6 @@ namespace Layoutize.Layouts;
 public abstract class ViewLayout : Layout
 {
 	public bool DeleteOnUnmount { get; init; }
-
-	[Required]
-	[Name]
-	public string Name { get; init; } = null!;
 
 	public EventHandler? OnCreated { get; init; }
 

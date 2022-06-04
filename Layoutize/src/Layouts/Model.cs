@@ -14,6 +14,6 @@ internal static class Model
 	public static void Validate([NotNull] object? value)
 	{
 		Debug.Assert(value != null);
-		Validator.ValidateObject(value, new(value));
+		Validator.ValidateObject(value, new(value), true);
 	}
 }

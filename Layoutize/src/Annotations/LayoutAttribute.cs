@@ -1,7 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Layoutize.Annotations;
 
+[AttributeUsage(AttributeTargets.Property)]
 public abstract class LayoutAttribute : ValidationAttribute
 {
 	protected sealed override ValidationResult? IsValid(object? value, ValidationContext context)
@@ -9,7 +11,7 @@ public abstract class LayoutAttribute : ValidationAttribute
 		try
 		{
 			Validate(value);
-			return null;
+			return ValidationResult.Success;
 		}
 		catch (ValidationException e)
 		{

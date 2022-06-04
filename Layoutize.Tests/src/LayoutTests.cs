@@ -11,6 +11,10 @@ public abstract class LayoutTests<T> where T : Layout, new()
 
 public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, new()
 {
+	public static IEnumerable<object?[]> InvalidNames => Path.GetInvalidFileNameChars()
+		.Select(name => new object[] { name })
+		.Append(new object?[] { null });
+
 	[Fact]
 	public void InitInherit_MergeAndOverrideProperties_ReturnsDerivedLayout()
 	{
@@ -24,6 +28,14 @@ public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, 
 		Assert.Equal(derivedName, derivedLayout.Name);
 	}
 
+	[Theory]
+	[MemberData(nameof(InvalidNames))]
+	public void InitInherit_MergeInvalidLayout_ThrowsValidationException(string invalidName)
+	{
+		var invalidLayout = new T { Name = invalidName };
+		Assert.Throws<ValidationException>(() => new T { Inherit = invalidLayout });
+	}
+
 	[Fact]
 	public void InitInherit_MergeTwoLayouts_ReturnsDerivedLayout()
 	{
@@ -34,16 +46,6 @@ public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, 
 
 		Assert.Equal(baseLayout.Name, derivedLayout.Name);
 	}
-
-	[Theory]
-	[MemberData(nameof(InvalidNames))]
-	public void InitInherit_MergeInvalidLayout_ThrowsValidationException(string invalidName)
-	{
-		var invalidLayout = new T { Name = invalidName };
-		Assert.Throws<ValidationException>(() => new T { Inherit = invalidLayout });
-	}
-
-	public static IEnumerable<object?[]> InvalidNames => Path.GetInvalidFileNameChars().Select(name => new object[] { name }).Append(new object?[] { null });
 }
 
 public abstract class ViewGroupLayoutTests<T> : ViewLayoutTests<T> where T : ViewGroupLayout, new()

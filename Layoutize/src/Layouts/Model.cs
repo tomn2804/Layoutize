@@ -8,7 +8,7 @@ internal static class Model
 {
 	public static bool IsValid([NotNullWhen(true)] object? value)
 	{
-		return value != null && Validator.TryValidateObject(value, new(value), null);
+		return value != null && Validator.TryValidateObject(value, new(value), null, true);
 	}
 
 	public static void Validate([NotNull] object? value)

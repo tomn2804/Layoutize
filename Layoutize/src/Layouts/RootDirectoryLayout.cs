@@ -12,7 +12,12 @@ internal class RootDirectoryLayout : ViewGroupLayout
 	[FullName]
 	public string FullName { get; init; } = null!;
 
-	internal override RootDirectoryElement CreateElement()
+	internal RootDirectoryElement CreateElement()
+	{
+		return CreateElement(null);
+	}
+
+	internal override RootDirectoryElement CreateElement(Element? parent)
 	{
 		Debug.Assert(Model.IsValid(this));
 		var element = new RootDirectoryElement(this);

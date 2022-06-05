@@ -1,24 +1,11 @@
-﻿using System.Diagnostics;
-using Layoutize.Layouts;
+﻿using Layoutize.Layouts;
 
 namespace Layoutize.Elements;
 
 internal class DirectoryElement : ViewGroupElement
 {
-	public DirectoryElement(DirectoryLayout layout)
-		: base(layout)
+	public DirectoryElement(Element? parent, DirectoryLayout layout)
+		: base(parent, layout)
 	{
 	}
-
-	public override string Name
-	{
-		get
-		{
-			var name = Layout.Name;
-			Debug.Assert(Contexts.Name.IsValid(name));
-			return name;
-		}
-	}
-
-	private new DirectoryLayout Layout => (DirectoryLayout)base.Layout;
 }

@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Elements;
-using Layoutize.Views;
 
 namespace Layoutize.Contexts;
 
@@ -10,11 +9,9 @@ public static class FullName
 {
 	public static string Of(IBuildContext context)
 	{
-		var element = context.Element;
-		if (!element.IsMounted) throw new ElementNotMountedException(element);
-		var view = element.View;
-		Debug.Assert(view != null);
-		return Of(view);
+		var fullName = context.Element.View.FullName;
+		Debug.Assert(IsValid(fullName));
+		return fullName;
 	}
 
 	internal static bool IsValid([NotNullWhen(true)] string? value)
@@ -46,12 +43,5 @@ public static class FullName
 		{
 			throw new ValidationException($"'{nameof(FullName)}' value is not an absolute path.");
 		}
-	}
-
-	private static string Of(IView view)
-	{
-		var fullName = view.FullName;
-		Debug.Assert(IsValid(fullName));
-		return fullName;
 	}
 }

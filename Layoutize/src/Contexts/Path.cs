@@ -17,9 +17,7 @@ public static class Path
 			switch (parent)
 			{
 				case ViewElement viewElement:
-					var view = viewElement.View;
-					Debug.Assert(view != null);
-					path = view.FullName;
+					path = viewElement.View.FullName;
 					return;
 
 				default:

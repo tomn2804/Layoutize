@@ -26,10 +26,10 @@ public class DirectoryLayout : ViewGroupLayout
 	[Name]
 	public string Name { get; init; } = null!;
 
-	internal override DirectoryElement CreateElement()
+	internal override DirectoryElement CreateElement(Element? parent)
 	{
 		Model.Validate(this);
-		var element = new DirectoryElement(this);
+		var element = new DirectoryElement(parent, this);
 		Debug.Assert(!element.IsMounted);
 		return element;
 	}

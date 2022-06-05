@@ -11,7 +11,7 @@ public static class Name
 	{
 		var element = context.Element;
 		Debug.Assert(element is not RootDirectoryElement);
-		var name = element.Name;
+		var name = element.View.Name;
 		Debug.Assert(IsValid(name));
 		return name;
 	}

@@ -5,8 +5,8 @@ namespace Layoutize.Elements;
 
 internal sealed class StatefulElement : ComponentElement
 {
-	public StatefulElement(StatefulLayout layout)
-		: base(layout)
+	public StatefulElement(Element? parent, StatefulLayout layout)
+		: base(parent, layout)
 	{
 		_state = Layout.CreateState();
 		_state.Element = this;
@@ -31,7 +31,7 @@ internal sealed class StatefulElement : ComponentElement
 		}
 		else
 		{
-			Child = newChildLayout.CreateElement();
+			Child = newChildLayout.CreateElement(this);
 		}
 		Debug.Assert(IsMounted);
 	}

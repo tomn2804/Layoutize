@@ -17,7 +17,6 @@
     <Compile Include="src\Annotations\NameAttribute.cs" />
     <Compile Include="src\Annotations\FullNameAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
-    <Compile Include="src\Elements\ElementNotMountedException.cs" />
     <Compile Include="src\Elements\RootDirectoryElement.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Layouts\DirectoryLayout.cs" />

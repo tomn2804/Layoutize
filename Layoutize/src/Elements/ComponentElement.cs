@@ -13,9 +13,11 @@ internal abstract class ComponentElement : Element
 		protected set
 		{
 			Debug.Assert(IsMounted);
+			Debug.Assert(!value.IsMounted);
+			Debug.Assert(value.Parent == this);
 			Child.Unmount();
 			_child = new(() => value);
-			Child.Mount(this);
+			Child.Mount();
 			Debug.Assert(IsMounted);
 		}
 	}
@@ -26,7 +28,6 @@ internal abstract class ComponentElement : Element
 		{
 			if (base.IsMounted)
 			{
-				Debug.Assert(Parent != null);
 				Debug.Assert(Child.IsMounted);
 				Debug.Assert(Child.Parent == this);
 				return true;
@@ -35,14 +36,22 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override string Name => Child.Name;
+	public override IView View => Child.View;
 
-	public override IView? View => Child.View;
-
-	protected ComponentElement(ComponentLayout layout)
-		: base(layout)
+	public new Element Parent
 	{
-		_child = new(() => Build().CreateElement());
+		get
+		{
+			Debug.Assert(base.Parent != null);
+			return base.Parent;
+		}
+	}
+
+	protected ComponentElement(Element? parent, ComponentLayout layout)
+		: base(parent, layout)
+	{
+		Debug.Assert(Parent != null);
+		_child = new(() => Build().CreateElement(this));
 	}
 
 	protected abstract Layout Build();
@@ -57,7 +66,7 @@ internal abstract class ComponentElement : Element
 	protected override void OnMounting(EventArgs e)
 	{
 		base.OnMounting(e);
-		Child.Mount(this);
+		Child.Mount();
 		Debug.Assert(!IsMounted);
 	}
 
@@ -65,7 +74,7 @@ internal abstract class ComponentElement : Element
 	{
 		Debug.Assert(!IsMounted);
 		Child.Unmount();
-		_child = new(() => Build().CreateElement());
+		_child = new(() => Build().CreateElement(this));
 		base.OnUnmounted(e);
 	}
 

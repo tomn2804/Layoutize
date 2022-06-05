@@ -4,8 +4,8 @@ namespace Layoutize.Elements;
 
 internal sealed class StatelessElement : ComponentElement
 {
-	public StatelessElement(StatelessLayout layout)
-		: base(layout)
+	public StatelessElement(Element? parent, StatelessLayout layout)
+		: base(parent, layout)
 	{
 	}
 

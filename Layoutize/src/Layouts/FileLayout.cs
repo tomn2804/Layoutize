@@ -14,10 +14,10 @@ public class FileLayout : ViewLayout
 	[Name]
 	public string Name { get; init; } = null!;
 
-	internal override FileElement CreateElement()
+	internal override FileElement CreateElement(Element? parent)
 	{
 		Model.Validate(this);
-		var element = new FileElement(this);
+		var element = new FileElement(parent, this);
 		Debug.Assert(!element.IsMounted);
 		return element;
 	}

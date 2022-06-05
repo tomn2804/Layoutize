@@ -15,6 +15,7 @@ internal abstract class ViewGroupElement : ViewElement
 		protected set
 		{
 			Debug.Assert(IsMounted);
+			Debug.Assert(value.All(child => child.Parent == this));
 			IEnumerable<Element> enteringChildren = value.Except(Children);
 			IEnumerable<Element> exitingChildren = Children.Except(value);
 			foreach (var exitingChild in exitingChildren)
@@ -26,7 +27,7 @@ internal abstract class ViewGroupElement : ViewElement
 			_children = new(() => value);
 			foreach (var enteringChild in enteringChildren)
 			{
-				enteringChild.Mount(this);
+				enteringChild.Mount();
 			}
 			Debug.Assert(IsMounted);
 		}
@@ -38,6 +39,7 @@ internal abstract class ViewGroupElement : ViewElement
 		{
 			if (base.IsMounted)
 			{
+				Debug.Assert(Children.Count == Layout.Children.Count());
 				Debug.Assert(Children.All(child => child.IsMounted));
 				Debug.Assert(Children.All(child => child.Parent == this));
 				return true;
@@ -46,11 +48,11 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	protected ViewGroupElement(ViewGroupLayout layout)
-		: base(layout)
+	protected ViewGroupElement(Element? parent, ViewGroupLayout layout)
+		: base(parent, layout)
 	{
 		_children = new(
-			() => Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet()
+			() => Layout.Children.Select(childLayout => childLayout.CreateElement(this)).ToImmutableSortedSet()
 		);
 	}
 
@@ -66,7 +68,7 @@ internal abstract class ViewGroupElement : ViewElement
 		base.OnMounting(e);
 		foreach (var child in Children)
 		{
-			child.Mount(this);
+			child.Mount();
 		}
 		Debug.Assert(!IsMounted);
 	}
@@ -79,7 +81,7 @@ internal abstract class ViewGroupElement : ViewElement
 			child.Unmount();
 		}
 		_children = new(
-			() => Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet()
+			() => Layout.Children.Select(childLayout => childLayout.CreateElement(this)).ToImmutableSortedSet()
 		);
 		base.OnUnmounted(e);
 	}
@@ -90,7 +92,7 @@ internal abstract class ViewGroupElement : ViewElement
 		var childrenBuilder = ImmutableSortedSet.CreateBuilder<Element>();
 		foreach (var newChildLayout in Layout.Children)
 		{
-			var newChild = newChildLayout.CreateElement();
+			var newChild = newChildLayout.CreateElement(this);
 			if (Children.TryGetValue(newChild, out var currentChild)
 				&& currentChild.Layout.GetType() == newChildLayout.GetType())
 			{

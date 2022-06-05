@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Layoutize.Contexts;
 using Layoutize.Layouts;
 using Layoutize.Views;
 
@@ -9,13 +10,12 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 {
 	public int CompareTo(Element? other)
 	{
-		return other == null ? 1 : string.Compare(Name, other.Name, StringComparison.Ordinal);
+		return other == null ? 1 : string.Compare(Name.Of(this), Name.Of(other), StringComparison.Ordinal);
 	}
 
-	public void Mount(Element? parent)
+	public void Mount()
 	{
 		Debug.Assert(!IsMounted);
-		Parent = parent;
 		OnMounting(EventArgs.Empty);
 		_isMounted = true;
 		OnMounted(EventArgs.Empty);
@@ -28,13 +28,10 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		OnUnmounting(EventArgs.Empty);
 		_isMounted = false;
 		OnUnmounted(EventArgs.Empty);
-		Parent = null;
 		Debug.Assert(!IsMounted);
 	}
 
-	public abstract string Name { get; }
-
-	public abstract IView? View { get; }
+	public abstract IView View { get; }
 
 	public bool IsMounted
 	{
@@ -42,7 +39,6 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		{
 			if (_isMounted)
 			{
-				Debug.Assert(View != null);
 				Debug.Assert(View.Exists);
 				return true;
 			}
@@ -59,8 +55,8 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		}
 		set
 		{
-			Debug.Assert(IsMounted);
 			Debug.Assert(Model.IsValid(value));
+			Debug.Assert(IsMounted);
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
 			OnLayoutUpdated(EventArgs.Empty);
@@ -68,7 +64,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		}
 	}
 
-	public Element? Parent { get; private set; }
+	public readonly Element? Parent;
 
 	public event EventHandler? LayoutUpdated;
 
@@ -82,9 +78,10 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public event EventHandler? Unmounting;
 
-	protected Element(Layout layout)
+	protected Element(Element? parent, Layout layout)
 	{
 		Debug.Assert(Model.IsValid(layout));
+		Parent = parent;
 		_layout = layout;
 	}
 

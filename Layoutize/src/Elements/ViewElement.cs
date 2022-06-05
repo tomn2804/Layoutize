@@ -73,16 +73,18 @@ internal abstract class ViewElement : Element
 	{
 		base.OnMounting(e);
 		_view = Layout.CreateView(this);
-		if (!_view.Exists) Create();
+		Debug.Assert(View != null);
+		if (!View.Exists) Create();
 		Debug.Assert(!IsMounted);
 	}
 
 	protected override void OnUnmounted(EventArgs e)
 	{
 		Debug.Assert(!IsMounted);
-		Debug.Assert(_view != null);
-		if (Layout.DeleteOnUnmount && _view.Exists) Delete();
+		Debug.Assert(View != null);
+		if (Layout.DeleteOnUnmount && View.Exists) Delete();
 		_view = null;
+		Debug.Assert(View == null);
 		base.OnUnmounted(e);
 	}
 

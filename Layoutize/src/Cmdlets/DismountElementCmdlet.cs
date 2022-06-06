@@ -8,7 +8,7 @@ namespace Layoutize.Cmdlets;
 [Cmdlet(VerbsData.Dismount, nameof(Element))]
 public class DismountElementCmdlet : Cmdlet
 {
-	[Parameter(Mandatory = true)]
+	[Parameter(Mandatory = true, Position = 0)]
 	[ValidateNotNull]
 	public IBuildContext Context { get; init; } = null!;
 
@@ -17,7 +17,7 @@ public class DismountElementCmdlet : Cmdlet
 		base.ProcessRecord();
 		var rootElement = Context.Element;
 		Debug.Assert(rootElement is RootDirectoryElement);
-		if (!rootElement.IsMounted) rootElement.Unmount();
+		if (rootElement.IsMounted) rootElement.Unmount();
 		Debug.Assert(!rootElement.IsMounted);
 		WriteObject(rootElement);
 	}

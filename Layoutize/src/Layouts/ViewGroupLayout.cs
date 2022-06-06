@@ -8,5 +8,5 @@ public abstract class ViewGroupLayout : ViewLayout
 {
 	public IEnumerable<Layout> Children { get; init; } = Enumerable.Empty<Layout>();
 
-	internal abstract override ViewGroupElement CreateElement(Element? parent);
+	internal abstract override ViewGroupElement CreateElement(Element parent);
 }

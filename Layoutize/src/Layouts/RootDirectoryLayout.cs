@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Annotations;
 using Layoutize.Elements;
@@ -14,21 +15,23 @@ internal class RootDirectoryLayout : ViewGroupLayout
 
 	internal RootDirectoryElement CreateElement()
 	{
-		return CreateElement(null);
+		Debug.Assert(Model.IsValid(this));
+		var element = new RootDirectoryElement(this);
+		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(!element.IsMounted);
+		return element;
 	}
 
 	internal override RootDirectoryElement CreateElement(Element? parent)
 	{
-		Debug.Assert(Model.IsValid(this));
-		var element = new RootDirectoryElement(this);
-		Debug.Assert(!element.IsMounted);
-		return element;
+		throw new InvalidOperationException();
 	}
 
 	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(Model.IsValid(this));
 		var view = new RootDirectoryView(new(FullName));
+		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(Contexts.FullName.IsValid(view.FullName));
 		return view;
 	}

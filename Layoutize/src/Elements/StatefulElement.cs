@@ -5,7 +5,7 @@ namespace Layoutize.Elements;
 
 internal sealed class StatefulElement : ComponentElement
 {
-	public StatefulElement(Element? parent, StatefulLayout layout)
+	public StatefulElement(Element parent, StatefulLayout layout)
 		: base(parent, layout)
 	{
 		_state = Layout.CreateState();

@@ -24,7 +24,7 @@ public abstract class ViewLayout : Layout
 
 	public EventHandler? OnUnmounting { get; init; }
 
-	internal abstract override ViewElement CreateElement(Element? parent);
+	internal abstract override ViewElement CreateElement(Element parent);
 
 	internal abstract IView CreateView(IBuildContext context);
 }

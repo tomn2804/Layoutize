@@ -12,9 +12,9 @@ internal abstract class ComponentElement : Element
 		get => _child.Value;
 		protected set
 		{
-			Debug.Assert(IsMounted);
 			Debug.Assert(!value.IsMounted);
 			Debug.Assert(value.Parent == this);
+			Debug.Assert(IsMounted);
 			Child.Unmount();
 			_child = new(() => value);
 			Child.Mount();
@@ -47,7 +47,7 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	protected ComponentElement(Element? parent, ComponentLayout layout)
+	protected ComponentElement(Element parent, ComponentLayout layout)
 		: base(parent, layout)
 	{
 		Debug.Assert(Parent != null);

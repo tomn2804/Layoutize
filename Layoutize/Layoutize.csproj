@@ -39,7 +39,7 @@
     <Compile Include="src\Layouts\StatelessLayout.cs" />
     <Compile Include="src\Layouts\ViewGroupLayout.cs" />
     <Compile Include="src\Layouts\ViewLayout.cs" />
-    <Compile Include="src\Elements\IBuildContext.cs" />
+    <Compile Include="src\Contexts\IBuildContext.cs" />
     <Compile Include="src\Layouts\Layout.cs" />
     <Compile Include="src\Layouts\State.cs" />
     <Compile Include="src\Elements\ViewElement.cs" />

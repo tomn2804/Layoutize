@@ -1,4 +1,6 @@
-﻿namespace Layoutize.Elements;
+﻿using Layoutize.Elements;
+
+namespace Layoutize.Contexts;
 
 public interface IBuildContext
 {

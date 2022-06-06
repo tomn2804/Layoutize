@@ -14,8 +14,8 @@ internal abstract class ViewGroupElement : ViewElement
 		get => _children.Value;
 		protected set
 		{
-			Debug.Assert(IsMounted);
 			Debug.Assert(value.All(child => child.Parent == this));
+			Debug.Assert(IsMounted);
 			IEnumerable<Element> enteringChildren = value.Except(Children);
 			IEnumerable<Element> exitingChildren = Children.Except(value);
 			foreach (var exitingChild in exitingChildren)
@@ -39,7 +39,6 @@ internal abstract class ViewGroupElement : ViewElement
 		{
 			if (base.IsMounted)
 			{
-				Debug.Assert(Children.Count == Layout.Children.Count());
 				Debug.Assert(Children.All(child => child.IsMounted));
 				Debug.Assert(Children.All(child => child.Parent == this));
 				return true;

@@ -31,6 +31,7 @@ public abstract class State
 			Debug.Assert(!value.IsMounted);
 			Debug.Assert(_element == null);
 			_element = value;
+			Debug.Assert(_element != null);
 		}
 	}
 

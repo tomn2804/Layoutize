@@ -30,7 +30,6 @@ public class DirectoryLayout : ViewGroupLayout
 	{
 		Model.Validate(this);
 		var element = new DirectoryElement(parent, this);
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
 		Debug.Assert(element.Parent == parent);
 		return element;
@@ -40,7 +39,6 @@ public class DirectoryLayout : ViewGroupLayout
 	{
 		Debug.Assert(Model.IsValid(this));
 		var view = new DirectoryView(new(Path.Combine(Contexts.Path.Of(context), Name)));
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(Contexts.Name.IsValid(view.Name));
 		Debug.Assert(FullName.IsValid(view.FullName));
 		return view;

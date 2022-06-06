@@ -18,7 +18,6 @@ public class FileLayout : ViewLayout
 	{
 		Model.Validate(this);
 		var element = new FileElement(parent, this);
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
 		Debug.Assert(element.Parent == parent);
 		return element;
@@ -28,7 +27,6 @@ public class FileLayout : ViewLayout
 	{
 		Debug.Assert(Model.IsValid(this));
 		var view = new FileView(new(Path.Combine(Contexts.Path.Of(context), Name)));
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(Contexts.Name.IsValid(view.Name));
 		Debug.Assert(FullName.IsValid(view.FullName));
 		return view;

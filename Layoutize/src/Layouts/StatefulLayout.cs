@@ -11,7 +11,6 @@ public abstract class StatefulLayout : ComponentLayout
 	{
 		Model.Validate(this);
 		var element = new StatefulElement(parent, this);
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
 		Debug.Assert(element.Parent == parent);
 		return element;

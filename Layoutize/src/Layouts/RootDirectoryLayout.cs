@@ -17,13 +17,12 @@ internal class RootDirectoryLayout : ViewGroupLayout
 	{
 		Debug.Assert(Model.IsValid(this));
 		var element = new RootDirectoryElement(this);
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
 		Debug.Assert(element.Parent == null);
 		return element;
 	}
 
-	internal override RootDirectoryElement CreateElement(Element? parent)
+	internal override RootDirectoryElement CreateElement(Element parent)
 	{
 		throw new InvalidOperationException();
 	}
@@ -32,7 +31,6 @@ internal class RootDirectoryLayout : ViewGroupLayout
 	{
 		Debug.Assert(Model.IsValid(this));
 		var view = new RootDirectoryView(new(FullName));
-		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(Contexts.FullName.IsValid(view.FullName));
 		return view;
 	}

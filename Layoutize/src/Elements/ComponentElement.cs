@@ -50,7 +50,6 @@ internal abstract class ComponentElement : Element
 	protected ComponentElement(Element parent, ComponentLayout layout)
 		: base(parent, layout)
 	{
-		Debug.Assert(Parent != null);
 		_child = new(() => Build().CreateElement(this));
 	}
 

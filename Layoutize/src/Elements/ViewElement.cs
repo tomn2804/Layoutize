@@ -55,7 +55,7 @@ internal abstract class ViewElement : Element
 	protected override void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
-		Rebuild();
+		Build();
 		base.OnLayoutUpdated(e);
 	}
 
@@ -83,7 +83,14 @@ internal abstract class ViewElement : Element
 
 	private void Build()
 	{
-		Rebuild();
+		Creating += Layout.OnCreating;
+		Created += Layout.OnCreated;
+		Deleting += Layout.OnDeleting;
+		Deleted += Layout.OnDeleted;
+		Mounting += Layout.OnMounting;
+		Mounted += Layout.OnMounted;
+		Unmounting += Layout.OnUnmounting;
+		Unmounted += Layout.OnUnmounted;
 	}
 
 	private void Create()
@@ -102,18 +109,6 @@ internal abstract class ViewElement : Element
 		View.Delete();
 		OnDeleted(EventArgs.Empty);
 		Debug.Assert(!View.Exists);
-	}
-
-	private void Rebuild()
-	{
-		Creating += Layout.OnCreating;
-		Created += Layout.OnCreated;
-		Deleting += Layout.OnDeleting;
-		Deleted += Layout.OnDeleted;
-		Mounting += Layout.OnMounting;
-		Mounted += Layout.OnMounted;
-		Unmounting += Layout.OnUnmounting;
-		Unmounted += Layout.OnUnmounted;
 	}
 
 	private void Unbuild()

@@ -8,7 +8,7 @@ using Layoutize.Views;
 
 namespace Layoutize.Layouts;
 
-internal class RootDirectoryLayout : ViewGroupLayout
+internal sealed class RootDirectoryLayout : ViewGroupLayout
 {
 	[Required]
 	[FullName]

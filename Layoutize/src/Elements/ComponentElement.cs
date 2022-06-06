@@ -31,13 +31,13 @@ internal abstract class ComponentElement : Element
 	{
 		get
 		{
-			if (base.IsMounted)
+			var isMounted = base.IsMounted;
+			if (isMounted)
 			{
 				Debug.Assert(Child.IsMounted);
 				Debug.Assert(Child.Parent == this);
-				return true;
 			}
-			return false;
+			return isMounted;
 		}
 	}
 

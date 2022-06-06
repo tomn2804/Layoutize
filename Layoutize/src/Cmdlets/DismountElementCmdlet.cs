@@ -16,8 +16,9 @@ public class DismountElementCmdlet : Cmdlet
 	{
 		base.ProcessRecord();
 		var rootElement = Context.Element;
+		Debug.Assert(rootElement is RootDirectoryElement);
 		if (!rootElement.IsMounted) rootElement.Unmount();
 		Debug.Assert(!rootElement.IsMounted);
-		WriteObject(Context);
+		WriteObject(rootElement);
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Layoutize.Elements;
 
-internal class FileElement : ViewElement
+internal sealed class FileElement : ViewElement
 {
 	public FileElement(Element parent, FileLayout layout)
 		: base(parent, layout)

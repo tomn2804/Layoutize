@@ -27,7 +27,7 @@ internal abstract class ViewGroupElement : ViewElement
 			{
 				exitingChild.Unmount();
 			}
-			Debug.Assert(exitingChildren.All(child => !child.IsMounted));
+			Debug.Assert(exitingChildren.All(exitingChild => !exitingChild.IsMounted));
 			_children = new(() => value);
 			foreach (var enteringChild in enteringChildren)
 			{
@@ -41,13 +41,13 @@ internal abstract class ViewGroupElement : ViewElement
 	{
 		get
 		{
-			if (base.IsMounted)
+			var isMounted = base.IsMounted;
+			if (isMounted)
 			{
 				Debug.Assert(Children.All(child => child.IsMounted));
 				Debug.Assert(Children.All(child => child.Parent == this));
-				return true;
 			}
-			return false;
+			return isMounted;
 		}
 	}
 

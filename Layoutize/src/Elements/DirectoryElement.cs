@@ -2,7 +2,7 @@
 
 namespace Layoutize.Elements;
 
-internal class DirectoryElement : ViewGroupElement
+internal sealed class DirectoryElement : ViewGroupElement
 {
 	public DirectoryElement(Element parent, DirectoryLayout layout)
 		: base(parent, layout)

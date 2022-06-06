@@ -20,6 +20,7 @@ public class FileLayout : ViewLayout
 		var element = new FileElement(parent, this);
 		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
+		Debug.Assert(element.Parent == parent);
 		return element;
 	}
 

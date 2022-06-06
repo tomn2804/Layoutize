@@ -28,6 +28,7 @@ public abstract class State
 		}
 		set
 		{
+			Debug.Assert(!value.IsMounted);
 			Debug.Assert(_element == null);
 			_element = value;
 		}

@@ -32,6 +32,7 @@ public class DirectoryLayout : ViewGroupLayout
 		var element = new DirectoryElement(parent, this);
 		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
+		Debug.Assert(element.Parent == parent);
 		return element;
 	}
 

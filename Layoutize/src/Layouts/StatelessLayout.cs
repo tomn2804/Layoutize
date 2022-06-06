@@ -13,6 +13,7 @@ public abstract class StatelessLayout : ComponentLayout
 		var element = new StatelessElement(parent, this);
 		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
+		Debug.Assert(element.Parent == parent);
 		return element;
 	}
 }

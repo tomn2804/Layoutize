@@ -36,8 +36,6 @@ internal abstract class ComponentElement : Element
 		}
 	}
 
-	public override IView View => Child.View;
-
 	public new Element Parent
 	{
 		get
@@ -46,6 +44,8 @@ internal abstract class ComponentElement : Element
 			return base.Parent;
 		}
 	}
+
+	public override IView View => Child.View;
 
 	protected ComponentElement(Element parent, ComponentLayout layout)
 		: base(parent, layout)

@@ -19,6 +19,7 @@ internal class RootDirectoryLayout : ViewGroupLayout
 		var element = new RootDirectoryElement(this);
 		Debug.Assert(Model.IsValid(this));
 		Debug.Assert(!element.IsMounted);
+		Debug.Assert(element.Parent == null);
 		return element;
 	}
 

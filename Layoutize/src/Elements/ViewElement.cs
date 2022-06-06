@@ -16,7 +16,7 @@ internal abstract class ViewElement : Element
 	public event EventHandler? Deleted;
 
 	public event EventHandler? Deleting;
-	
+
 	protected ViewElement(Element? parent, ViewLayout layout)
 		: base(parent, layout)
 	{

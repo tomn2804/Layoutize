@@ -64,8 +64,6 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		}
 	}
 
-	public readonly Element? Parent;
-
 	public event EventHandler? LayoutUpdated;
 
 	public event EventHandler? LayoutUpdating;
@@ -77,6 +75,8 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	public event EventHandler? Unmounted;
 
 	public event EventHandler? Unmounting;
+
+	public readonly Element? Parent;
 
 	protected Element(Element? parent, Layout layout)
 	{

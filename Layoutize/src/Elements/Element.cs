@@ -37,12 +37,12 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		get
 		{
-			if (_isMounted)
+			var isMounted = _isMounted;
+			if (isMounted)
 			{
 				Debug.Assert(View.Exists);
-				return true;
 			}
-			return false;
+			return isMounted;
 		}
 	}
 
@@ -64,6 +64,8 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		}
 	}
 
+	public virtual Element Parent { get; }
+
 	public event EventHandler? LayoutUpdated;
 
 	public event EventHandler? LayoutUpdating;
@@ -76,9 +78,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	public event EventHandler? Unmounting;
 
-	public readonly Element? Parent;
-
-	protected Element(Element? parent, Layout layout)
+	protected Element(Element parent, Layout layout)
 	{
 		Debug.Assert(Model.IsValid(layout));
 		Parent = parent;

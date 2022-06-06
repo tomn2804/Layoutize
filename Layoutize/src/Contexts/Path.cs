@@ -13,7 +13,6 @@ public static class Path
 		void VisitParent(Element element)
 		{
 			var parent = element.Parent;
-			Debug.Assert(parent != null);
 			switch (parent)
 			{
 				case ViewElement viewElement:

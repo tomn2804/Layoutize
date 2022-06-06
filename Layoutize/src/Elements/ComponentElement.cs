@@ -9,7 +9,12 @@ internal abstract class ComponentElement : Element
 {
 	public Element Child
 	{
-		get => _child.Value;
+		get
+		{
+			var child = _child.Value;
+			Debug.Assert(child.Parent == this);
+			return child;
+		}
 		protected set
 		{
 			Debug.Assert(!value.IsMounted);
@@ -33,15 +38,6 @@ internal abstract class ComponentElement : Element
 				return true;
 			}
 			return false;
-		}
-	}
-
-	public new Element Parent
-	{
-		get
-		{
-			Debug.Assert(base.Parent != null);
-			return base.Parent;
 		}
 	}
 

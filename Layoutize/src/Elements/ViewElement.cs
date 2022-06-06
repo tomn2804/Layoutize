@@ -17,7 +17,7 @@ internal abstract class ViewElement : Element
 
 	public event EventHandler? Deleting;
 
-	protected ViewElement(Element? parent, ViewLayout layout)
+	protected ViewElement(Element parent, ViewLayout layout)
 		: base(parent, layout)
 	{
 		_view = new(() => Layout.CreateView(this));

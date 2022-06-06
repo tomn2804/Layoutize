@@ -11,7 +11,12 @@ internal abstract class ViewGroupElement : ViewElement
 {
 	public ImmutableSortedSet<Element> Children
 	{
-		get => _children.Value;
+		get
+		{
+			var children = _children.Value;
+			Debug.Assert(children.All(child => child.Parent == this));
+			return children;
+		}
 		protected set
 		{
 			Debug.Assert(value.All(child => child.Parent == this));
@@ -23,7 +28,6 @@ internal abstract class ViewGroupElement : ViewElement
 				exitingChild.Unmount();
 			}
 			Debug.Assert(exitingChildren.All(child => !child.IsMounted));
-			Debug.Assert(exitingChildren.All(child => child.Parent == null));
 			_children = new(() => value);
 			foreach (var enteringChild in enteringChildren)
 			{
@@ -47,7 +51,7 @@ internal abstract class ViewGroupElement : ViewElement
 		}
 	}
 
-	protected ViewGroupElement(Element? parent, ViewGroupLayout layout)
+	protected ViewGroupElement(Element parent, ViewGroupLayout layout)
 		: base(parent, layout)
 	{
 		_children = new(

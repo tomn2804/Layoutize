@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Contexts;
 using Layoutize.Elements;
+using Layoutize.Utils;
 
 namespace Layoutize.Layouts;
 
@@ -24,15 +25,15 @@ public abstract class State
 	{
 		get
 		{
-			Debug.Assert(_element != null);
-			return _element;
+			Debug.Assert(Validator.TryValidateProperty(_element, new(this) { MemberName = nameof(Element) }, null));
+			return _element!;
 		}
 		set
 		{
+			Debug.Assert(Validator.TryValidateProperty(value, new(this) { MemberName = nameof(Element) }, null));
 			Debug.Assert(!value.IsMounted);
-			Debug.Assert(_element == null);
 			_element = value;
-			Debug.Assert(_element != null);
+			Debug.Assert(_element == value);
 		}
 	}
 
@@ -64,9 +65,7 @@ public abstract class State<T> : State where T : StatefulLayout
 		get
 		{
 			Debug.Assert(Model.IsValid(this));
-			var layout = (T)Element.Layout;
-			Debug.Assert(Model.IsValid(layout));
-			return layout;
+			return (T)Element.Layout;
 		}
 	}
 }

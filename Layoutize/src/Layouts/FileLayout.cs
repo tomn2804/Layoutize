@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
+using Layoutize.Utils;
 using Layoutize.Views;
 using Path = System.IO.Path;
 
@@ -12,13 +13,27 @@ public class FileLayout : ViewLayout
 {
 	[Required]
 	[Name]
-	public string Name { get; init; } = null!;
+	public string Name
+	{
+		get
+		{
+			Debug.Assert(Validator.TryValidateProperty(_name, new(this) { MemberName = nameof(Name) }, null));
+			return _name!;
+		}
+		init
+		{
+			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
+			_name = value;
+			Debug.Assert(_name == value);
+		}
+	}
 
 	internal override FileElement CreateElement(Element parent)
 	{
-		Model.Validate(this);
+		Debug.Assert(Model.IsValid(this));
 		var element = new FileElement(parent, this);
 		Debug.Assert(!element.IsMounted);
+		Debug.Assert(element.Layout == this);
 		Debug.Assert(element.Parent == parent);
 		return element;
 	}
@@ -27,8 +42,10 @@ public class FileLayout : ViewLayout
 	{
 		Debug.Assert(Model.IsValid(this));
 		var view = new FileView(new(Path.Combine(Contexts.Path.Of(context), Name)));
-		Debug.Assert(Contexts.Name.IsValid(view.Name));
-		Debug.Assert(FullName.IsValid(view.FullName));
+		Debug.Assert(view.Name == Name);
+		Debug.Assert(view.FullName == FullName.Of(context));
 		return view;
 	}
+
+	private string? _name;
 }

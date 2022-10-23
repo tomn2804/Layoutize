@@ -30,7 +30,7 @@
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\ViewGroupElement.cs" />
     <Compile Include="src\Cmdlets\MountElementCmdlet.cs" />
-    <Compile Include="src\Layouts\Model.cs" />
+    <Compile Include="src\Utils\Model.cs" />
     <Compile Include="src\Layouts\RootDirectoryLayout.cs" />
     <Compile Include="src\Contexts\Name.cs" />
     <Compile Include="src\Contexts\Path.cs" />
@@ -54,12 +54,8 @@
     <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="src\Utils\" />
-  </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot; -ProjectName &quot;$(ProjectName)&quot;&#xD;&#xA;" />
+    <Exec Command="pwsh &quot;$(ProjectDir)Install-Module.ps1&quot; -TargetPath &quot;$(TargetPath)&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

@@ -1,14 +1,11 @@
 ﻿param (
 	[Parameter(Mandatory)]
 	[ValidateNotNullOrEmpty()]
-	[string]$TargetPath,
-
-	[Parameter(Mandatory)]
-	[ValidateNotNullOrEmpty()]
-	[string]$ProjectName
+	[string]$TargetPath
 )
 
-$PSModulePath = $Env:PSModulePath -split ';' | Select-Object -First 1
+$PSModulePath = $env:PSModulePath -split ';' | Select-Object -First 1
+$ProjectName = Split-Path -Path $TargetPath -LeafBase
 $ProjectModulePath = New-Item -Path $PSModulePath -Name $ProjectName -ItemType 'Directory' -Force
 
 Copy-Item -Path $TargetPath -Destination $ProjectModulePath

@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Linq;
+using Layoutize.Utils;
 using Layoutize.Elements;
 
 namespace Layoutize.Layouts;
@@ -11,12 +12,11 @@ public abstract class Layout
 		init
 		{
 			Model.Validate(value);
-			const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
+			var flags = BindingFlags.Instance | BindingFlags.Public;
 			var thisProperties = GetType().GetProperties(flags);
 			foreach (var otherProperty in value.GetType().GetProperties(flags))
 			{
-				var thisProperty
-					= thisProperties.LastOrDefault(thisProperty => thisProperty.Name == otherProperty.Name);
+				var thisProperty = thisProperties.LastOrDefault(thisProperty => thisProperty.Name == otherProperty.Name);
 				if (thisProperty != null && thisProperty.CanWrite && otherProperty.CanRead)
 				{
 					thisProperty.SetValue(this, otherProperty.GetValue(value));

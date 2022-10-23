@@ -5,6 +5,7 @@ using System.Linq;
 using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
+using Layoutize.Utils;
 using Layoutize.Views;
 using Path = System.IO.Path;
 
@@ -24,13 +25,27 @@ public class DirectoryLayout : ViewGroupLayout
 
 	[Required]
 	[Name]
-	public string Name { get; init; } = null!;
+	public string Name
+	{
+		get
+		{
+			Debug.Assert(Validator.TryValidateProperty(_name, new(this) { MemberName = nameof(Name) }, null));
+			return _name!;
+		}
+		init
+		{
+			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
+			_name = value;
+			Debug.Assert(_name == value);
+		}
+	}
 
 	internal override DirectoryElement CreateElement(Element parent)
 	{
-		Model.Validate(this);
+		Debug.Assert(Model.IsValid(this));
 		var element = new DirectoryElement(parent, this);
 		Debug.Assert(!element.IsMounted);
+		Debug.Assert(element.Layout == this);
 		Debug.Assert(element.Parent == parent);
 		return element;
 	}
@@ -39,8 +54,10 @@ public class DirectoryLayout : ViewGroupLayout
 	{
 		Debug.Assert(Model.IsValid(this));
 		var view = new DirectoryView(new(Path.Combine(Contexts.Path.Of(context), Name)));
-		Debug.Assert(Contexts.Name.IsValid(view.Name));
-		Debug.Assert(FullName.IsValid(view.FullName));
+		Debug.Assert(view.Name == Name);
+		Debug.Assert(view.FullName == FullName.Of(context));
 		return view;
 	}
+
+	private string? _name;
 }

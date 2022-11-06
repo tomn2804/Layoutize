@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.ComponentModel.DataAnnotations;
 using Layoutize.Views;
 using Layoutize.Utils;
@@ -24,22 +23,14 @@ internal sealed class RootDirectoryLayout : ViewGroupLayout
 		{
 			Validator.ValidateProperty(value, new(this) { MemberName = nameof(FullName) });
 			_fullName = value;
-			Debug.Assert(_fullName == value);
+			Debug.Assert(FullName == value);
 		}
 	}
 
-	internal RootDirectoryElement CreateElement()
+	internal override RootDirectoryElement CreateElement()
 	{
 		Debug.Assert(Model.IsValid(this));
-		var element = new RootDirectoryElement(this);
-		Debug.Assert(!element.IsMounted);
-		Debug.Assert(element.Layout == this);
-		return element;
-	}
-
-	internal override RootDirectoryElement CreateElement(Element parent)
-	{
-		throw new InvalidOperationException();
+		return new(this);
 	}
 
 	internal override IView CreateView(IBuildContext context)

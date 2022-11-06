@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Layoutize.Contexts;
 using Layoutize.Layouts;
 using Layoutize.Utils;
@@ -11,35 +12,45 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 {
 	public int CompareTo(Element? other)
 	{
-		return other == null ? 1 : string.Compare(Name.Of(this), Name.Of(other), StringComparison.Ordinal);
+		return string.Compare(Name.Of(this), other != null ? Name.Of(other) : null, StringComparison.Ordinal);
 	}
 
-	public void Mount()
+	[MemberNotNull(nameof(View))]
+	public void MountTo(Element? parent)
 	{
 		Debug.Assert(!IsMounted);
-		OnMounting(EventArgs.Empty);
-		_isMounted = true;
-		OnMounted(EventArgs.Empty);
+		Parent = parent;
+		Cleanup = Mount();
 		Debug.Assert(IsMounted);
 	}
+
+	protected abstract Action? Mount();
 
 	public void Unmount()
 	{
 		Debug.Assert(IsMounted);
-		OnUnmounting(EventArgs.Empty);
-		_isMounted = false;
-		OnUnmounted(EventArgs.Empty);
+		Cleanup?.Invoke();
+		Parent = null;
 		Debug.Assert(!IsMounted);
 	}
 
-	public abstract IView View { get; }
+	private Action? Cleanup { get; set; }
 
-	public bool IsMounted
+	public abstract IView? View { get; }
+
+	[MemberNotNullWhen(true, nameof(Parent), nameof(View))]
+	public virtual bool IsMounted
 	{
 		get
 		{
-			if (_isMounted) Debug.Assert(View.Exists);
-			return _isMounted;
+			if (View != null)
+			{
+				Debug.Assert(Parent != null);
+				Debug.Assert(View.Exists);
+				return true;
+			}
+			Debug.Assert(Parent == null);
+			return false;
 		}
 	}
 
@@ -50,6 +61,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 			Debug.Assert(Model.IsValid(_layout));
 			return _layout;
 		}
+		[MemberNotNull(nameof(Parent), nameof(View))]
 		set
 		{
 			Debug.Assert(Model.IsValid(value));
@@ -57,76 +69,39 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
 			OnLayoutUpdated(EventArgs.Empty);
-			Debug.Assert(IsMounted);
+			Debug.Assert(Layout == value);
 		}
 	}
 
-	public virtual Element Parent { get; }
+	public virtual Element? Parent { get; private set; }
 
 	public event EventHandler? LayoutUpdated;
 
 	public event EventHandler? LayoutUpdating;
 
-	public event EventHandler? Mounted;
-
-	public event EventHandler? Mounting;
-
-	public event EventHandler? Unmounted;
-
-	public event EventHandler? Unmounting;
-
-	protected Element(Element parent, Layout layout)
+	protected Element(Layout layout)
 	{
 		Debug.Assert(Model.IsValid(layout));
-		Parent = parent;
 		_layout = layout;
+		Debug.Assert(Layout == layout);
+		Debug.Assert(!IsMounted);
 	}
 
+	[MemberNotNull(nameof(Parent), nameof(View))]
 	protected virtual void OnLayoutUpdated(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		LayoutUpdated?.Invoke(this, e);
-		Debug.Assert(IsMounted);
 	}
 
+	[MemberNotNull(nameof(Parent), nameof(View))]
 	protected virtual void OnLayoutUpdating(EventArgs e)
 	{
 		Debug.Assert(IsMounted);
 		LayoutUpdating?.Invoke(this, e);
-		Debug.Assert(IsMounted);
-	}
-
-	protected virtual void OnMounted(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		Mounted?.Invoke(this, e);
-		Debug.Assert(IsMounted);
-	}
-
-	protected virtual void OnMounting(EventArgs e)
-	{
-		Debug.Assert(!IsMounted);
-		Mounting?.Invoke(this, e);
-		Debug.Assert(!IsMounted);
-	}
-
-	protected virtual void OnUnmounted(EventArgs e)
-	{
-		Debug.Assert(!IsMounted);
-		Unmounted?.Invoke(this, e);
-		Debug.Assert(!IsMounted);
-	}
-
-	protected virtual void OnUnmounting(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		Unmounting?.Invoke(this, e);
-		Debug.Assert(IsMounted);
 	}
 
 	Element IBuildContext.Element => this;
-
-	private bool _isMounted;
 
 	private Layout _layout;
 }

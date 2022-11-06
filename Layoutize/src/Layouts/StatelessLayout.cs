@@ -9,13 +9,9 @@ public abstract class StatelessLayout : ComponentLayout
 {
 	protected internal abstract Layout Build(IBuildContext context);
 
-	internal sealed override StatelessElement CreateElement(Element parent)
+	internal sealed override StatelessElement CreateElement()
 	{
 		Debug.Assert(Model.IsValid(this));
-		var element = new StatelessElement(parent, this);
-		Debug.Assert(!element.IsMounted);
-		Debug.Assert(element.Layout == this);
-		Debug.Assert(element.Parent == parent);
-		return element;
+		return new(this);
 	}
 }

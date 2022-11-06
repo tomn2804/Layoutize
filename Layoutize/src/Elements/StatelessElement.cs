@@ -1,12 +1,12 @@
 ﻿using Layoutize.Layouts;
-using Layoutize.src.Utils;
+using Layoutize.Utils;
 
 namespace Layoutize.Elements;
 
 internal sealed class StatelessElement : ComponentElement
 {
-	public StatelessElement(Element parent, StatelessLayout layout)
-		: base(parent, layout)
+	public StatelessElement(StatelessLayout layout)
+		: base(layout)
 	{
 	}
 

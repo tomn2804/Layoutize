@@ -24,18 +24,14 @@ public class FileLayout : ViewLayout
 		{
 			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
 			_name = value;
-			Debug.Assert(_name == value);
+			Debug.Assert(Name == value);
 		}
 	}
 
-	internal override FileElement CreateElement(Element parent)
+	internal override FileElement CreateElement()
 	{
 		Debug.Assert(Model.IsValid(this));
-		var element = new FileElement(parent, this);
-		Debug.Assert(!element.IsMounted);
-		Debug.Assert(element.Layout == this);
-		Debug.Assert(element.Parent == parent);
-		return element;
+		return new(this);
 	}
 
 	internal override IView CreateView(IBuildContext context)

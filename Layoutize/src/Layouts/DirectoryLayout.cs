@@ -19,7 +19,7 @@ public class DirectoryLayout : ViewGroupLayout
 		init => base.Children = value switch
 		{
 			IEnumerable<object> children => children.Cast<Layout>(),
-			_ => new[] { (Layout)value },
+			_ => new[] { (Layout)value }
 		};
 	}
 
@@ -36,18 +36,14 @@ public class DirectoryLayout : ViewGroupLayout
 		{
 			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
 			_name = value;
-			Debug.Assert(_name == value);
+			Debug.Assert(Name == value);
 		}
 	}
 
-	internal override DirectoryElement CreateElement(Element parent)
+	internal override DirectoryElement CreateElement()
 	{
 		Debug.Assert(Model.IsValid(this));
-		var element = new DirectoryElement(parent, this);
-		Debug.Assert(!element.IsMounted);
-		Debug.Assert(element.Layout == this);
-		Debug.Assert(element.Parent == parent);
-		return element;
+		return new(this);
 	}
 
 	internal override IView CreateView(IBuildContext context)

@@ -25,5 +25,5 @@ public abstract class Layout
 		}
 	}
 
-	internal abstract Element CreateElement(Element parent);
+	internal abstract Element CreateElement();
 }

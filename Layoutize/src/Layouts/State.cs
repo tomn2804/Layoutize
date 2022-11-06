@@ -16,8 +16,8 @@ public abstract class State
 		Debug.Assert(Model.IsValid(this));
 		OnStateUpdating(EventArgs.Empty);
 		action.Invoke();
+		Model.Validate(this);
 		OnStateUpdated(EventArgs.Empty);
-		Debug.Assert(Model.IsValid(this));
 	}
 
 	[Required]
@@ -33,7 +33,7 @@ public abstract class State
 			Debug.Assert(Validator.TryValidateProperty(value, new(this) { MemberName = nameof(Element) }, null));
 			Debug.Assert(!value.IsMounted);
 			_element = value;
-			Debug.Assert(_element == value);
+			Debug.Assert(Element == value);
 		}
 	}
 

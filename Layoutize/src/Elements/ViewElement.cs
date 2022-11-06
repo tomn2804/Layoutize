@@ -18,40 +18,6 @@ internal abstract class ViewElement : Element
 
 	public event EventHandler? Deleting;
 
-	public event EventHandler? Mounted;
-
-	public event EventHandler? Mounting;
-
-	public event EventHandler? Unmounted;
-
-	public event EventHandler? Unmounting;
-
-	[MemberNotNull(nameof(View))]
-	protected virtual void OnMounted(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		Mounted?.Invoke(this, e);
-	}
-
-	protected virtual void OnMounting(EventArgs e)
-	{
-		Debug.Assert(!IsMounted);
-		Mounting?.Invoke(this, e);
-	}
-
-	protected virtual void OnUnmounted(EventArgs e)
-	{
-		Debug.Assert(!IsMounted);
-		Unmounted?.Invoke(this, e);
-	}
-
-	[MemberNotNull(nameof(View))]
-	protected virtual void OnUnmounting(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		Unmounting?.Invoke(this, e);
-	}
-
 	protected ViewElement(ViewLayout layout)
 		: base(layout)
 	{
@@ -61,21 +27,16 @@ internal abstract class ViewElement : Element
 	protected override Action Mount()
 	{
 		Debug.Assert(!IsMounted);
-		OnMounting(EventArgs.Empty);
 		_view = Layout.CreateView(this);
-		Build();
+		Cleanup = Build();
 		if (!_view.Exists) Create();
-		OnMounted(EventArgs.Empty);
-		Debug.Assert(IsMounted);
+		Debug.Assert(View != null);
 		return () =>
 		{
-			Debug.Assert(IsMounted);
-			OnUnmounting(EventArgs.Empty);
-			if (Layout.DeleteOnUnmount && _view.Exists) Delete();
+			if (Layout.DeleteOnUnmount && View.Exists) Delete();
 			Unbuild();
 			_view = null;
-			OnUnmounted(EventArgs.Empty);
-			Debug.Assert(!IsMounted);
+			Debug.Assert(View == null);
 		};
 	}
 
@@ -120,20 +81,16 @@ internal abstract class ViewElement : Element
 		Created += Layout.OnCreated;
 		Deleting += Layout.OnDeleting;
 		Deleted += Layout.OnDeleted;
-		Mounting += Layout.OnMounting;
 		Mounted += Layout.OnMounted;
 		Unmounting += Layout.OnUnmounting;
-		Unmounted += Layout.OnUnmounted;
 		return () =>
 		{
 			Creating -= Layout.OnCreating;
 			Created -= Layout.OnCreated;
 			Deleting -= Layout.OnDeleting;
 			Deleted -= Layout.OnDeleted;
-			Mounting -= Layout.OnMounting;
 			Mounted -= Layout.OnMounted;
 			Unmounting -= Layout.OnUnmounting;
-			Unmounted -= Layout.OnUnmounted;
 		};
 	}
 

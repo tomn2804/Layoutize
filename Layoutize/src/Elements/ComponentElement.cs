@@ -62,13 +62,12 @@ internal abstract class ComponentElement : Element
 		Debug.Assert(!IsMounted);
 		_child = Build().CreateElement();
 		_child.MountTo(this);
-		Debug.Assert(IsMounted);
+		Debug.Assert(Child != null);
 		return () =>
 		{
-			Debug.Assert(IsMounted);
-			_child.Unmount();
+			Child.Unmount();
 			_child = null;
-			Debug.Assert(!IsMounted);
+			Debug.Assert(Child == null);
 		};
 	}
 

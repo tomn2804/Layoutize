@@ -15,12 +15,48 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		return string.Compare(Name.Of(this), other != null ? Name.Of(other) : null, StringComparison.Ordinal);
 	}
 
+	public event EventHandler? Mounted;
+
+	public event EventHandler? Mounting;
+
+	public event EventHandler? Unmounted;
+
+	public event EventHandler? Unmounting;
+
+	[MemberNotNull(nameof(View))]
+	protected virtual void OnMounted(EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		Mounted?.Invoke(this, e);
+	}
+
+	protected virtual void OnMounting(EventArgs e)
+	{
+		Debug.Assert(!IsMounted);
+		Mounting?.Invoke(this, e);
+	}
+
+	protected virtual void OnUnmounted(EventArgs e)
+	{
+		Debug.Assert(!IsMounted);
+		Unmounted?.Invoke(this, e);
+	}
+
+	[MemberNotNull(nameof(View))]
+	protected virtual void OnUnmounting(EventArgs e)
+	{
+		Debug.Assert(IsMounted);
+		Unmounting?.Invoke(this, e);
+	}
+
 	[MemberNotNull(nameof(View))]
 	public void MountTo(Element? parent)
 	{
 		Debug.Assert(!IsMounted);
+		OnMounting(EventArgs.Empty);
 		Parent = parent;
 		Cleanup = Mount();
+		OnMounted(EventArgs.Empty);
 		Debug.Assert(IsMounted);
 	}
 
@@ -29,8 +65,11 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	public void Unmount()
 	{
 		Debug.Assert(IsMounted);
+		OnUnmounting(EventArgs.Empty);
 		Cleanup?.Invoke();
+		Cleanup = null;
 		Parent = null;
+		OnUnmounted(EventArgs.Empty);
 		Debug.Assert(!IsMounted);
 	}
 

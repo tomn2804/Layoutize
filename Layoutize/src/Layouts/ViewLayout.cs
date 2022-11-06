@@ -19,10 +19,6 @@ public abstract class ViewLayout : Layout
 
 	public EventHandler? OnMounted { get; init; }
 
-	public EventHandler? OnMounting { get; init; }
-
-	public EventHandler? OnUnmounted { get; init; }
-
 	public EventHandler? OnUnmounting { get; init; }
 
 	internal abstract override ViewElement CreateElement();

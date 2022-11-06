@@ -64,26 +64,25 @@ internal abstract class ViewGroupElement : ViewElement
 	}
 
 	[MemberNotNull(nameof(Children))]
-	protected override void OnMounted(EventArgs e)
+	protected override Action Mount()
 	{
+		Debug.Assert(!IsMounted);
+		var cleanup = base.Mount();
 		_children = Layout.Children.Select(childLayout => childLayout.CreateElement()).ToImmutableSortedSet();
 		foreach (var child in _children)
 		{
 			child.MountTo(this);
 		}
-		base.OnMounted(e);
-		Debug.Assert(IsMounted);
-	}
-
-	protected override void OnUnmounting(EventArgs e)
-	{
-		Debug.Assert(IsMounted);
-		base.OnUnmounting(e);
-		foreach (var child in Children)
+		Debug.Assert(Children != null);
+		return (() =>
 		{
-			child.Unmount();
-		}
-		_children = null;
+			foreach (var child in Children)
+			{
+				child.Unmount();
+			}
+			_children = null;
+			Debug.Assert(Children == null);
+		}) + cleanup;
 	}
 
 	[MemberNotNull(nameof(Children))]

@@ -4,37 +4,23 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal sealed class RootDirectoryView : IView
+internal sealed class RootDirectoryView : DirectoryView
 {
 	public RootDirectoryView(DirectoryInfo directoryInfo)
+		: base(directoryInfo)
 	{
 		Debug.Assert(directoryInfo.Exists);
-		_directoryInfo = directoryInfo;
 	}
 
-	public void Create()
+	public override void Create()
 	{
 		throw new InvalidOperationException();
 	}
 
-	public void Delete()
+	public override void Delete()
 	{
 		throw new InvalidOperationException();
 	}
 
-	public bool Exists => _directoryInfo.Exists;
-
-	public string FullName
-	{
-		get
-		{
-			var fullName = _directoryInfo.FullName;
-			Debug.Assert(Contexts.FullName.IsValid(fullName));
-			return fullName;
-		}
-	}
-
-	public string Name => throw new InvalidOperationException();
-
-	private readonly DirectoryInfo _directoryInfo;
+	public override string Name => throw new InvalidOperationException();
 }

@@ -47,14 +47,12 @@ public abstract class State
 	{
 		Debug.Assert(Model.IsValid(this));
 		StateUpdated?.Invoke(this, e);
-		Debug.Assert(Model.IsValid(this));
 	}
 
 	private protected virtual void OnStateUpdating(EventArgs e)
 	{
 		Debug.Assert(Model.IsValid(this));
 		StateUpdating?.Invoke(this, e);
-		Debug.Assert(Model.IsValid(this));
 	}
 }
 

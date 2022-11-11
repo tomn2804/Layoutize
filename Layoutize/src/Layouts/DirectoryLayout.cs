@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
-using Layoutize.Annotations;
 using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Utils;
@@ -11,34 +9,9 @@ using Path = System.IO.Path;
 
 namespace Layoutize.Layouts;
 
-public class DirectoryLayout : ViewGroupLayout
+public class DirectoryLayout : FileSystemLayout
 {
-	public new object Children
-	{
-		get => base.Children;
-		init => base.Children = value switch
-		{
-			IEnumerable<object> children => children.Cast<Layout>(),
-			_ => new[] { (Layout)value }
-		};
-	}
-
-	[Required]
-	[Name]
-	public string Name
-	{
-		get
-		{
-			Debug.Assert(Validator.TryValidateProperty(_name, new(this) { MemberName = nameof(Name) }, null));
-			return _name!;
-		}
-		init
-		{
-			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
-			_name = value;
-			Debug.Assert(Name == value);
-		}
-	}
+	public IEnumerable<Layout> Children { get; init; } = Enumerable.Empty<Layout>();
 
 	internal override DirectoryElement CreateElement()
 	{
@@ -54,6 +27,4 @@ public class DirectoryLayout : ViewGroupLayout
 		Debug.Assert(view.FullName == FullName.Of(context));
 		return view;
 	}
-
-	private string? _name;
 }

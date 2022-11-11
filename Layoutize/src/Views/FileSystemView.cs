@@ -7,7 +7,7 @@ internal abstract class FileSystemView : IView
 {
 	public abstract void Create();
 
-	public void Delete()
+	public virtual void Delete()
 	{
 		Debug.Assert(Exists);
 		FileSystemInfo.Delete();
@@ -26,7 +26,7 @@ internal abstract class FileSystemView : IView
 		}
 	}
 
-	public string Name
+	public virtual string Name
 	{
 		get
 		{

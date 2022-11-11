@@ -6,7 +6,7 @@ using Layoutize.Views;
 
 namespace Layoutize.Elements;
 
-internal abstract class ViewElement : Element
+internal abstract class FileSystemElement : Element
 {
 	public override IView? View => _view;
 
@@ -18,7 +18,7 @@ internal abstract class ViewElement : Element
 
 	public event EventHandler? Deleting;
 
-	protected ViewElement(ViewLayout layout)
+	protected FileSystemElement(FileSystemLayout layout)
 		: base(layout)
 	{
 	}
@@ -133,7 +133,7 @@ internal abstract class ViewElement : Element
 		Debug.Assert(!View.Exists);
 	}
 
-	private new ViewLayout Layout => (ViewLayout)base.Layout;
+	private new FileSystemLayout Layout => (FileSystemLayout)base.Layout;
 
 	private IView? _view;
 }

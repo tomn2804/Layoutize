@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Layoutize.Views;
 
-internal sealed class FileView : FileSystemView
+internal class FileView : FileSystemView
 {
 	public FileView(FileInfo fileInfo)
 		: base(fileInfo)

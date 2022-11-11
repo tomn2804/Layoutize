@@ -5,11 +5,14 @@ using Layoutize.Utils;
 using Layoutize.Elements;
 using Layoutize.Contexts;
 using Layoutize.Annotations;
+using System;
 
 namespace Layoutize.Layouts;
 
-internal sealed class RootDirectoryLayout : ViewGroupLayout
+internal sealed class RootDirectoryLayout : DirectoryLayout
 {
+	public override string Name => throw new InvalidOperationException(nameof(Name));
+
 	[Required]
 	[FullName]
 	public string FullName

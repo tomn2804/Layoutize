@@ -16,7 +16,7 @@ public abstract class LayoutTests<T> where T : Layout, new()
 	public abstract Layout InvalidLayout { get; }
 }
 
-public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, new()
+public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : FileSystemLayout, new()
 {
 	public static IEnumerable<object?[]> InvalidNames => Path.GetInvalidFileNameChars()
 		.Select(name => new object[] { name })
@@ -49,7 +49,7 @@ public abstract class ViewLayoutTests<T> : LayoutTests<T> where T : ViewLayout, 
 	public override T InvalidLayout => new();
 }
 
-public abstract class ViewGroupLayoutTests<T> : ViewLayoutTests<T> where T : ViewGroupLayout, new()
+public abstract class ViewGroupLayoutTests<T> : ViewLayoutTests<T> where T : DirectoryLayout, new()
 {
 	[Fact]
 	public void InitInherit_MergeAndOverrideEnumerableProperties_ReturnsDerivedLayout()

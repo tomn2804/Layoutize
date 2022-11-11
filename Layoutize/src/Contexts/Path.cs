@@ -15,7 +15,7 @@ public static class Path
 			var parent = element.Parent;
 			switch (parent)
 			{
-				case ViewElement viewElement:
+				case FileSystemElement viewElement:
 					path = viewElement.View.FullName;
 					return;
 

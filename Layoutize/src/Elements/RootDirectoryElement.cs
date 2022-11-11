@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Layoutize.Elements;
 
-internal sealed class RootDirectoryElement : ViewGroupElement
+internal sealed class RootDirectoryElement : DirectoryElement
 {
 	public RootDirectoryElement(RootDirectoryLayout layout)
 		: base(layout)

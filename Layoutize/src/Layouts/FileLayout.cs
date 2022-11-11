@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
-using Layoutize.Annotations;
+﻿using System.Diagnostics;
 using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Utils;
@@ -9,25 +7,8 @@ using Path = System.IO.Path;
 
 namespace Layoutize.Layouts;
 
-public class FileLayout : ViewLayout
+public class FileLayout : FileSystemLayout
 {
-	[Required]
-	[Name]
-	public string Name
-	{
-		get
-		{
-			Debug.Assert(Validator.TryValidateProperty(_name, new(this) { MemberName = nameof(Name) }, null));
-			return _name!;
-		}
-		init
-		{
-			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
-			_name = value;
-			Debug.Assert(Name == value);
-		}
-	}
-
 	internal override FileElement CreateElement()
 	{
 		Debug.Assert(Model.IsValid(this));
@@ -42,6 +23,4 @@ public class FileLayout : ViewLayout
 		Debug.Assert(view.FullName == FullName.Of(context));
 		return view;
 	}
-
-	private string? _name;
 }

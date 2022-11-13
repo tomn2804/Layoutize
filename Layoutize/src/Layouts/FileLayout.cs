@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Utils;
@@ -18,9 +19,14 @@ public class FileLayout : FileSystemLayout
 	internal override IView CreateView(IBuildContext context)
 	{
 		Debug.Assert(Model.IsValid(this));
-		var view = new FileView(new(Path.Combine(Contexts.Path.Of(context), Name)));
+		var fullName = FullNameAttribute.Of(context);
+		if (fullName == null)
+		{
+			throw new InvalidOperationException();
+		}
+		var view = new FileView(new(fullName));
 		Debug.Assert(view.Name == Name);
-		Debug.Assert(view.FullName == FullName.Of(context));
+		Debug.Assert(view.FullName == fullName);
 		return view;
 	}
 }

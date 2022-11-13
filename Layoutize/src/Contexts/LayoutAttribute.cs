@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Layoutize.Annotations;
+namespace Layoutize.Contexts;
 
 [AttributeUsage(AttributeTargets.Property)]
 public abstract class LayoutAttribute : ValidationAttribute

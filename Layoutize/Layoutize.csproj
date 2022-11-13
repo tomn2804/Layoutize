@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -13,25 +13,25 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="src\Annotations\LayoutAttribute.cs" />
-    <Compile Include="src\Annotations\NameAttribute.cs" />
-    <Compile Include="src\Annotations\FullNameAttribute.cs" />
+    <Compile Include="src\Contexts\LayoutAttribute.cs" />
+    <Compile Include="src\Contexts\IAtom.cs" />
+    <Compile Include="src\Contexts\NameAttribute.cs" />
+    <Compile Include="src\Contexts\FullNameAttribute.cs" />
+    <Compile Include="src\Contexts\PathAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
+    <Compile Include="src\Contexts\Selector.cs" />
     <Compile Include="src\Elements\RootDirectoryElement.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Cmdlets\DismountElementCmdlet.cs" />
     <Compile Include="src\Elements\ComponentElement.cs" />
     <Compile Include="src\Elements\Element.cs" />
     <Compile Include="src\Elements\FileElement.cs" />
-    <Compile Include="src\Contexts\FullName.cs" />
     <Compile Include="src\Elements\StatefulElement.cs" />
     <Compile Include="src\Elements\StatelessElement.cs" />
     <Compile Include="src\Elements\DirectoryElement.cs" />
     <Compile Include="src\Cmdlets\MountElementCmdlet.cs" />
     <Compile Include="src\Utils\Model.cs" />
     <Compile Include="src\Layouts\RootDirectoryLayout.cs" />
-    <Compile Include="src\Contexts\Name.cs" />
-    <Compile Include="src\Contexts\Path.cs" />
     <Compile Include="src\Layouts\FileLayout.cs" />
     <Compile Include="src\Layouts\StatefulLayout.cs" />
     <Compile Include="src\Layouts\StatelessLayout.cs" />

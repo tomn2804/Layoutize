@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Management.Automation;
+using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Layouts;
-using Layoutize.src.Utils;
+using Layoutize.Utils;
 
 namespace Layoutize.Cmdlets;
 
@@ -21,9 +22,8 @@ public class MountElementCmdlet : PSCmdlet
 	{
 		base.ProcessRecord();
 		Model.Validate(Layout);
-		var rootElement = new RootDirectoryLayout { FullName = GetFullyQualifiedPath(), Children = new[] { Layout } }
-			.CreateElement();
-		rootElement.Mount();
+		var rootElement = new RootDirectoryLayout { FullName = GetFullyQualifiedPath(), Children = new[] { Layout } }.CreateElement();
+		rootElement.MountTo(null);
 		Debug.Assert(rootElement.IsMounted);
 		WriteObject(rootElement);
 	}
@@ -33,9 +33,9 @@ public class MountElementCmdlet : PSCmdlet
 		var path = System.IO.Path.IsPathFullyQualified(Path)
 			? Path
 			: System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, Path);
-		Contexts.Path.Validate(path);
+		PathAttribute.Validate(path);
 		path = System.IO.Path.GetFullPath(path);
-		Debug.Assert(Contexts.Path.IsValid(path));
+		Debug.Assert(PathAttribute.IsValid(path));
 		if (!Directory.Exists(path)) throw new PSArgumentException($"{nameof(Path)} does not exists.", nameof(Path));
 		return path;
 	}

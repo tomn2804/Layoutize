@@ -1,13 +1,13 @@
 ﻿using System;
-using Layoutize.Annotations;
+using Layoutize.Contexts;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using Layoutize.Contexts;
 using Layoutize.Elements;
 using Layoutize.Views;
 
 namespace Layoutize.Layouts;
 
+[Path]
 public abstract class FileSystemLayout : Layout
 {
 	public bool DeleteOnUnmount { get; init; }

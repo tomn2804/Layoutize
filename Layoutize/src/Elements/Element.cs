@@ -12,7 +12,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 {
 	public int CompareTo(Element? other)
 	{
-		return string.Compare(Name.Of(this), other != null ? Name.Of(other) : null, StringComparison.Ordinal);
+		return string.Compare(NameAttribute.Of(this), other != null ? NameAttribute.Of(other) : null, StringComparison.Ordinal);
 	}
 
 	public event EventHandler? Mounted;

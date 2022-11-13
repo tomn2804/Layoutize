@@ -11,7 +11,7 @@ namespace Layoutize.Layouts;
 
 internal sealed class RootDirectoryLayout : DirectoryLayout
 {
-	public override string Name => throw new InvalidOperationException(nameof(Name));
+	public override string Name => throw new NotSupportedException();
 
 	[Required]
 	[FullName]

@@ -14,13 +14,13 @@ internal sealed class RootDirectoryView : DirectoryView
 
 	public override void Create()
 	{
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
 	public override void Delete()
 	{
-		throw new InvalidOperationException();
+		throw new NotSupportedException();
 	}
 
-	public override string Name => throw new InvalidOperationException();
+	public override string Name => throw new NotSupportedException();
 }

@@ -7,12 +7,10 @@ namespace Layoutize.Contexts;
 
 public static class Name
 {
-	public static string Of(IBuildContext context)
+	public static string? Of(IBuildContext context)
 	{
-		var element = context.Element;
-		Debug.Assert(element is not RootDirectoryElement);
-		var name = element.View.Name;
-		Debug.Assert(IsValid(name));
+		var name = context.Element?.View?.Name;
+		if (name != null) Debug.Assert(IsValid(name));
 		return name;
 	}
 

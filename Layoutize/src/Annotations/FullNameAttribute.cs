@@ -1,14 +1,13 @@
-﻿using Layoutize.Elements;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-namespace Layoutize.Contexts;
+namespace Layoutize.Annotations;
 
-[AttributeUsage(AttributeTargets.Class, Inherited = true)]
-internal class PathAttribute : LayoutAttribute, IContextValue<string>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
+internal sealed class FullNameAttribute : LayoutAttribute, IContextValue<string>
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{
@@ -33,29 +32,33 @@ internal class PathAttribute : LayoutAttribute, IContextValue<string>
 		if (string.IsNullOrWhiteSpace(value))
 		{
 			throw new ValidationException(
-				$"'{nameof(PathAttribute)}' value is either null, empty, or consists of only white-space characters."
+				$"'{nameof(FullNameAttribute)}' value is either null, empty, or consists of only white-space characters."
 			);
 		}
 		if (value.IndexOfAny(Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ValidationException($"'{nameof(PathAttribute)}' value contains invalid characters.");
+			throw new ValidationException($"'{nameof(FullNameAttribute)}' value contains invalid characters.");
 		}
 		if (!Path.IsPathFullyQualified(value))
 		{
-			throw new ValidationException($"'{nameof(PathAttribute)}' value is not an absolute path.");
+			throw new ValidationException($"'{nameof(FullNameAttribute)}' value is not an absolute path.");
 		}
 	}
 
 	public static string? Of(IBuildContext context)
 	{
-		return Selector<string?>.GetValue(context, typeof(PathAttribute));
+		return Selector<string?>.GetValue(context, typeof(FullNameAttribute), true);
 	}
 
 	public bool TryGetValue(IBuildContext context, [NotNullWhen(true)] out string? value)
 	{
-		if (context.Element is FileSystemElement element)
+		if (
+			IsDefined(context.Element.Layout.GetType(), typeof(FullNameAttribute))
+			&& PathAttribute.Of(context) is string path
+			&& NameAttribute.Of(context) is string name
+		)
 		{
-			value = element.View?.FullName;
+			value = Path.Combine(path, name);
 			Debug.Assert(IsValid(value));
 			return true;
 		}

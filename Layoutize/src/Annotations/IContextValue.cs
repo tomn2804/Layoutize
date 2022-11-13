@@ -1,4 +1,4 @@
-﻿namespace Layoutize.Contexts;
+﻿namespace Layoutize.Annotations;
 
 public interface IContextValue<T>
 {

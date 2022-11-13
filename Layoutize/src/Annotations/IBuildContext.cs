@@ -1,6 +1,6 @@
 ﻿using Layoutize.Elements;
 
-namespace Layoutize.Contexts;
+namespace Layoutize.Annotations;
 
 public interface IBuildContext
 {

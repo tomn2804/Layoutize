@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Layoutize.Contexts;
+namespace Layoutize.Annotations;
 
 public static class Selector<T>
 {

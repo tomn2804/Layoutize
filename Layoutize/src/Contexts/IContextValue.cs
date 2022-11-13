@@ -1,6 +1,6 @@
 ﻿namespace Layoutize.Contexts;
 
-public interface IAtom<T>
+public interface IContextValue<T>
 {
 	bool TryGetValue(IBuildContext context, out T? value);
 }

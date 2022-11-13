@@ -7,7 +7,7 @@ using System.IO;
 namespace Layoutize.Contexts;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
-internal sealed class FullNameAttribute : LayoutAttribute, IAtom<string>
+internal sealed class FullNameAttribute : LayoutAttribute, IContextValue<string>
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{

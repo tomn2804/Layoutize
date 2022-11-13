@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace Layoutize.Contexts;
 
-public sealed class NameAttribute : LayoutAttribute, IAtom<string>
+public sealed class NameAttribute : LayoutAttribute, IContextValue<string>
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{

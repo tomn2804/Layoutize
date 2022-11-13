@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <Compile Include="src\Contexts\LayoutAttribute.cs" />
-    <Compile Include="src\Contexts\IAtom.cs" />
+    <Compile Include="src\Contexts\IContextValue.cs" />
     <Compile Include="src\Contexts\NameAttribute.cs" />
     <Compile Include="src\Contexts\FullNameAttribute.cs" />
     <Compile Include="src\Contexts\PathAttribute.cs" />

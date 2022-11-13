@@ -1,5 +1,6 @@
 ﻿using Layoutize.Elements;
 using System;
+using System.Linq;
 
 namespace Layoutize.Contexts;
 
@@ -10,13 +11,26 @@ public static class Selector<T>
 		T? value = default;
 		void visitElement(Element? element)
 		{
-			if (
-				element != null
-				&& Attribute.GetCustomAttribute(element.Layout.GetType(), attributeType) is IAtom<T> attribute
-				&& !attribute.TryGetValue(element, out value)
-			)
+			if (element != null)
 			{
-				visitElement(element.Parent);
+				var layoutType = element.Layout.GetType();
+				if (Attribute.GetCustomAttribute(layoutType, attributeType) is IContextValue<T> classAttribute)
+				{
+					if (!classAttribute.TryGetValue(element, out value))
+					{
+						visitElement(element.Parent);
+					}
+					return;
+				}
+				var propertyType = layoutType.GetProperties().FirstOrDefault(property => Attribute.IsDefined(property, attributeType));
+				if (propertyType != null && Attribute.GetCustomAttribute(propertyType, attributeType) is IContextValue<T> propertyAttribute)
+				{
+					if (!propertyAttribute.TryGetValue(element, out value))
+					{
+						visitElement(element.Parent);
+					}
+					return;
+				}
 			}
 		}
 		var element = context.Element;

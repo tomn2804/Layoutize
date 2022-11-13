@@ -8,7 +8,7 @@ using System.IO;
 namespace Layoutize.Contexts;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = true)]
-internal class PathAttribute : LayoutAttribute, IAtom<string>
+internal class PathAttribute : LayoutAttribute, IContextValue<string>
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{

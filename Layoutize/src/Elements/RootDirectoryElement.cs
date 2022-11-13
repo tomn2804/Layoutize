@@ -10,6 +10,12 @@ internal sealed class RootDirectoryElement : DirectoryElement
 	{
 	}
 
+	public new void Mount()
+	{
+		Debug.Assert(!IsMounted);
+		MountTo(null);
+	}
+
 	public override Element? Parent => null;
 
 	public override bool IsMounted

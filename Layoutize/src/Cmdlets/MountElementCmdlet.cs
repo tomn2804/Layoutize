@@ -12,6 +12,7 @@ namespace Layoutize.Cmdlets;
 public class MountElementCmdlet : PSCmdlet
 {
 	[Parameter(Mandatory = true, Position = 0)]
+	[ValidateNotNullOrEmpty]
 	public string Path { get; init; } = null!;
 
 	[Parameter(Mandatory = true, Position = 1)]
@@ -23,8 +24,7 @@ public class MountElementCmdlet : PSCmdlet
 		base.ProcessRecord();
 		Model.Validate(Layout);
 		var rootElement = new RootDirectoryLayout { FullName = GetFullyQualifiedPath(), Children = new[] { Layout } }.CreateElement();
-		rootElement.MountTo(null);
-		Debug.Assert(rootElement.IsMounted);
+		rootElement.Mount();
 		WriteObject(rootElement);
 	}
 

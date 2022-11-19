@@ -6,33 +6,19 @@ namespace Layoutize.Annotations;
 
 internal sealed class NameAttribute : LayoutAttribute
 {
-	internal static bool IsValid([NotNullWhen(true)] string? value)
+	protected override void Validate([NotNull] object? value)
 	{
-		try
+		if (value is not string name)
 		{
-			Validate(value);
-			return true;
+			throw new ValidationException($"'{nameof(NameAttribute)}' value is not of type string.");
 		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	protected override void Validate(object? value)
-	{
-		Validate(value as string);
-	}
-
-	internal static void Validate([NotNull] string? value)
-	{
-		if (string.IsNullOrWhiteSpace(value))
+		if (string.IsNullOrWhiteSpace(name))
 		{
 			throw new ValidationException(
 				$"'{nameof(NameAttribute)}' value is either null, empty, or consists of only white-space characters."
 			);
 		}
-		if (value.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+		if (name.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
 		{
 			throw new ValidationException($"'{nameof(NameAttribute)}' value contains invalid characters.");
 		}

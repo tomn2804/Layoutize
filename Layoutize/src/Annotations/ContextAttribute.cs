@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Layoutize.Annotations;
 
-[AttributeUsage(AttributeTargets.Property, Inherited = true)]
+[AttributeUsage(AttributeTargets.Property)]
 public abstract class ContextAttribute : Attribute, IEquatable<ContextAttribute>
 {
 	private object Key { get; }

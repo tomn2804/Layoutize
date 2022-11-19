@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.ComponentModel.DataAnnotations;
 using Layoutize.Views;
 using Layoutize.Elements;
 using Layoutize.Annotations;
@@ -18,7 +17,6 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
 		Debug.Assert(FullName == fullName);
 	}
 
-	[Required]
 	[FullName]
 	public override string FullName
 	{

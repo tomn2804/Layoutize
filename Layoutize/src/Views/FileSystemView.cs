@@ -17,22 +17,24 @@ internal abstract class FileSystemView : IView
 
 	public bool Exists => FileSystemInfo.Exists;
 
+	[FullName]
 	public string FullName
 	{
 		get
 		{
 			var fullName = FileSystemInfo.FullName;
-			Debug.Assert(FullNameAttribute.IsValid(fullName));
+			Debug.Assert(this.IsMemberValid(nameof(FullName), fullName));
 			return fullName;
 		}
 	}
 
+	[Name]
 	public virtual string Name
 	{
 		get
 		{
 			var name = FileSystemInfo.Name;
-			Debug.Assert(NameAttribute.IsValid(name));
+			Debug.Assert(this.IsMemberValid(nameof(Name), name));
 			return name;
 		}
 	}

@@ -15,9 +15,9 @@ public class DismountElementCmdlet : Cmdlet
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
-		var rootElement = Context.Element;
-		Debug.Assert(rootElement is RootDirectoryElement);
-		if (rootElement.IsMounted) rootElement.Unmount();
-		WriteObject(rootElement);
+		var element = Context.Element;
+		Debug.Assert(element is RootDirectoryElement);
+		if (element.IsMounted) element.Unmount();
+		WriteObject(element);
 	}
 }

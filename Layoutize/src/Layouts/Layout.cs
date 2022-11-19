@@ -11,8 +11,8 @@ namespace Layoutize.Layouts;
 public abstract class Layout
 {
 	[Required]
-	[Name]
 	[FromContext(nameof(Name))]
+	[Name]
 	public virtual string Name
 	{
 		get
@@ -29,8 +29,8 @@ public abstract class Layout
 	}
 
 	[Required]
-	[Path]
 	[FromContext(nameof(FullName))]
+	[Path]
 	public string Path
 	{
 		get
@@ -53,7 +53,7 @@ public abstract class Layout
 		{
 			var fullName = System.IO.Path.Combine(Path, Name);
 			Debug.Assert(this.IsMemberValid(nameof(FullName), fullName));
-			return fullName!;
+			return fullName;
 		}
 	}
 
@@ -64,27 +64,26 @@ public abstract class Layout
 		foreach (var thisProperty in GetType().GetProperties().Where(property => property.CanWrite && Attribute.IsDefined(property, typeof(FromContextAttribute))))
 		{
 			var thisAttribute = thisProperty.GetCustomAttribute<FromContextAttribute>();
-			if (thisAttribute != null)
+			Debug.Assert(thisAttribute != null);
+			void visitParent(Element? element)
 			{
-				void visitParent(Element? element)
+				var parent = element?.Parent;
+				if (parent != null)
 				{
-					var parent = element?.Parent;
-					if (parent != null)
+					foreach (var parentProperty in parent.Layout.GetType().GetProperties().Where(property => property.CanRead && Attribute.IsDefined(property, typeof(ToContextAttribute))))
 					{
-						foreach (var parentProperty in parent.Layout.GetType().GetProperties().Where(property => property.CanRead && Attribute.IsDefined(property, typeof(ToContextAttribute))))
+						var parentAttribute = parentProperty.GetCustomAttribute<ToContextAttribute>();
+						Debug.Assert(parentAttribute != null);
+						if (thisAttribute.Equals(parentAttribute))
 						{
-							var parentAttribute = parentProperty.GetCustomAttribute<ToContextAttribute>();
-							if (parentAttribute != null && thisAttribute.Equals(parentAttribute))
-							{
-								thisProperty.SetValue(this, parentProperty.GetValue(parent));
-								return;
-							}
+							thisProperty.SetValue(this, parentProperty.GetValue(parent));
+							return;
 						}
-						visitParent(parent.Parent);
 					}
+					visitParent(parent.Parent);
 				}
-				visitParent(context.Element);
 			}
+			visitParent(context.Element);
 		}
 	}
 

@@ -6,37 +6,23 @@ namespace Layoutize.Annotations;
 
 internal sealed class PathAttribute : LayoutAttribute
 {
-	internal static bool IsValid([NotNullWhen(true)] string? value)
-	{
-		try
-		{
-			Validate(value);
-			return true;
-		}
-		catch
-		{
-			return false;
-		}
-	}
-
 	protected override void Validate([NotNull] object? value)
 	{
-		Validate((string?)value);
-	}
-
-	internal static void Validate([NotNull] string? value)
-	{
-		if (string.IsNullOrWhiteSpace(value))
+		if (value is not string path)
+		{
+			throw new ValidationException($"'{nameof(PathAttribute)}' value is not of type string.");
+		}
+		if (string.IsNullOrWhiteSpace(path))
 		{
 			throw new ValidationException(
 				$"'{nameof(PathAttribute)}' value is either null, empty, or consists of only white-space characters."
 			);
 		}
-		if (value.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+		if (path.IndexOfAny(Path.GetInvalidPathChars()) != -1)
 		{
 			throw new ValidationException($"'{nameof(PathAttribute)}' value contains invalid characters.");
 		}
-		if (!Path.IsPathFullyQualified(value))
+		if (!Path.IsPathFullyQualified(path))
 		{
 			throw new ValidationException($"'{nameof(PathAttribute)}' value is not an absolute path.");
 		}

@@ -6,37 +6,23 @@ namespace Layoutize.Annotations;
 
 internal sealed class FullNameAttribute : LayoutAttribute
 {
-	internal static bool IsValid([NotNullWhen(true)] string? value)
+	protected override void Validate([NotNull] object? value)
 	{
-		try
+		if (value is not string fullName)
 		{
-			Validate(value);
-			return true;
+			throw new ValidationException($"'{nameof(FullNameAttribute)}' value is not of type string.");
 		}
-		catch
-		{
-			return false;
-		}
-	}
-
-	protected override void Validate(object? value)
-	{
-		Validate(value as string);
-	}
-
-	internal static void Validate([NotNull] string? value)
-	{
-		if (string.IsNullOrWhiteSpace(value))
+		if (string.IsNullOrWhiteSpace(fullName))
 		{
 			throw new ValidationException(
 				$"'{nameof(FullNameAttribute)}' value is either null, empty, or consists of only white-space characters."
 			);
 		}
-		if (value.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+		if (fullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
 		{
 			throw new ValidationException($"'{nameof(FullNameAttribute)}' value contains invalid characters.");
 		}
-		if (!Path.IsPathFullyQualified(value))
+		if (!Path.IsPathFullyQualified(fullName))
 		{
 			throw new ValidationException($"'{nameof(FullNameAttribute)}' value is not an absolute path.");
 		}

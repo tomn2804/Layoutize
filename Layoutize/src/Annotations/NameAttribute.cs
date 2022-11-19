@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 
 namespace Layoutize.Annotations;
 
-public sealed class NameAttribute : LayoutAttribute, IContextValue<string>
+internal sealed class NameAttribute : LayoutAttribute
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{
@@ -21,9 +19,9 @@ public sealed class NameAttribute : LayoutAttribute, IContextValue<string>
 		}
 	}
 
-	protected override void Validate([NotNull] object? value)
+	protected override void Validate(object? value)
 	{
-		Validate((string?)value);
+		Validate(value as string);
 	}
 
 	internal static void Validate([NotNull] string? value)
@@ -38,24 +36,5 @@ public sealed class NameAttribute : LayoutAttribute, IContextValue<string>
 		{
 			throw new ValidationException($"'{nameof(NameAttribute)}' value contains invalid characters.");
 		}
-	}
-
-	public static string? Of(IBuildContext context)
-	{
-		return Selector<string?>.GetValue(context, typeof(NameAttribute), true);
-	}
-
-	public bool TryGetValue(IBuildContext context, [NotNullWhen(true)] out string? value)
-	{
-		var layout = context.Element.Layout;
-		var property = layout.GetType().GetProperties().FirstOrDefault(property => IsDefined(property, GetType()));
-		if (property != null)
-		{
-			value = (string?)property.GetValue(layout);
-			Debug.Assert(IsValid(value));
-			return true;
-		}
-		value = default;
-		return false;
 	}
 }

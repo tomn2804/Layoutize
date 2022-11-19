@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using Layoutize.Annotations;
 using Layoutize.Elements;
-using Layoutize.Utils;
+using Layoutize.Annotations;
 
 namespace Layoutize.Layouts;
 
@@ -11,7 +10,7 @@ public abstract class StatelessLayout : ComponentLayout
 
 	internal sealed override StatelessElement CreateElement()
 	{
-		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(this.IsValid());
 		return new(this);
 	}
 }

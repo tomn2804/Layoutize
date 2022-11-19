@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Layoutize.Annotations;
 using Layoutize.Layouts;
-using Layoutize.Utils;
 using Layoutize.Views;
 
 namespace Layoutize.Elements;
@@ -12,7 +11,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 {
 	public int CompareTo(Element? other)
 	{
-		return string.Compare(NameAttribute.Of(this), other != null ? NameAttribute.Of(other) : null, StringComparison.Ordinal);
+		return string.Compare(Layout.Name, other != null ? other.Layout.Name : null, StringComparison.Ordinal);
 	}
 
 	public event EventHandler? Mounted;
@@ -55,6 +54,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 		Debug.Assert(!IsMounted);
 		OnMounting(EventArgs.Empty);
 		Parent = parent;
+		_layout.InitState(this);
 		Cleanup = Mount();
 		OnMounted(EventArgs.Empty);
 		Debug.Assert(IsMounted);
@@ -97,13 +97,13 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 	{
 		get
 		{
-			Debug.Assert(Model.IsValid(_layout));
+			Debug.Assert(_layout.IsValid());
 			return _layout;
 		}
 		[MemberNotNull(nameof(Parent), nameof(View))]
 		set
 		{
-			Debug.Assert(Model.IsValid(value));
+			Debug.Assert(value.IsValid());
 			Debug.Assert(IsMounted);
 			OnLayoutUpdating(EventArgs.Empty);
 			_layout = value;
@@ -120,9 +120,7 @@ internal abstract class Element : IBuildContext, IComparable<Element>
 
 	protected Element(Layout layout)
 	{
-		Debug.Assert(Model.IsValid(layout));
 		_layout = layout;
-		Debug.Assert(Layout == layout);
 		Debug.Assert(!IsMounted);
 	}
 

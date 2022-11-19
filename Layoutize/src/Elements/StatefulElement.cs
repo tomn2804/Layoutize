@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Layoutize.Layouts;
-using Layoutize.Utils;
+using Layoutize.Annotations;
 
 namespace Layoutize.Elements;
 
@@ -30,7 +30,8 @@ internal sealed class StatefulElement : ComponentElement
 	protected override Layout Build()
 	{
 		var layout = State.Build(this);
-		Model.Validate(layout);
+		layout.InitState(this);
+		layout.Validate();
 		return layout;
 	}
 
@@ -40,7 +41,7 @@ internal sealed class StatefulElement : ComponentElement
 	{
 		get
 		{
-			Debug.Assert(Model.IsValid(_state));
+			Debug.Assert(_state.IsValid());
 			return _state;
 		}
 	}

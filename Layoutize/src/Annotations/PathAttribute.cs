@@ -1,14 +1,10 @@
-﻿using Layoutize.Elements;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Layoutize.Annotations;
 
-[AttributeUsage(AttributeTargets.Class, Inherited = true)]
-internal class PathAttribute : LayoutAttribute, IContextValue<string>
+internal sealed class PathAttribute : LayoutAttribute
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{
@@ -44,22 +40,5 @@ internal class PathAttribute : LayoutAttribute, IContextValue<string>
 		{
 			throw new ValidationException($"'{nameof(PathAttribute)}' value is not an absolute path.");
 		}
-	}
-
-	public static string? Of(IBuildContext context)
-	{
-		return Selector<string?>.GetValue(context, typeof(PathAttribute));
-	}
-
-	public bool TryGetValue(IBuildContext context, [NotNullWhen(true)] out string? value)
-	{
-		if (context.Element is FileSystemElement element)
-		{
-			value = element.View?.FullName;
-			Debug.Assert(IsValid(value));
-			return true;
-		}
-		value = default;
-		return false;
 	}
 }

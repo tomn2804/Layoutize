@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Layoutize.Annotations;
 using Layoutize.Elements;
-using Layoutize.Utils;
 
 namespace Layoutize.Layouts;
 
@@ -13,10 +12,10 @@ public abstract class State
 
 	protected void SetState(Action action)
 	{
-		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(this.IsValid());
 		OnStateUpdating(EventArgs.Empty);
 		action.Invoke();
-		Model.Validate(this);
+		this.Validate();
 		OnStateUpdated(EventArgs.Empty);
 	}
 
@@ -25,12 +24,12 @@ public abstract class State
 	{
 		get
 		{
-			Debug.Assert(Validator.TryValidateProperty(_element, new(this) { MemberName = nameof(Element) }, null));
-			return _element!;
+			Debug.Assert(this.IsMemberValid(nameof(Element), _element));
+			return _element;
 		}
 		set
 		{
-			Debug.Assert(Validator.TryValidateProperty(value, new(this) { MemberName = nameof(Element) }, null));
+			Debug.Assert(this.IsMemberValid(nameof(Element), value));
 			Debug.Assert(!value.IsMounted);
 			_element = value;
 			Debug.Assert(Element == value);
@@ -45,13 +44,13 @@ public abstract class State
 
 	private protected virtual void OnStateUpdated(EventArgs e)
 	{
-		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(this.IsValid());
 		StateUpdated?.Invoke(this, e);
 	}
 
 	private protected virtual void OnStateUpdating(EventArgs e)
 	{
-		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(this.IsValid());
 		StateUpdating?.Invoke(this, e);
 	}
 }
@@ -62,7 +61,7 @@ public abstract class State<T> : State where T : StatefulLayout
 	{
 		get
 		{
-			Debug.Assert(Model.IsValid(this));
+			Debug.Assert(this.IsValid());
 			return (T)Element.Layout;
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Layoutize.Annotations;
+using System.Diagnostics;
 using System.IO;
 
 namespace Layoutize.Views;
@@ -21,7 +22,7 @@ internal abstract class FileSystemView : IView
 		get
 		{
 			var fullName = FileSystemInfo.FullName;
-			Debug.Assert(Annotations.FullName.IsValid(fullName));
+			Debug.Assert(FullNameAttribute.IsValid(fullName));
 			return fullName;
 		}
 	}
@@ -31,7 +32,7 @@ internal abstract class FileSystemView : IView
 		get
 		{
 			var name = FileSystemInfo.Name;
-			Debug.Assert(Annotations.Name.IsValid(name));
+			Debug.Assert(NameAttribute.IsValid(name));
 			return name;
 		}
 	}

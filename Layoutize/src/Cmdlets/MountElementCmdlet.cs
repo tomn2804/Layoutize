@@ -4,7 +4,6 @@ using System.Management.Automation;
 using Layoutize.Annotations;
 using Layoutize.Elements;
 using Layoutize.Layouts;
-using Layoutize.Utils;
 
 namespace Layoutize.Cmdlets;
 
@@ -22,8 +21,8 @@ public class MountElementCmdlet : PSCmdlet
 	protected override void ProcessRecord()
 	{
 		base.ProcessRecord();
-		Model.Validate(Layout);
-		var rootElement = new RootDirectoryLayout { FullName = GetFullyQualifiedPath(), Children = new[] { Layout } }.CreateElement();
+		Layout.Validate();
+		var rootElement = new RootDirectoryLayout(GetFullyQualifiedPath()) { Children = new[] { Layout } }.CreateElement();
 		rootElement.Mount();
 		WriteObject(rootElement);
 	}

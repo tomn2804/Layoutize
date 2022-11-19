@@ -1,5 +1,5 @@
 ﻿using Layoutize.Layouts;
-using Layoutize.Utils;
+using Layoutize.Annotations;
 
 namespace Layoutize.Elements;
 
@@ -13,7 +13,8 @@ internal sealed class StatelessElement : ComponentElement
 	protected override Layout Build()
 	{
 		var layout = Layout.Build(this);
-		Model.Validate(layout);
+		layout.InitState(this);
+		layout.Validate();
 		return layout;
 	}
 

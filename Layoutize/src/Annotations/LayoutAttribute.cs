@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Layoutize.Annotations;
 
-[AttributeUsage(AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Property, Inherited = true)]
 public abstract class LayoutAttribute : ValidationAttribute
 {
 	protected sealed override ValidationResult? IsValid(object? value, ValidationContext context)

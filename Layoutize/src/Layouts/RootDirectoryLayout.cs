@@ -1,10 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.ComponentModel.DataAnnotations;
 using Layoutize.Views;
-using Layoutize.Utils;
 using Layoutize.Elements;
 using Layoutize.Annotations;
-using System;
 
 namespace Layoutize.Layouts;
 
@@ -12,36 +11,37 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
 {
 	public override string Name => throw new NotSupportedException();
 
+	public RootDirectoryLayout(string fullName)
+	{
+		Debug.Assert(this.IsMemberValid(nameof(FullName), fullName));
+		_fullName = fullName;
+		Debug.Assert(FullName == fullName);
+	}
+
 	[Required]
 	[FullName]
-	public string FullName
+	public override string FullName
 	{
 		get
 		{
-			Debug.Assert(Validator.TryValidateProperty(_fullName, new(this) { MemberName = nameof(FullName) }, null));
-			return _fullName!;
-		}
-		init
-		{
-			Validator.ValidateProperty(value, new(this) { MemberName = nameof(FullName) });
-			_fullName = value;
-			Debug.Assert(FullName == value);
+			Debug.Assert(this.IsMemberValid(nameof(FullName), _fullName));
+			return _fullName;
 		}
 	}
 
 	internal override RootDirectoryElement CreateElement()
 	{
-		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(this.IsValid());
 		return new(this);
 	}
 
 	internal override IView CreateView(IBuildContext context)
 	{
-		Debug.Assert(Model.IsValid(this));
+		Debug.Assert(this.IsValid());
 		var view = new RootDirectoryView(new(FullName));
 		Debug.Assert(view.FullName == FullName);
 		return view;
 	}
 
-	private string? _fullName;
+	private readonly string? _fullName;
 }

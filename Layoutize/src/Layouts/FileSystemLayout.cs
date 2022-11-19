@@ -1,13 +1,10 @@
 ﻿using System;
 using Layoutize.Annotations;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using Layoutize.Elements;
 using Layoutize.Views;
 
 namespace Layoutize.Layouts;
 
-[Path]
 public abstract class FileSystemLayout : Layout
 {
 	public bool DeleteOnUnmount { get; init; }
@@ -28,22 +25,6 @@ public abstract class FileSystemLayout : Layout
 
 	internal abstract IView CreateView(IBuildContext context);
 
-	[Required]
-	[Name]
-	public virtual string Name
-	{
-		get
-		{
-			Debug.Assert(Validator.TryValidateProperty(_name, new(this) { MemberName = nameof(Name) }, null));
-			return _name!;
-		}
-		init
-		{
-			Validator.ValidateProperty(value, new(this) { MemberName = nameof(Name) });
-			_name = value;
-			Debug.Assert(Name == value);
-		}
-	}
-
-	private string? _name;
+	[ToContext(nameof(FullName))]
+	public override string FullName => base.FullName;
 }

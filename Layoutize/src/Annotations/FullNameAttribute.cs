@@ -1,13 +1,10 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Layoutize.Annotations;
 
-[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property)]
-internal sealed class FullNameAttribute : LayoutAttribute, IContextValue<string>
+internal sealed class FullNameAttribute : LayoutAttribute
 {
 	internal static bool IsValid([NotNullWhen(true)] string? value)
 	{
@@ -22,9 +19,9 @@ internal sealed class FullNameAttribute : LayoutAttribute, IContextValue<string>
 		}
 	}
 
-	protected override void Validate([NotNull] object? value)
+	protected override void Validate(object? value)
 	{
-		Validate((string?)value);
+		Validate(value as string);
 	}
 
 	internal static void Validate([NotNull] string? value)
@@ -43,26 +40,5 @@ internal sealed class FullNameAttribute : LayoutAttribute, IContextValue<string>
 		{
 			throw new ValidationException($"'{nameof(FullNameAttribute)}' value is not an absolute path.");
 		}
-	}
-
-	public static string? Of(IBuildContext context)
-	{
-		return Selector<string?>.GetValue(context, typeof(FullNameAttribute), true);
-	}
-
-	public bool TryGetValue(IBuildContext context, [NotNullWhen(true)] out string? value)
-	{
-		if (
-			IsDefined(context.Element.Layout.GetType(), typeof(FullNameAttribute))
-			&& PathAttribute.Of(context) is string path
-			&& NameAttribute.Of(context) is string name
-		)
-		{
-			value = Path.Combine(path, name);
-			Debug.Assert(IsValid(value));
-			return true;
-		}
-		value = default;
-		return false;
 	}
 }

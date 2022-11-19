@@ -12,17 +12,17 @@ internal static class Validator
 
 	public static bool IsMemberValid(this object instance, string memberName, [NotNullWhen(true)] object? value)
 	{
-		return value != null && System.ComponentModel.DataAnnotations.Validator.TryValidateObject(value, new(instance) { MemberName = memberName }, null);
+		return value != null && System.ComponentModel.DataAnnotations.Validator.TryValidateProperty(value, new(instance) { MemberName = memberName }, null);
 	}
 
 	public static void Validate(this object instance)
 	{
-		System.ComponentModel.DataAnnotations.Validator.ValidateObject(instance, new(instance));
+		System.ComponentModel.DataAnnotations.Validator.ValidateObject(instance, new(instance), true);
 	}
 
 	public static void ValidateMember(this object instance, string memberName, [NotNull] object? value)
 	{
 		if (value == null) throw new ArgumentNullException(nameof(value));
-		System.ComponentModel.DataAnnotations.Validator.ValidateObject(value, new(instance) { MemberName = memberName });
+		System.ComponentModel.DataAnnotations.Validator.ValidateProperty(value, new(instance) { MemberName = memberName });
 	}
 }

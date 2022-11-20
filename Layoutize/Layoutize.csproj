@@ -15,7 +15,6 @@
   <ItemGroup>
     <Compile Include="src\Annotations\ContextAttribute.cs" />
     <Compile Include="src\Annotations\FromContextAttribute.cs" />
-    <Compile Include="src\Annotations\LayoutAttribute.cs" />
     <Compile Include="src\Annotations\NameAttribute.cs" />
     <Compile Include="src\Annotations\FullNameAttribute.cs" />
     <Compile Include="src\Annotations\PathAttribute.cs" />

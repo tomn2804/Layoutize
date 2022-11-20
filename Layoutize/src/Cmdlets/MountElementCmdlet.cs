@@ -11,7 +11,6 @@ public class MountElementCmdlet : PSCmdlet
 {
 	[Parameter(Mandatory = true, Position = 0)]
 	[ValidateNotNullOrEmpty]
-	[Path]
 	public string Path { get; init; } = null!;
 
 	[Parameter(Mandatory = true, Position = 1)]
@@ -23,7 +22,6 @@ public class MountElementCmdlet : PSCmdlet
 	{
 		get
 		{
-			this.ValidateMember(nameof(Path), Path);
 			var fullName = System.IO.Path.IsPathFullyQualified(Path)
 				? Path
 				: System.IO.Path.Combine(SessionState.Path.CurrentLocation.Path, Path);

@@ -1,30 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Layoutize.Annotations;
 
-internal sealed class FullNameAttribute : LayoutAttribute
+internal sealed class FullNameAttribute : ValidationAttribute
 {
-	protected override void Validate([NotNull] object? value)
+	protected override ValidationResult? IsValid(object? value, ValidationContext context)
 	{
 		if (value is not string fullName)
 		{
-			throw new ValidationException($"'{nameof(FullNameAttribute)}' value is not of type string.");
+			return new($"'{nameof(FullNameAttribute)}' value must be of type {typeof(string)}.");
 		}
 		if (string.IsNullOrWhiteSpace(fullName))
 		{
-			throw new ValidationException(
-				$"'{nameof(FullNameAttribute)}' value is either null, empty, or consists of only white-space characters."
-			);
+			return new($"'{nameof(FullNameAttribute)}' value cannot be null, empty, or consists of only white-space characters.");
 		}
 		if (fullName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
 		{
-			throw new ValidationException($"'{nameof(FullNameAttribute)}' value contains invalid characters.");
+			return new($"'{nameof(FullNameAttribute)}' value cannot contain invalid characters.");
 		}
 		if (!Path.IsPathFullyQualified(fullName))
 		{
-			throw new ValidationException($"'{nameof(FullNameAttribute)}' value is not an absolute path.");
+			return new($"'{nameof(FullNameAttribute)}' value is not an absolute path.");
 		}
+		return ValidationResult.Success;
 	}
 }

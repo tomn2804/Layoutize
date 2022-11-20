@@ -22,5 +22,5 @@ internal sealed class RootDirectoryView : DirectoryView
 		throw new NotSupportedException();
 	}
 
-	public override string Name => throw new NotSupportedException();
+	public override string Name => throw new NotSupportedException(); // TODO: Validator will trip this
 }

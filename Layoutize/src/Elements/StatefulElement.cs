@@ -9,7 +9,7 @@ internal sealed class StatefulElement : ComponentElement
 	public StatefulElement(StatefulLayout layout)
 		: base(layout)
 	{
-		_state = Layout.CreateState();
+		_state = Layout.CreateState(); // TODO: Layout is not ready
 		_state.Element = this;
 		_state.StateUpdated += (sender, e) =>
 		{

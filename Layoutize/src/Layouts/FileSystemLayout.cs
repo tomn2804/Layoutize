@@ -26,6 +26,5 @@ public abstract class FileSystemLayout : Layout
 	internal abstract IView CreateView(IBuildContext context);
 
 	[ToContext(nameof(FullName))]
-	[FullName]
 	public override string FullName => base.FullName;
 }

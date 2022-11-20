@@ -8,7 +8,7 @@ namespace Layoutize.Layouts;
 
 internal sealed class RootDirectoryLayout : DirectoryLayout
 {
-	public override string Name => throw new NotSupportedException();
+	public override string Name => throw new NotSupportedException(); // TODO: Validator will trip this
 
 	public RootDirectoryLayout(string fullName)
 	{
@@ -17,7 +17,6 @@ internal sealed class RootDirectoryLayout : DirectoryLayout
 		Debug.Assert(FullName == fullName);
 	}
 
-	[FullName]
 	public override string FullName
 	{
 		get

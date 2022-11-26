@@ -20,6 +20,7 @@
     <Compile Include="src\Annotations\PathAttribute.cs" />
     <Compile Include="src\Annotations\ToContextAttribute.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
+    <Compile Include="src\Cmdlets\MountLayoutCmdlet.cs" />
     <Compile Include="src\Elements\RootDirectoryElement.cs" />
     <Compile Include="src\Layouts\ComponentLayout.cs" />
     <Compile Include="src\Cmdlets\DismountElementCmdlet.cs" />

@@ -6,7 +6,7 @@ using Layoutize.Layouts;
 
 namespace Layoutize.Cmdlets;
 
-[Cmdlet(VerbsData.Mount, nameof(Element))]
+[Cmdlet(VerbsData.Mount, nameof(LocalElement))]
 public class MountElementCmdlet : PSCmdlet
 {
 	[Parameter(Mandatory = true, Position = 0)]

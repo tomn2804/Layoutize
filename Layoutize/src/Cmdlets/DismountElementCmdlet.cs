@@ -4,7 +4,7 @@ using Layoutize.Elements;
 
 namespace Layoutize.Cmdlets;
 
-[Cmdlet(VerbsData.Dismount, nameof(Element))]
+[Cmdlet(VerbsData.Dismount, nameof(LocalElement))]
 public class DismountElementCmdlet : Cmdlet
 {
 	[Parameter(Mandatory = true, Position = 0)]
